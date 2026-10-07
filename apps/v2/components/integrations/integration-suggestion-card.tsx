@@ -2,9 +2,16 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useUser } from "@/lib/auth/session";
-import { IconCircleCheckFilled, IconDownload } from "@tabler/icons-react";
+import {
+  IconCircleCheckFilled,
+  IconClockPause,
+  IconDownload,
+  IconX,
+} from "@tabler/icons-react";
 import { motion } from "motion/react";
+import { useMutation } from "convex/react";
 
+import { api } from "@whirl/backend/convex/_generated/api";
 import type { Id } from "@whirl/backend/convex/_generated/dataModel";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { IntegrationLogo } from "@/components/integration-logo";
@@ -35,9 +42,13 @@ type IntegrationSuggestionItem = {
 export function IntegrationSuggestionCard({
   phase,
   animate,
+  messageId,
+  phaseIndex,
 }: {
   phase: MessagePhase;
   animate: boolean;
+  messageId?: string;
+  phaseIndex?: number;
 }) {
   const items = useMemo(
     () =>
@@ -58,10 +69,10 @@ export function IntegrationSuggestionCard({
   );
   const integrations = useSuggestedIntegrations(ids);
   const { user, isLoaded } = useUser();
-  const [selectedId, setSelectedId] = useState<Id<"integrations"> | null>(
-    null,
-  );
+  const [selectedId, setSelectedId] = useState<Id<"integrations"> | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
+  const [declining, setDeclining] = useState(false);
+  const declineGate = useMutation(api.messages.declineIntegrationGate);
   const shownEventSent = useRef(false);
 
   useEffect(() => {
@@ -105,6 +116,25 @@ export function IntegrationSuggestionCard({
             entry={entry}
             ready={ready}
             onOpen={() => openEntry(entry)}
+            connectionStatus={phase.connectionStatus}
+            declining={declining}
+            onDecline={
+              phase.connectionStatus === "waiting" &&
+              messageId !== undefined &&
+              phaseIndex !== undefined
+                ? async () => {
+                    setDeclining(true);
+                    try {
+                      await declineGate({
+                        messageId: messageId as Id<"messages">,
+                        phaseIndex,
+                      });
+                    } finally {
+                      setDeclining(false);
+                    }
+                  }
+                : undefined
+            }
           />
         ))}
       </motion.div>
@@ -112,9 +142,7 @@ export function IntegrationSuggestionCard({
       <IntegrationInstallModal
         integration={selected}
         onClose={() => setSelectedId(null)}
-        onRequireAuth={
-          isLoaded && !user ? () => setAuthOpen(true) : undefined
-        }
+        onRequireAuth={isLoaded && !user ? () => setAuthOpen(true) : undefined}
       />
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
     </>
@@ -125,10 +153,16 @@ function SuggestionTile({
   entry,
   ready,
   onOpen,
+  connectionStatus,
+  onDecline,
+  declining,
 }: {
   entry: StoreIntegration;
   ready: boolean;
   onOpen: () => void;
+  connectionStatus?: "waiting" | "connected" | "declined";
+  onDecline?: () => Promise<void>;
+  declining: boolean;
 }) {
   const installed = entry.installedConnected;
   const needsConnection = entry.installedServerId !== null && !installed;
@@ -149,13 +183,13 @@ function SuggestionTile({
         />
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="flex min-w-0 items-center gap-1.5">
-            <span className="truncate text-[13.5px]/5 font-semibold tracking-tight">
+            <span className="truncate text-[15px]/6 font-semibold tracking-tight">
               {entry.name}
             </span>
             {entry.verified && <VerifiedBadge size={13} />}
           </span>
           {ready ? (
-            <span className="line-clamp-2 text-[11.5px]/4 text-muted-foreground">
+            <span className="line-clamp-2 text-[13px]/5 text-muted-foreground">
               {entry.description ?? "A new set of tools for the desk."}
             </span>
           ) : (
@@ -167,22 +201,47 @@ function SuggestionTile({
         </span>
       </button>
 
-      {installed ? (
-        <span className="inline-flex shrink-0 items-center gap-1 text-[12px]/4 font-medium text-emerald-600 dark:text-emerald-400">
+      {connectionStatus === "declined" ? (
+        <span className="inline-flex shrink-0 items-center gap-1 text-[13px]/5 font-medium text-muted-foreground">
+          <IconX size={14} />
+          Skipped
+        </span>
+      ) : installed || connectionStatus === "connected" ? (
+        <span className="inline-flex shrink-0 items-center gap-1 text-[13px]/5 font-medium text-emerald-600 dark:text-emerald-400">
           <IconCircleCheckFilled size={14} />
-          Installed
+          {connectionStatus === "connected"
+            ? "Connected · resumed"
+            : "Installed"}
         </span>
       ) : (
-        <Button
-          type="button"
-          size="sm"
-          disabled={!ready}
-          onClick={onOpen}
-          className="rounded-full px-3"
-        >
-          <IconDownload size={13} stroke={2.25} />
-          {needsConnection ? "Connect" : "Install"}
-        </Button>
+        <span className="flex shrink-0 items-center gap-1.5">
+          {connectionStatus === "waiting" && onDecline && (
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              disabled={declining}
+              onClick={() => void onDecline()}
+              className="rounded-full px-2.5"
+            >
+              Not now
+            </Button>
+          )}
+          <Button
+            type="button"
+            size="sm"
+            disabled={!ready}
+            onClick={onOpen}
+            className="rounded-full px-3"
+          >
+            {connectionStatus === "waiting" ? (
+              <IconClockPause size={13} stroke={2.25} />
+            ) : (
+              <IconDownload size={13} stroke={2.25} />
+            )}
+            {needsConnection ? "Connect" : "Install"}
+          </Button>
+        </span>
       )}
     </div>
   );

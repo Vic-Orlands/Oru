@@ -236,9 +236,7 @@ export const getRequestForStream = internalQuery({
     const mentionedSkillInstallIds = new Set(
       messages
         .filter((message) => message.role === "user")
-        .flatMap((message) =>
-          (message.skills ?? []).map((m) => m.installId),
-        ),
+        .flatMap((message) => (message.skills ?? []).map((m) => m.installId)),
     );
     const installedSkills = await Promise.all(
       runtimeSkills.map(async (skill) => {
@@ -325,7 +323,6 @@ export const getRequestForStream = internalQuery({
           .map((row) => [row.id as string, row.link as string]),
       ),
     };
-
 
     const attachmentStorage = ctx.storage as unknown as AttachmentStorage;
     const history = messages.map(async (message) => ({
@@ -446,7 +443,8 @@ export const getRequestForStream = internalQuery({
       const image = [...(message.attachments ?? [])]
         .reverse()
         .find(
-          (attachment) => attachment.type?.startsWith("image/") && attachment.url,
+          (attachment) =>
+            attachment.type?.startsWith("image/") && attachment.url,
         );
       if (image?.url) {
         lastGeneratedImage = {
@@ -755,7 +753,7 @@ export const finalizeLastPendingWeather = internalMutation({
         if (value !== undefined) phase[key] = value;
       }
       if (offset !== undefined) phase.contentOffset = offset;
-      return phase as typeof phases[number];
+      return phase as (typeof phases)[number];
     };
 
     // Prefer the pending phase opened on tool-input-start; some providers
@@ -928,13 +926,9 @@ export const finalizeLastPendingCalc = internalMutation({
     const phases = [...(assistant.phases ?? [])];
     const buildPhase = (offset: number | undefined) => ({
       kind: "calc" as const,
-      ...(calc.expression !== undefined
-        ? { expression: calc.expression }
-        : {}),
+      ...(calc.expression !== undefined ? { expression: calc.expression } : {}),
       ...(calc.result !== undefined ? { result: calc.result } : {}),
-      ...(calc.needsLatex !== undefined
-        ? { needsLatex: calc.needsLatex }
-        : {}),
+      ...(calc.needsLatex !== undefined ? { needsLatex: calc.needsLatex } : {}),
       ...(calc.label !== undefined ? { label: calc.label } : {}),
       ...(calc.expressionTex !== undefined
         ? { expressionTex: calc.expressionTex }
@@ -1011,16 +1005,7 @@ export const finalizeLastPendingMcp = internalMutation({
   },
   handler: async (
     ctx,
-    {
-      assistantId,
-      server,
-      tool,
-      action,
-      completed,
-      ok,
-      error,
-      contentOffset,
-    },
+    { assistantId, server, tool, action, completed, ok, error, contentOffset },
   ) => {
     const assistant = await ctx.db.get(assistantId);
     if (!assistant) {
@@ -1149,8 +1134,20 @@ export const finalizeLastPendingIntegrationSuggestion = internalMutation({
     ),
     // Used only when no pending phase exists to inherit a position from.
     contentOffset: v.optional(v.number()),
+    waitForConnection: v.optional(v.boolean()),
+    resumeInstruction: v.optional(v.string()),
   },
-  handler: async (ctx, { assistantId, query, items, contentOffset }) => {
+  handler: async (
+    ctx,
+    {
+      assistantId,
+      query,
+      items,
+      contentOffset,
+      waitForConnection,
+      resumeInstruction,
+    },
+  ) => {
     const assistant = await ctx.db.get(assistantId);
     if (!assistant) {
       throw new Error("Assistant message not found");
@@ -1161,6 +1158,8 @@ export const finalizeLastPendingIntegrationSuggestion = internalMutation({
       kind: "integrationSuggestion" as const,
       ...(query !== undefined ? { query } : {}),
       items,
+      ...(waitForConnection ? { connectionStatus: "waiting" as const } : {}),
+      ...(waitForConnection && resumeInstruction ? { resumeInstruction } : {}),
       ...(offset !== undefined ? { contentOffset: offset } : {}),
     });
 
@@ -1171,12 +1170,46 @@ export const finalizeLastPendingIntegrationSuggestion = internalMutation({
       if (phase.kind === "integrationSuggestion" && phase.pending) {
         phases[i] = buildPhase(phase.contentOffset);
         await ctx.db.patch(assistantId, { phases, updatedAt: Date.now() });
+        if (waitForConnection && items[0]) {
+          const existing = await ctx.db
+            .query("integrationGates")
+            .withIndex("by_message_phase", (q) =>
+              q.eq("messageId", assistantId),
+            )
+            .filter((q) => q.eq(q.field("phaseIndex"), i))
+            .unique();
+          if (!existing) {
+            await ctx.db.insert("integrationGates", {
+              userId: assistant.userId,
+              threadId: assistant.threadId,
+              messageId: assistantId,
+              phaseIndex: i,
+              integrationId: items[0].integrationId,
+              status: "waiting",
+              resumeInstruction,
+              createdAt: Date.now(),
+            });
+          }
+        }
         return;
       }
     }
 
+    const phaseIndex = phases.length;
     phases.push(buildPhase(contentOffset));
     await ctx.db.patch(assistantId, { phases, updatedAt: Date.now() });
+    if (waitForConnection && items[0]) {
+      await ctx.db.insert("integrationGates", {
+        userId: assistant.userId,
+        threadId: assistant.threadId,
+        messageId: assistantId,
+        phaseIndex,
+        integrationId: items[0].integrationId,
+        status: "waiting",
+        resumeInstruction,
+        createdAt: Date.now(),
+      });
+    }
   },
 });
 
@@ -1334,13 +1367,25 @@ export const finalizeLastPendingImage = internalMutation({
   },
   handler: async (
     ctx,
-    { assistantId, prompt, count, images, ok, error, contentOffset, expectedStreamId },
+    {
+      assistantId,
+      prompt,
+      count,
+      images,
+      ok,
+      error,
+      contentOffset,
+      expectedStreamId,
+    },
   ) => {
     const assistant = await ctx.db.get(assistantId);
     if (!assistant) {
       return;
     }
-    if (expectedStreamId !== undefined && assistant.streamId !== expectedStreamId) {
+    if (
+      expectedStreamId !== undefined &&
+      assistant.streamId !== expectedStreamId
+    ) {
       return;
     }
 
@@ -1363,7 +1408,11 @@ export const finalizeLastPendingImage = internalMutation({
     if (prompt !== undefined) {
       for (let i = phases.length - 1; i >= 0; i -= 1) {
         const phase = phases[i];
-        if (phase.kind === "image" && phase.pending && phase.prompt === prompt) {
+        if (
+          phase.kind === "image" &&
+          phase.pending &&
+          phase.prompt === prompt
+        ) {
           return await settle(i);
         }
       }

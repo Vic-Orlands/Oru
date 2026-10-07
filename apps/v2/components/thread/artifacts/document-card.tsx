@@ -96,14 +96,14 @@ export function DocumentCard({
         >
           <ArtifactIconBadge icon={icon} />
           <span className="flex min-w-0 flex-1 flex-col">
-            <span className="truncate text-[13.5px]/5 font-medium">
+            <span className="truncate text-[15px]/6 font-medium">
               {title}
             </span>
-            <span className="truncate text-[11.5px]/4 text-muted-foreground">
+            <span className="truncate text-[13px]/5 text-muted-foreground">
               {subtitle}
             </span>
           </span>
-          <span className="flex h-7 items-center gap-1 rounded-full bg-black/[0.04] px-2.5 text-[11.5px]/4 font-medium text-muted-foreground transition-colors duration-150 group-hover/doc:bg-black/[0.07] dark:bg-white/[0.06] dark:group-hover/doc:bg-white/[0.1]">
+          <span className="flex h-7 items-center gap-1 rounded-full bg-black/[0.04] px-2.5 text-[13px]/5 font-medium text-muted-foreground transition-colors duration-150 group-hover/doc:bg-black/[0.07] dark:bg-white/[0.06] dark:group-hover/doc:bg-white/[0.1]">
             Open
             <IconArrowUpRight size={13} stroke={2} />
           </span>

@@ -157,7 +157,8 @@ export const updateOAuthTokens = internalMutation({
       oauth: {
         ...server.oauth,
         accessTokenCipher,
-        refreshTokenCipher: refreshTokenCipher ?? server.oauth.refreshTokenCipher,
+        refreshTokenCipher:
+          refreshTokenCipher ?? server.oauth.refreshTokenCipher,
         expiresAt,
         connected: true,
       },
@@ -307,9 +308,7 @@ export function callbackHtml(payload: {
   // When opened in a popup, post the result to the opener and close. When the
   // popup was blocked and this is a full-tab redirect (no opener), send the user
   // back to the settings page.
-  const returnUrl = JSON.stringify(
-    `${siteUrl()}/settings?section=mcp-servers`,
-  );
+  const returnUrl = JSON.stringify(`${siteUrl()}/settings?section=mcp-servers`);
   const delay = payload.ok ? 500 : 2500;
   return `<!doctype html><html><head><meta charset="utf-8"><title>${heading}</title><style>body{font-family:ui-sans-serif,system-ui,sans-serif;display:flex;min-height:100vh;margin:0;align-items:center;justify-content:center;background:#0b0b0b;color:#eee}main{text-align:center;max-width:24rem;padding:2rem}h1{font-size:1.1rem;margin:0 0 .5rem}p{font-size:.9rem;color:#aaa;margin:0}</style></head><body><main><h1>${heading}</h1><p>${detail}</p></main><script>(function(){var url=${returnUrl};try{if(window.opener){window.opener.postMessage(${message},"*");setTimeout(function(){window.close();},${delay});return;}}catch(e){}if(url){setTimeout(function(){window.location.href=url;},${delay});}})();</script></body></html>`;
 }
@@ -370,11 +369,16 @@ export const mcpOAuthCallback = httpAction(async (ctx, request) => {
       refreshTokenCipher,
       expiresAt: tokens.expiresAt,
     });
+    await ctx.runMutation(internal.messages.resumeIntegrationGateForServer, {
+      serverId: server._id,
+    });
     return new Response(callbackHtml({ ok: true, name: server.name }), {
       status: 200,
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   } catch (error) {
-    return fail(error instanceof Error ? error.message : "Token exchange failed.");
+    return fail(
+      error instanceof Error ? error.message : "Token exchange failed.",
+    );
   }
 });

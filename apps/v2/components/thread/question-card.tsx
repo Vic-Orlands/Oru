@@ -19,14 +19,14 @@ export function QuestionCard({ phase }: { phase: MessagePhase }) {
 
   return (
     <div className="mb-2 w-full max-w-md rounded-[20px] bg-well px-4 py-3 shadow-[inset_0_0_0_1px_var(--well-outline),inset_0_1px_0_0_var(--well-highlight)]">
-      <div className="flex items-center gap-1.5 text-[12.5px]/4 font-medium text-muted-foreground">
+      <div className="flex items-center gap-1.5 text-[13px]/5 font-medium text-muted-foreground">
         <IconMessageQuestion size={14} stroke={2} />
         {phase.answered ? "Asked you" : "Asking you"}
       </div>
       <div className="mt-2.5 flex flex-col gap-3">
         {questions.map((question) => (
           <div key={question.id}>
-            <p className="text-sm font-medium text-foreground">
+            <p className="text-[15px]/6 font-medium text-foreground">
               {question.prompt}
             </p>
             {phase.answered && (
@@ -55,7 +55,7 @@ function AnswerLine({
 
   if (empty) {
     return (
-      <p className="mt-1 text-[12.5px]/4 text-muted-foreground">Skipped</p>
+      <p className="mt-1 text-[13px]/5 text-muted-foreground">Skipped</p>
     );
   }
 
@@ -64,7 +64,7 @@ function AnswerLine({
       {selected.map((label) => (
         <span
           key={label}
-          className="rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground"
+          className="rounded-full bg-primary px-2.5 py-1 text-[13px]/5 font-medium text-primary-foreground"
         >
           {label}
         </span>
@@ -75,7 +75,7 @@ function AnswerLine({
         </span>
       )}
       {files.length > 0 && (
-        <span className="flex items-center gap-1 text-[12.5px]/4 text-muted-foreground">
+        <span className="flex items-center gap-1 text-[13px]/5 text-muted-foreground">
           <IconPaperclip size={13} />
           {files.join(", ")}
         </span>

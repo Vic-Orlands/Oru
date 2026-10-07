@@ -75,6 +75,15 @@ export function ArtifactPanel() {
      overlay already covers everything. */
   const isFullscreen = minMd && fullscreen;
 
+  useEffect(() => {
+    if (!target) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeArtifactPanel();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [target]);
+
   return (
     <AnimatePresence initial={false}>
       {target?.kind === "document" ? (

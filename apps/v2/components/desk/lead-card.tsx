@@ -65,16 +65,16 @@ function CardShell({
     <div className="my-2 overflow-hidden rounded-xl bg-card ring-1 ring-border">
       <div className="flex items-center justify-between gap-3 border-b border-border px-3 py-2">
         <div className="min-w-0">
-          <div className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+          <div className="text-[13px]/5 font-medium text-muted-foreground">
             {kicker}
           </div>
-          <div className="truncate text-[13.5px] font-medium">{title}</div>
+          <div className="truncate text-[15px]/6 font-medium">{title}</div>
         </div>
         {onOpen && (
           <button
             type="button"
             onClick={onOpen}
-            className="flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-[12px] text-muted-foreground hover:bg-accent hover:text-foreground"
+            className="flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-[13px]/5 text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             Open
             <IconArrowUpRight size={13} />
@@ -100,7 +100,9 @@ function ProspectCard({ title, text }: { title?: string; text?: string }) {
           <li key={row.name} className="flex items-center gap-3 px-3 py-2">
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 items-center gap-1.5">
-                <span className="truncate text-[13px] font-medium">{row.name}</span>
+                <span className="truncate text-[15px]/6 font-medium">
+                  {row.name}
+                </span>
                 {(row.profileUrl ?? row.sourceUrl) && (
                   <a
                     href={row.profileUrl ?? row.sourceUrl}
@@ -113,12 +115,16 @@ function ProspectCard({ title, text }: { title?: string; text?: string }) {
                   </a>
                 )}
               </div>
-              <div className="truncate text-[12px] text-muted-foreground">
+              <div className="truncate text-[13px]/5 text-muted-foreground">
                 {row.title} · {row.company}
               </div>
             </div>
-            <span className="text-[12px] tabular-nums text-muted-foreground">{row.score}</span>
-            <span className="rounded-full bg-accent px-2 py-0.5 text-[11px]">{row.fit}</span>
+            <span className="text-[13px]/5 tabular-nums text-muted-foreground">
+              {row.score}
+            </span>
+            <span className="rounded-full bg-accent px-2 py-0.5 text-[13px]/5">
+              {row.fit}
+            </span>
           </li>
         ))}
       </ul>
@@ -138,9 +144,11 @@ function SequenceCard({ text }: { text?: string }) {
         {(data?.steps ?? []).map((step) => (
           <li
             key={step.subject}
-            className="grid grid-cols-[2.75rem_4.5rem_minmax(0,1fr)] items-baseline gap-2 text-[12.5px]"
+            className="grid grid-cols-[2.75rem_4.5rem_minmax(0,1fr)] items-baseline gap-2 text-[13px]/5"
           >
-            <span className="tabular-nums text-muted-foreground">Day {step.day}</span>
+            <span className="tabular-nums text-muted-foreground">
+              Day {step.day}
+            </span>
             <span className="text-muted-foreground">{step.channel}</span>
             <span className="min-w-0 truncate">{step.subject}</span>
           </li>
@@ -160,10 +168,10 @@ function ApprovalCard({ text }: { text?: string }) {
       onOpen={() => openLeadPanel("approval")}
     >
       <div className="px-3 py-2.5">
-        <div className="text-[12px] text-muted-foreground">
+        <div className="text-[13px]/5 text-muted-foreground">
           To {draft.to} · {draft.company} · {draft.step}
         </div>
-        <p className="mt-1.5 text-[13px]/5">{draft.preview}</p>
+        <p className="mt-1.5 text-[15px]/6">{draft.preview}</p>
         <div className="mt-3 flex gap-2">
           <button
             type="button"

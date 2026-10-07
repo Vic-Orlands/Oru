@@ -116,6 +116,10 @@ export default defineSchema({
     userId: v.string(),
     role: v.union(v.literal("user"), v.literal("assistant")),
     content: v.string(),
+    // Backend-authored continuation events (for example a connected app
+    // resuming a paused job). They remain model context but stay out of the
+    // visible transcript because they are not words the user typed.
+    systemGenerated: v.optional(v.boolean()),
     createdAt: v.number(),
     updatedAt: v.number(),
     attachments: v.optional(v.array(attachmentValidator)),
@@ -212,6 +216,31 @@ export default defineSchema({
     userName: v.optional(v.string()),
     createdAt: v.number(),
   }).index("by_thread_created_at", ["threadId", "createdAt"]),
+
+  // Durable pause points for tasks that require a newly connected app.
+  // Kept outside the transcript so a connection can resume a job days or
+  // months later without scanning a bounded window of recent messages.
+  integrationGates: defineTable({
+    userId: v.string(),
+    threadId: v.id("threads"),
+    messageId: v.id("messages"),
+    phaseIndex: v.number(),
+    integrationId: v.id("integrations"),
+    status: v.union(
+      v.literal("waiting"),
+      v.literal("connected"),
+      v.literal("declined"),
+    ),
+    resumeInstruction: v.optional(v.string()),
+    createdAt: v.number(),
+    resolvedAt: v.optional(v.number()),
+  })
+    .index("by_message_phase", ["messageId", "phaseIndex"])
+    .index("by_user_integration_status", [
+      "userId",
+      "integrationId",
+      "status",
+    ]),
 
   // Documents whirl authors and revises in a thread. Markdown documents render
   // as rich text; code documents render as editable source files and carry the
@@ -811,11 +840,7 @@ export default defineSchema({
     // "approved" (rows that predate the workflow). Only approved integrations
     // can be enabled.
     status: v.optional(
-      v.union(
-        v.literal("pending"),
-        v.literal("approved"),
-        v.literal("denied"),
-      ),
+      v.union(v.literal("pending"), v.literal("approved"), v.literal("denied")),
     ),
     // Requester identity claims captured at create time so reviewers see a
     // human, not a Clerk subject id.
@@ -883,11 +908,7 @@ export default defineSchema({
     // "pending" and an admin approves or denies them from the console's
     // Approvals tab. Only approved skills are listed in the store.
     status: v.optional(
-      v.union(
-        v.literal("pending"),
-        v.literal("approved"),
-        v.literal("denied"),
-      ),
+      v.union(v.literal("pending"), v.literal("approved"), v.literal("denied")),
     ),
     requestedByName: v.optional(v.string()),
     requestedByEmail: v.optional(v.string()),

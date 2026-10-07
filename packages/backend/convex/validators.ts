@@ -307,6 +307,19 @@ export const phaseValidator = v.union(
     ),
     contentOffset: v.optional(v.number()),
     pending: v.optional(v.boolean()),
+    // A required integration becomes a durable connection gate. The turn
+    // can finish normally; once the install connects, the backend appends a
+    // hidden continuation turn and resumes the original job. Because this
+    // state lives on the message it survives refreshes and long absences.
+    connectionStatus: v.optional(
+      v.union(
+        v.literal("waiting"),
+        v.literal("connected"),
+        v.literal("declined"),
+      ),
+    ),
+    resumeInstruction: v.optional(v.string()),
+    resolvedAt: v.optional(v.number()),
   }),
   // A markdown or code document whirl authored or revised via the document
   // tools,

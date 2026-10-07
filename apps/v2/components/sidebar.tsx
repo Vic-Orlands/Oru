@@ -88,8 +88,14 @@ export function Sidebar() {
     onResizePointerDown,
     onResizeDoubleClick,
   } = useSidebar();
-  const { settingsOpen, integrationsOpen, deskPage, openHome, openIntegrations, openDesk } =
-    useView();
+  const {
+    settingsOpen,
+    integrationsOpen,
+    deskPage,
+    openHome,
+    openIntegrations,
+    openDesk,
+  } = useView();
   /* Incognito tucks the whole rail away: width glides to a slim gutter
      (so the main pane keeps its 8px inset) while the contents fade, and
      `invisible` lands at the curve's end to drop it from the tab order.
@@ -105,7 +111,7 @@ export function Sidebar() {
        item it would otherwise resolve against the viewport. */
     <aside
       id="app-sidebar"
-      className={`group/sidebar relative hidden shrink-0 flex-col gap-2 pt-3 pb-2 md:flex ${
+      className={`group/sidebar relative hidden shrink-0 flex-col gap-0 pt-3 pb-2 md:flex ${
         /* Incognito tucks the rail away: width glides to a slim gutter (so
            the pane keeps its 8px inset) while the contents fade, and
            `invisible` lands at the curve's end to drop it from the tab
@@ -133,7 +139,7 @@ export function Sidebar() {
           type="button"
           onClick={toggleCollapsed}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="ml-auto -mr-1.5 hidden size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-foreground-soft opacity-0 transition-[opacity,background-color] duration-150 group-hover/sidebar:opacity-100 hover:bg-accent focus-visible:opacity-100 sidebar-collapsed:absolute sidebar-collapsed:inset-0 sidebar-collapsed:m-auto md:flex"
+          className="ml-auto -mr-1.5 hidden size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-foreground-soft transition-[opacity,background-color] duration-150 hover:bg-accent focus-visible:opacity-100 sidebar-collapsed:absolute sidebar-collapsed:inset-0 sidebar-collapsed:m-auto md:flex"
         >
           {collapsed ? (
             <IconLayoutSidebarLeftExpandFilled size={18} />
@@ -148,7 +154,7 @@ export function Sidebar() {
       <PageSlide
         page={settingsOpen ? 2 : 1}
         className="min-h-0 flex-1"
-        pageClassName="flex flex-col gap-2"
+        pageClassName="flex flex-col gap-0"
         one={
           <>
             {/* Hit areas (the before: layers here and on the rows) reach the
@@ -173,7 +179,7 @@ export function Sidebar() {
             {/* -mt pulls the nav onto the same pitch as the New pill: 2px
                 seams all the way down, so a hovered row's pill stacks under
                 New exactly like the rows stack under each other. */}
-            <nav className="-mt-1.5 flex flex-col gap-0.5">
+            <nav className="flex flex-col gap-0">
               <SearchRow />
               <SidebarRow
                 icon={IconPuzzleFilled}

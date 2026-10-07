@@ -138,7 +138,7 @@ function InlineBody({
           stroke={2}
           className="shrink-0 text-muted-foreground"
         />
-        <span className="min-w-0 flex-1 truncate text-[12.5px]/4 font-medium">
+        <span className="min-w-0 flex-1 truncate text-[15px]/6 font-medium">
           {title}
         </span>
         {!bound ? (
@@ -156,7 +156,7 @@ function InlineBody({
         onErrorChange={setFrameError}
       />
       {frameError ? (
-        <div className="border-t border-black/[0.05] px-3 py-2 text-[11.5px]/4 text-muted-foreground dark:border-white/[0.05]">
+        <div className="border-t border-black/[0.05] px-3 py-2 text-[13px]/5 text-muted-foreground dark:border-white/[0.05]">
           {frameError}
         </div>
       ) : null}
@@ -192,8 +192,8 @@ function CollapsedVisualRow({
     <div className="flex items-center gap-3 px-3.5 py-3">
       <ArtifactIconBadge icon={RowIcon} />
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-[13.5px]/5 font-medium">{title}</span>
-        <span className="truncate text-[11.5px]/4 text-muted-foreground">
+        <span className="truncate text-[15px]/6 font-medium">{title}</span>
+        <span className="truncate text-[13px]/5 text-muted-foreground">
           {subtitle}
         </span>
       </span>
@@ -255,16 +255,16 @@ function FullPageRow({
     >
       <ArtifactIconBadge icon={isReact ? IconLayoutDashboard : IconBrowser} />
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-[13.5px]/5 font-medium">{title}</span>
+        <span className="truncate text-[15px]/6 font-medium">{title}</span>
         {readsLiveData(live) ? (
           <ArtifactDataSources bindings={live?.bindings ?? []} />
         ) : (
-          <span className="truncate text-[11.5px]/4 text-muted-foreground">
+          <span className="truncate text-[13px]/5 text-muted-foreground">
             {subtitle}
           </span>
         )}
       </span>
-      <span className="flex h-7 items-center gap-1 rounded-full bg-black/[0.04] px-2.5 text-[11.5px]/4 font-medium text-muted-foreground transition-colors duration-150 group-hover/html:bg-black/[0.07] dark:bg-white/[0.06] dark:group-hover/html:bg-white/[0.1]">
+      <span className="flex h-7 items-center gap-1 rounded-full bg-black/[0.04] px-2.5 text-[13px]/5 font-medium text-muted-foreground transition-colors duration-150 group-hover/html:bg-black/[0.07] dark:bg-white/[0.06] dark:group-hover/html:bg-white/[0.1]">
         Open
         <IconArrowUpRight size={13} stroke={2} />
       </span>
@@ -279,8 +279,8 @@ function DataLockedRow({ title }: { title: string }) {
     <div className="flex items-center gap-3 px-3.5 py-3">
       <ArtifactIconBadge icon={IconPlugConnected} />
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-[13.5px]/5 font-medium">{title}</span>
-        <span className="truncate text-[11.5px]/4 text-muted-foreground">
+        <span className="truncate text-[15px]/6 font-medium">{title}</span>
+        <span className="truncate text-[13px]/5 text-muted-foreground">
           Not shown here — it reads live data from connected apps
         </span>
       </span>
@@ -294,10 +294,10 @@ function FailedBody({ live }: { live: LiveHtmlArtifact | null | undefined }) {
     <div className="flex items-center gap-3 px-3.5 py-3">
       <ArtifactIconBadge icon={IconAlertTriangleFilled} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <span className="text-[13.5px]/5 font-medium">
+        <span className="text-[15px]/6 font-medium">
           Couldn&apos;t build the page
         </span>
-        <span className="truncate text-[11.5px]/4 text-muted-foreground">
+        <span className="truncate text-[13px]/5 text-muted-foreground">
           {live?.error?.trim() || "Something went wrong while generating it."}
         </span>
       </div>

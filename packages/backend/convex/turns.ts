@@ -147,6 +147,7 @@ export async function appendUserTurn(
     model,
     userName,
     now,
+    systemGenerated,
   }: {
     threadId: Id<"threads">;
     userId: string;
@@ -158,6 +159,7 @@ export async function appendUserTurn(
     model: string;
     userName: string | undefined;
     now: number;
+    systemGenerated?: boolean;
   },
 ) {
   const status = options?.thinking ? "thinking" : "streaming";
@@ -168,6 +170,7 @@ export async function appendUserTurn(
     userId,
     role: "user",
     content,
+    ...(systemGenerated ? { systemGenerated: true } : {}),
     createdAt: now,
     updatedAt: now,
     attachments,

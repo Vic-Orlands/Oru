@@ -44,10 +44,7 @@ import {
   UPLOAD_GATE,
   USAGE_GATE,
 } from "./billing";
-import {
-  captureAiGeneration,
-  captureServerEvent,
-} from "../posthog";
+import { captureAiGeneration, captureServerEvent } from "../posthog";
 // The chat's `streamText`/`generateText` come from the Braintrust wrapper rather
 // than straight from `ai`: same functions, plus trace + tool-span capture. With
 // no API key configured they *are* the plain AI SDK functions.
@@ -246,10 +243,7 @@ function createStreamTimings() {
       return {
         total_ms: Date.now() - startedAt,
         ...Object.fromEntries(
-          Object.entries(marks).map(([label, value]) => [
-            `${label}_ms`,
-            value,
-          ]),
+          Object.entries(marks).map(([label, value]) => [`${label}_ms`, value]),
         ),
       };
     },
@@ -332,11 +326,14 @@ export async function runAssistantTurn(
   timings.setMeta({ streamId });
   timings.mark("bodyRead");
 
-  const requestInfo = await ctx.runQuery(internal.inference.getRequestForStream, {
-    streamId,
-    userId,
-    userName,
-  });
+  const requestInfo = await ctx.runQuery(
+    internal.inference.getRequestForStream,
+    {
+      streamId,
+      userId,
+      userName,
+    },
+  );
   timings.setMeta({
     assistantId: requestInfo.assistantId,
     model: requestInfo.model,
@@ -609,8 +606,7 @@ export async function runAssistantTurn(
       timings.mark("streamWriterStart");
       await runMutation(internal.inference.setAssistantStatus, {
         assistantId: requestInfo.assistantId,
-        status:
-          requestInfo.thinking && !isImageTurn ? "thinking" : "streaming",
+        status: requestInfo.thinking && !isImageTurn ? "thinking" : "streaming",
       });
       timings.mark("initialStatus");
 
@@ -920,6 +916,10 @@ export async function runAssistantTurn(
                 name: item.name,
               })),
               contentOffset: text.length,
+              ...(payload.waitForConnection ? { waitForConnection: true } : {}),
+              ...(payload.resumeInstruction
+                ? { resumeInstruction: payload.resumeInstruction }
+                : {}),
             },
           );
         } else {
@@ -970,9 +970,7 @@ export async function runAssistantTurn(
       // phase and record an analytics event. The zero-match case still
       // finalizes (the chip says the archives came up empty) — the misses tell
       // us whether keyword search is cutting it or vector search is warranted.
-      const persistHistorySearch = async (
-        payload: ChatHistoryPhasePayload,
-      ) => {
+      const persistHistorySearch = async (payload: ChatHistoryPhasePayload) => {
         await runMutation(internal.inference.finalizeLastPendingHistory, {
           assistantId: requestInfo.assistantId,
           query: payload.query,
@@ -1472,13 +1470,16 @@ export async function runAssistantTurn(
             return { htmlId: streamed.htmlId };
           }
         }
-        const { htmlId } = await runMutation(internal.html.createStreamingHtml, {
-          threadId: requestInfo.threadId,
-          userId: customerId,
-          kind: mode,
-          runtime,
-          createdByMessageId: requestInfo.assistantId,
-        });
+        const { htmlId } = await runMutation(
+          internal.html.createStreamingHtml,
+          {
+            threadId: requestInfo.threadId,
+            userId: customerId,
+            kind: mode,
+            runtime,
+            createdByMessageId: requestInfo.assistantId,
+          },
+        );
         await runMutation(internal.html.finalizeStreamingHtml, {
           htmlId,
           title,
@@ -1868,8 +1869,7 @@ export async function runAssistantTurn(
       // without a discovery round trip. Kicked off here so it overlaps the
       // memory lookup; awaited just before the prompt is assembled.
       let mentionedToolsPromise:
-        | Promise<{ server: string; toolLines: string[] }[]>
-        | undefined;
+        Promise<{ server: string; toolLines: string[] }[]> | undefined;
       if (isPaid && requestInfo.mcpServers.length > 0) {
         mcpIntegrations = requestInfo.mcpServers.map((server) => ({
           name: server.name,
@@ -1930,16 +1930,13 @@ export async function runAssistantTurn(
           onToolResult: persistMcp,
           onServerResult: async ({ id, ok, error, authExpired }) => {
             if (!id) return;
-            await runMutation(
-              internal.mcpServers.recordConnectionResult,
-              {
-                id: id as Id<"mcpServers">,
-                ok,
-                ...(error ? { error } : {}),
-                ...(authExpired ? { authExpired } : {}),
-                at: Date.now(),
-              },
-            );
+            await runMutation(internal.mcpServers.recordConnectionResult, {
+              id: id as Id<"mcpServers">,
+              ok,
+              ...(error ? { error } : {}),
+              ...(authExpired ? { authExpired } : {}),
+              at: Date.now(),
+            });
           },
         });
         mcpTools = gateway.tools;
@@ -1951,9 +1948,7 @@ export async function runAssistantTurn(
           mentionedToolsPromise = Promise.all(
             mentioned.map((server) => gateway.preloadTools(server.name)),
           ).then((results) =>
-            results.filter(
-              (r): r is NonNullable<typeof r> => r !== null,
-            ),
+            results.filter((r): r is NonNullable<typeof r> => r !== null),
           );
         }
       }
@@ -1994,12 +1989,11 @@ export async function runAssistantTurn(
         // Started before the stream writer so it overlapped the gate checks and
         // setup above; by now it's usually already resolved (see
         // memoryContextPromise), so this await rarely costs first-token time.
-        memoryContext =
-          (await memoryContextPromise) ?? {
-            staticFacts: [],
-            dynamicFacts: [],
-            memories: [],
-          };
+        memoryContext = (await memoryContextPromise) ?? {
+          staticFacts: [],
+          dynamicFacts: [],
+          memories: [],
+        };
       }
       timings.mark("memoryLookup");
 
@@ -2033,8 +2027,7 @@ export async function runAssistantTurn(
         userName: ctxUserName,
         timeZone: ctxTimeZone,
         locale: ctxLocale,
-        hasLocation:
-          ctxLatitude !== undefined || Boolean(ctxTimeZone),
+        hasLocation: ctxLatitude !== undefined || Boolean(ctxTimeZone),
         memoryContext,
         mcpIntegrations:
           mcpIntegrations.length > 0 ? mcpIntegrations : undefined,
@@ -2378,10 +2371,10 @@ export async function runAssistantTurn(
                 }),
               onResult: persistDocument,
               onNoChange: async () => {
-                await runMutation(
-                  internal.inference.dropPendingDocumentPhase,
-                  { assistantId: requestInfo.assistantId, op: "edit" },
-                );
+                await runMutation(internal.inference.dropPendingDocumentPhase, {
+                  assistantId: requestInfo.assistantId,
+                  op: "edit",
+                });
               },
             }),
             // HTML artifacts (paid-only): an inline visualization streamed into
@@ -2729,102 +2722,101 @@ export async function runAssistantTurn(
               // "Calculating" row. The calc chip still appears afterward via
               // finalizeLastPendingCalc's append fallback when no pending
               // phase exists.
-              const toolPhase =
-                LEAD_TOOL_NAMES.has(part.toolName)
-                  ? ({
-                      kind: "lead" as const,
-                      contentOffset: text.length,
-                      pending: true,
-                      title: "Working the desk",
-                    })
-                  : searchEnabled && part.toolName === "answerQuestion"
-                  ? ({
+              const toolPhase = LEAD_TOOL_NAMES.has(part.toolName)
+                ? {
+                    kind: "lead" as const,
+                    contentOffset: text.length,
+                    pending: true,
+                    title: "Working the desk",
+                  }
+                : searchEnabled && part.toolName === "answerQuestion"
+                  ? {
                       kind: "search" as const,
                       sources: 0,
                       contentOffset: text.length,
                       pending: true,
-                    })
+                    }
                   : part.toolName === "fetchUrl"
-                    ? ({
+                    ? {
                         kind: "fetch" as const,
                         sources: 0,
                         contentOffset: text.length,
                         pending: true,
-                      })
+                      }
                     : part.toolName === "calculate" ||
                         part.toolName === "calculateBatch"
-                      ? ({
+                      ? {
                           kind: "calc" as const,
                           contentOffset: text.length,
                           pending: true,
-                        })
+                        }
                       : part.toolName === "getWeather"
-                        ? ({
+                        ? {
                             kind: "weather" as const,
                             contentOffset: text.length,
                             pending: true,
-                          })
+                          }
                         : part.toolName === "createChart"
-                          ? ({
+                          ? {
                               kind: "chart" as const,
                               contentOffset: text.length,
                               pending: true,
-                            })
-                        : part.toolName === "generateImage"
-                          ? ({
-                              kind: "image" as const,
-                              contentOffset: text.length,
-                              pending: true,
-                            })
-                        : part.toolName === "searchChatHistory"
-                          ? ({
-                              kind: "history" as const,
-                              contentOffset: text.length,
-                              pending: true,
-                            })
-                        : part.toolName === "suggestIntegrations"
-                          ? ({
-                              kind: "integrationSuggestion" as const,
-                              contentOffset: text.length,
-                              pending: true,
-                            })
-                        : part.toolName === ASK_QUESTION_TOOL_NAME
-                          ? ({
-                              kind: "question" as const,
-                              contentOffset: text.length,
-                              pending: true,
-                            })
-                        : part.toolName === "editDocument"
-                          ? ({
-                              kind: "document" as const,
-                              op: "edit" as const,
-                              contentOffset: text.length,
-                              pending: true,
-                            })
-                          : // editHtml's input is tiny, so execute() can finish
-                            // before this add commits; the onResult sweep in the
-                            // tool wiring (and clearPendingPhases at turn end)
-                            // drops the stray phase when that happens.
-                            part.toolName === "editHtml"
-                            ? ({
-                                kind: "html" as const,
-                                op: "edit" as const,
+                            }
+                          : part.toolName === "generateImage"
+                            ? {
+                                kind: "image" as const,
                                 contentOffset: text.length,
                                 pending: true,
-                              })
-                            : part.toolName === LOAD_SKILL_NAME
-                                ? ({
-                                    kind: "skill" as const,
+                              }
+                            : part.toolName === "searchChatHistory"
+                              ? {
+                                  kind: "history" as const,
+                                  contentOffset: text.length,
+                                  pending: true,
+                                }
+                              : part.toolName === "suggestIntegrations"
+                                ? {
+                                    kind: "integrationSuggestion" as const,
                                     contentOffset: text.length,
                                     pending: true,
-                                  })
-                              : isMcpToolName(part.toolName)
-                                ? ({
-                                    kind: "mcp" as const,
-                                    contentOffset: text.length,
-                                    pending: true,
-                                  })
-                                : null;
+                                  }
+                                : part.toolName === ASK_QUESTION_TOOL_NAME
+                                  ? {
+                                      kind: "question" as const,
+                                      contentOffset: text.length,
+                                      pending: true,
+                                    }
+                                  : part.toolName === "editDocument"
+                                    ? {
+                                        kind: "document" as const,
+                                        op: "edit" as const,
+                                        contentOffset: text.length,
+                                        pending: true,
+                                      }
+                                    : // editHtml's input is tiny, so execute() can finish
+                                      // before this add commits; the onResult sweep in the
+                                      // tool wiring (and clearPendingPhases at turn end)
+                                      // drops the stray phase when that happens.
+                                      part.toolName === "editHtml"
+                                      ? {
+                                          kind: "html" as const,
+                                          op: "edit" as const,
+                                          contentOffset: text.length,
+                                          pending: true,
+                                        }
+                                      : part.toolName === LOAD_SKILL_NAME
+                                        ? {
+                                            kind: "skill" as const,
+                                            contentOffset: text.length,
+                                            pending: true,
+                                          }
+                                        : isMcpToolName(part.toolName)
+                                          ? {
+                                              kind: "mcp" as const,
+                                              contentOffset: text.length,
+                                              pending: true,
+                                            }
+                                          : null;
               if (toolPhase) {
                 await runMutation(internal.inference.addAssistantPhase, {
                   assistantId: requestInfo.assistantId,
@@ -2958,15 +2950,12 @@ export async function runAssistantTurn(
                     integration,
                     toolField,
                   );
-                  await runMutation(
-                    internal.inference.describeLastPendingMcp,
-                    {
-                      assistantId: requestInfo.assistantId,
-                      server: integration,
-                      tool: toolField,
-                      ...lifecycle,
-                    },
-                  );
+                  await runMutation(internal.inference.describeLastPendingMcp, {
+                    assistantId: requestInfo.assistantId,
+                    server: integration,
+                    tool: toolField,
+                    ...lifecycle,
+                  });
                 }
                 break;
               }
@@ -3005,12 +2994,12 @@ export async function runAssistantTurn(
               // Parsed MCP gateway inputs are the backstop for providers that
               // deliver a call in one shot instead of streaming its fields.
               if (isMcpToolName(part.toolName)) {
-                const described =
-                  mcpPhaseStreams.get(part.toolCallId)?.described;
+                const described = mcpPhaseStreams.get(
+                  part.toolCallId,
+                )?.described;
                 mcpPhaseStreams.delete(part.toolCallId);
                 const input = part.input as
-                  | { integration?: string; tool?: string }
-                  | undefined;
+                  { integration?: string; tool?: string } | undefined;
                 if (!described && input?.integration) {
                   const toolName =
                     part.toolName === MCP_CALL_TOOL_NAME
@@ -3023,19 +3012,16 @@ export async function runAssistantTurn(
                         toolName,
                       )
                     : {};
-                  await runMutation(
-                    internal.inference.describeLastPendingMcp,
-                    {
-                      assistantId: requestInfo.assistantId,
-                      server: input.integration,
-                      ...(part.toolName === MCP_CALL_TOOL_NAME
-                        ? input.tool
-                          ? { tool: input.tool }
-                          : {}
-                        : { tool: MCP_LIST_TOOLS_NAME }),
-                      ...lifecycle,
-                    },
-                  );
+                  await runMutation(internal.inference.describeLastPendingMcp, {
+                    assistantId: requestInfo.assistantId,
+                    server: input.integration,
+                    ...(part.toolName === MCP_CALL_TOOL_NAME
+                      ? input.tool
+                        ? { tool: input.tool }
+                        : {}
+                      : { tool: MCP_LIST_TOOLS_NAME }),
+                    ...lifecycle,
+                  });
                 }
               }
               break;
@@ -3084,15 +3070,12 @@ export async function runAssistantTurn(
                 break;
               }
               if (part.toolName === "generateImage") {
-                await runMutation(
-                  internal.inference.finalizeLastPendingImage,
-                  {
-                    assistantId: requestInfo.assistantId,
-                    ok: false,
-                    error: toolErrorMessage,
-                    contentOffset: text.length,
-                  },
-                );
+                await runMutation(internal.inference.finalizeLastPendingImage, {
+                  assistantId: requestInfo.assistantId,
+                  ok: false,
+                  error: toolErrorMessage,
+                  contentOffset: text.length,
+                });
               }
               break;
             }

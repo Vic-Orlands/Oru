@@ -236,9 +236,7 @@ export const searchForSuggestion = internalQuery({
       .filter(isListable)
       .map((row) => ({ row, score: scoreListing(row, tokens) }))
       .filter(({ score }) => score > 0)
-      .sort(
-        (a, b) => b.score - a.score || a.row.name.localeCompare(b.row.name),
-      )
+      .sort((a, b) => b.score - a.score || a.row.name.localeCompare(b.row.name))
       .slice(0, SUGGESTION_LIMIT);
 
     const installed = await installsByIntegration(ctx, args.userId);
@@ -249,7 +247,8 @@ export const searchForSuggestion = internalQuery({
       author: row.author,
       verified: row.verified === true,
       authMode: row.authMode ?? "none",
-      needsSignIn: (row.authMode ?? "none") === "oauth" || needsComposioConnect(row),
+      needsSignIn:
+        (row.authMode ?? "none") === "oauth" || needsComposioConnect(row),
       installed: installed.has(row._id),
     }));
   },
@@ -323,7 +322,16 @@ export const install = action({
       if (!paid) throw new Error("Integrations are a paid feature.");
     }
 
-    return ctx.runMutation(internal.integrationStore.installInternal, args);
+    const result = await ctx.runMutation(
+      internal.integrationStore.installInternal,
+      args,
+    );
+    // API-key and no-auth installs are usable immediately. OAuth/Composio
+    // installs resume from their verified callback instead.
+    await ctx.runMutation(internal.messages.resumeIntegrationGateForServer, {
+      serverId: result.serverId,
+    });
+    return result;
   },
 });
 
@@ -541,6 +549,9 @@ export const composioOAuthCallback = httpAction(async (ctx, request) => {
       });
     }
     await ctx.runMutation(internal.integrationStore.markComposioConnected, {
+      serverId: server._id,
+    });
+    await ctx.runMutation(internal.messages.resumeIntegrationGateForServer, {
       serverId: server._id,
     });
     return respond({ ok: true, name: server.name });

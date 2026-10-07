@@ -18,6 +18,8 @@ export type IntegrationSuggestion = {
 export type IntegrationSuggestionPhasePayload = {
   query: string;
   items: { integrationId: string; name: string }[];
+  waitForConnection?: boolean;
+  resumeInstruction?: string;
   /**
    * Which half of the flow settled the phase. "searched" is the model looking
    * at candidates with nothing on screen yet — a normal step, not a store
@@ -55,7 +57,12 @@ export function createSuggestIntegrationsTool({
   return tool({
     description:
       "Search the integration store, then show ONE install card for the listing that fits. Call it once with `query` to see what's available, then again with `integrationId` to show the one you picked.",
-    inputSchema: jsonSchema<{ query: string; integrationId?: string }>({
+    inputSchema: jsonSchema<{
+      query: string;
+      integrationId?: string;
+      waitForConnection?: boolean;
+      resumeInstruction?: string;
+    }>({
       type: "object",
       properties: {
         query: {
@@ -68,11 +75,27 @@ export function createSuggestIntegrationsTool({
           description:
             "The id of the single listing to show the user, from a previous search. Omit to search first.",
         },
+        waitForConnection: {
+          type: "boolean",
+          description:
+            "True only when the user's current request cannot continue until this app is connected. This creates a durable wait and automatically resumes the task after connection.",
+        },
+        resumeInstruction: {
+          type: "string",
+          maxLength: 300,
+          description:
+            "When waitForConnection is true, a short private instruction describing the exact interrupted work to resume after connection.",
+        },
       },
       required: ["query"],
       additionalProperties: false,
     }),
-    execute: async ({ query, integrationId }) => {
+    execute: async ({
+      query,
+      integrationId,
+      waitForConnection,
+      resumeInstruction,
+    }) => {
       const trimmed = query.trim();
       let matches: IntegrationSuggestion[];
       try {
@@ -109,6 +132,10 @@ export function createSuggestIntegrationsTool({
           query: trimmed,
           items: [{ integrationId: picked.integrationId, name: picked.name }],
           stage: "shown",
+          ...(waitForConnection ? { waitForConnection: true } : {}),
+          ...(waitForConnection && resumeInstruction?.trim()
+            ? { resumeInstruction: resumeInstruction.trim().slice(0, 300) }
+            : {}),
         });
         return {
           shown: {
@@ -117,7 +144,9 @@ export function createSuggestIntegrationsTool({
             verified: picked.verified,
             setup: setupOf(picked),
           },
-          note: "The user sees one install card for it right where you called this. Reference it in a short line — it already shows the name, description and an install button — and don't repeat those details, add links, or offer the alternatives.",
+          note: waitForConnection
+            ? "The user sees a connection gate in chat. End this turn with one short sentence. The task will resume automatically, even after a refresh, when they connect; do not ask them to send another message."
+            : "The user sees one install card for it right where you called this. Reference it in a short line — it already shows the name, description and an install button — and don't repeat those details, add links, or offer the alternatives.",
         };
       }
 

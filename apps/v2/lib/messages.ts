@@ -141,6 +141,9 @@ export type MessagePhase = {
   questions?: QuestionSpec[];
   answers?: QuestionAnswer[];
   answered?: boolean;
+  connectionStatus?: "waiting" | "connected" | "declined";
+  resumeInstruction?: string;
+  resolvedAt?: number;
 };
 
 export type ChatMessage = {
@@ -149,6 +152,8 @@ export type ChatMessage = {
   /** Ciphertext when `sealed` — opened by the tab holding the thread's key
    *  (lib/locked/use-locked-thread.ts), never rendered as-is. */
   content: string;
+  /** Backend-authored continuation context; never rendered as user speech. */
+  systemGenerated?: boolean;
   sealed?: boolean;
   createdAt: number;
   status?: MessageStatus;

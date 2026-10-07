@@ -13,17 +13,17 @@ export function LeadPanelBody({ leadId }: { leadId: string }) {
           <IconLayoutDashboard size={16} />
         </span>
         <span className="min-w-0">
-          <span className="block truncate text-[13.5px] font-medium">
+          <span className="block truncate text-[15px]/6 font-medium">
             {leadId === "approval"
               ? "Email draft"
               : leadId === "sequence"
                 ? "Clinic revival"
                 : "Prospect list"}
           </span>
-          <span className="text-[11px] text-muted-foreground">Artifact</span>
+          <span className="text-[13px]/5 text-muted-foreground">Artifact</span>
         </span>
       </header>
-      <div className="min-h-0 flex-1 overflow-y-auto p-4 text-[13px]">
+      <div className="min-h-0 flex-1 overflow-y-auto p-4 text-[15px]/6">
         {leadId === "approval" ? <Approval /> : leadId === "sequence" ? <Sequence /> : <List />}
       </div>
     </div>
@@ -37,7 +37,7 @@ function List() {
       {rows.map((row) => (
         <li key={row.id} className="py-2">
           <div className="font-medium">{row.name}</div>
-          <div className="text-[12px] text-muted-foreground">
+          <div className="text-[13px]/5 text-muted-foreground">
             {row.title}, {row.company} · {row.score}
           </div>
         </li>
@@ -56,7 +56,7 @@ function Sequence() {
   return (
     <ol className="flex flex-col gap-2">
       {steps.map((step) => (
-        <li key={step} className="rounded-lg bg-accent/60 px-3 py-2 text-[12.5px]">
+        <li key={step} className="rounded-lg bg-accent/60 px-3 py-2 text-[13px]/5">
           {step}
         </li>
       ))}
@@ -69,11 +69,11 @@ function Approval() {
   if (!draft) return null;
   return (
     <div>
-      <div className="text-[12px] text-muted-foreground">
+      <div className="text-[13px]/5 text-muted-foreground">
         To {draft.to} · {draft.company}
       </div>
       <h2 className="mt-2 text-[15px] font-medium">{draft.subject}</h2>
-      <p className="mt-3 text-[13px]/5">{draft.preview}</p>
+      <p className="mt-3 text-[15px]/6">{draft.preview}</p>
       <button
         type="button"
         onClick={() => showToast("Approved from the side panel.")}

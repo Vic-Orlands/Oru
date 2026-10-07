@@ -38,3 +38,9 @@ jobs:
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
         run: bunx convex deploy -y
+
+      - name: Sync curated integration catalog
+        working-directory: packages/backend
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        run: bunx convex run --prod composio:seedCuratedToolkits '{}'

@@ -83,12 +83,12 @@ export function ArtifactWorkingBody({
             text={verb}
             ellipsis
             shimmer
-            className="text-[13.5px]/5 font-medium"
+            className="text-[15px]/6 font-medium"
           />
           {title && (
             <LabelMorph
               text={title}
-              className="max-w-full truncate text-[11.5px]/4 text-muted-foreground"
+              className="max-w-full truncate text-[13px]/5 text-muted-foreground"
             />
           )}
         </span>

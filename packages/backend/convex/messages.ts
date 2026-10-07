@@ -12,9 +12,11 @@ import { resolveSendModel } from "./models";
 import {
   appendUserTurn,
   displayNameFromIdentity,
+  isThreadRunning,
   scheduleAssistantTurn as scheduleTurn,
   verifyMentions,
 } from "./turns";
+import { internalMutation } from "./_generated/server";
 import {
   attachmentValidator,
   integrationMentionValidator,
@@ -61,7 +63,10 @@ function fallbackTitleFromPrompt(prompt: string) {
     return TITLE_FALLBACK;
   }
 
-  const words = cleaned.split(" ").filter(Boolean).slice(0, TITLE_FALLBACK_WORDS);
+  const words = cleaned
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, TITLE_FALLBACK_WORDS);
   const title = words
     .map((word) => {
       const [first = "", ...rest] = word;
@@ -84,11 +89,7 @@ function createMessageHydrationCache(): MessageHydrationCache {
   };
 }
 
-function getCachedDocument(
-  ctx: any,
-  cache: MessageHydrationCache,
-  id: string,
-) {
+function getCachedDocument(ctx: any, cache: MessageHydrationCache, id: string) {
   const pending = cache.documents.get(id);
   if (pending) return pending;
 
@@ -121,12 +122,9 @@ async function formatMessage(
     id: message._id,
     role: message.role,
     content: message.content,
+    systemGenerated: message.systemGenerated === true,
     createdAt: message.createdAt,
-    attachments: await hydrateAttachmentUrls(
-      ctx,
-      cache,
-      message.attachments,
-    ),
+    attachments: await hydrateAttachmentUrls(ctx, cache, message.attachments),
     integrations: await hydrateIntegrationMentions(
       ctx,
       cache,
@@ -274,9 +272,7 @@ async function getOwnedThread(ctx: any, threadId: string) {
    (convex/lockedThreads.ts) where the body arrives already sealed. */
 function refuseIfLocked(thread: any) {
   if (thread.lock) {
-    throw new ConvexError(
-      "This chat is locked. Unlock it first.",
-    );
+    throw new ConvexError("This chat is locked. Unlock it first.");
   }
 }
 
@@ -423,9 +419,7 @@ export const recentUsage = queryGeneric({
     const indexUsage = indexRuns
       .filter(
         (r: any) =>
-          r.status === "complete" &&
-          typeof r.cost === "number" &&
-          r.cost > 0,
+          r.status === "complete" && typeof r.cost === "number" && r.cost > 0,
       )
       .map((r: any) => ({
         id: `${r._id}:index`,
@@ -435,8 +429,7 @@ export const recentUsage = queryGeneric({
         thinking: false,
         search: false,
         usageCost: r.cost as number,
-        extraUsageCost:
-          typeof r.extraCost === "number" ? r.extraCost : 0,
+        extraUsageCost: typeof r.extraCost === "number" ? r.extraCost : 0,
         searchSources: 0,
         thoughtMs: 0,
         inputTokens: null,
@@ -502,7 +495,15 @@ export const sendUserMessage = mutationGeneric({
   },
   handler: async (
     ctx,
-    { threadId, content, attachments, integrations, skills, options, incognito },
+    {
+      threadId,
+      content,
+      attachments,
+      integrations,
+      skills,
+      options,
+      incognito,
+    },
   ) => {
     const userId = await getCurrentUserId(ctx);
     const now = Date.now();
@@ -572,21 +573,18 @@ export const sendUserMessage = mutationGeneric({
 
     // The rows and the scheduled turn — shared with the message queue, so a
     // message that waited its turn starts exactly like one that didn't.
-    const { userMessageId, assistantId, streamId } = await appendUserTurn(
-      ctx,
-      {
-        threadId: resolvedThreadId,
-        userId,
-        content,
-        attachments,
-        mentions,
-        skillMentions,
-        options,
-        model,
-        userName: await displayNameFromIdentity(ctx),
-        now,
-      },
-    );
+    const { userMessageId, assistantId, streamId } = await appendUserTurn(ctx, {
+      threadId: resolvedThreadId,
+      userId,
+      content,
+      attachments,
+      mentions,
+      skillMentions,
+      options,
+      model,
+      userName: await displayNameFromIdentity(ctx),
+      now,
+    });
 
     if (scheduleTitleFor !== null) {
       await ctx.scheduler.runAfter(0, internal.inference.generateThreadTitle, {
@@ -658,7 +656,9 @@ export const updateUserMessage = mutationGeneric({
       .withIndex("by_thread_created_at", (q: any) => q.eq("threadId", threadId))
       .collect();
 
-    const firstUserMessage = messages.find((message: any) => message.role === "user");
+    const firstUserMessage = messages.find(
+      (message: any) => message.role === "user",
+    );
     if (firstUserMessage?._id === messageId) {
       const titlePrompt = titlePromptInput(content);
       await ctx.db.patch(threadId, {
@@ -691,7 +691,9 @@ export const prepareAssistantRetryFromUser = mutationGeneric({
       .withIndex("by_thread_created_at", (q: any) => q.eq("threadId", threadId))
       .collect();
 
-    const userIndex = messages.findIndex((message: any) => message._id === userMessageId);
+    const userIndex = messages.findIndex(
+      (message: any) => message._id === userMessageId,
+    );
     const existingAssistant = messages
       .slice(userIndex + 1)
       .find((message: any) => message.role === "assistant");
@@ -762,7 +764,12 @@ export const resetAssistantMessage = mutationGeneric({
     const now = Date.now();
     const { thread } = await getOwnedThread(ctx, threadId);
     refuseIfLocked(thread);
-    const message = await getOwnedMessage(ctx, threadId, messageId, "assistant");
+    const message = await getOwnedMessage(
+      ctx,
+      threadId,
+      messageId,
+      "assistant",
+    );
     const streamId = await persistentTextStreaming.createStream(ctx);
 
     await ctx.db.patch(messageId, {
@@ -802,7 +809,12 @@ export const answerQuestionPhase = mutationGeneric({
     answers: v.array(questionAnswerValidator),
   },
   handler: async (ctx, { threadId, messageId, answers }) => {
-    const message = await getOwnedMessage(ctx, threadId, messageId, "assistant");
+    const message = await getOwnedMessage(
+      ctx,
+      threadId,
+      messageId,
+      "assistant",
+    );
 
     const phases = [...(message.phases ?? [])];
     for (let i = phases.length - 1; i >= 0; i -= 1) {
@@ -818,6 +830,160 @@ export const answerQuestionPhase = mutationGeneric({
     }
 
     throw new Error("There's no open question on this message to answer.");
+  },
+});
+
+/**
+ * Decline a durable integration gate without starting another model turn.
+ * The card remains in the transcript as a settled record of the choice.
+ */
+export const declineIntegrationGate = mutationGeneric({
+  args: {
+    messageId: v.id("messages"),
+    phaseIndex: v.number(),
+  },
+  handler: async (ctx, { messageId, phaseIndex }) => {
+    const message = await ctx.db.get(messageId);
+    if (!message || message.role !== "assistant") {
+      throw new Error("Connection request not found");
+    }
+    await getOwnedThread(ctx, message.threadId);
+    const phases = [...(message.phases ?? [])];
+    const phase = phases[phaseIndex];
+    if (
+      !phase ||
+      phase.kind !== "integrationSuggestion" ||
+      phase.connectionStatus !== "waiting"
+    ) {
+      return null;
+    }
+    phases[phaseIndex] = {
+      ...phase,
+      connectionStatus: "declined",
+      resolvedAt: Date.now(),
+    };
+    await ctx.db.patch(messageId, { phases, updatedAt: Date.now() });
+    const gate = await ctx.db
+      .query("integrationGates")
+      .withIndex("by_message_phase", (q) => q.eq("messageId", messageId))
+      .filter((q) => q.eq(q.field("phaseIndex"), phaseIndex))
+      .unique();
+    if (gate?.status === "waiting") {
+      await ctx.db.patch(gate._id, {
+        status: "declined",
+        resolvedAt: Date.now(),
+      });
+    }
+    return null;
+  },
+});
+
+/**
+ * Resume the newest job waiting on this installed server. Called by every
+ * successful install/auth path, so the continuation is durable and does not
+ * depend on the browser tab or popup still being open.
+ */
+export const resumeIntegrationGateForServer = internalMutation({
+  args: {
+    serverId: v.id("mcpServers"),
+    attempt: v.optional(v.number()),
+  },
+  handler: async (ctx, { serverId, attempt = 0 }) => {
+    const server = await ctx.db.get(serverId);
+    if (!server?.integrationId || !server.enabled) return null;
+    const connected = server.composio
+      ? server.composio.connected
+      : server.authMode !== "oauth" || server.oauth?.connected === true;
+    if (!connected) return null;
+
+    const gate = await ctx.db
+      .query("integrationGates")
+      .withIndex("by_user_integration_status", (q) =>
+        q
+          .eq("userId", server.userId)
+          .eq("integrationId", server.integrationId!)
+          .eq("status", "waiting"),
+      )
+      .order("desc")
+      .first();
+    if (!gate) return null;
+    const message = await ctx.db.get(gate.messageId);
+    if (!message || message.role !== "assistant") {
+      await ctx.db.patch(gate._id, {
+        status: "declined",
+        resolvedAt: Date.now(),
+      });
+      return null;
+    }
+
+    // A very fast popup can finish while the asking reply is still settling.
+    // Re-check in the background; the persisted gate means a refresh cannot
+    // lose the continuation. The watchdog settles genuinely stuck replies.
+    if (await isThreadRunning(ctx, gate.threadId)) {
+      if (attempt < 180) {
+        await ctx.scheduler.runAfter(
+          2_000,
+          internal.messages.resumeIntegrationGateForServer,
+          { serverId, attempt: attempt + 1 },
+        );
+      }
+      return null;
+    }
+
+    const thread = await ctx.db.get(gate.threadId);
+    if (!thread || thread.lock) return null;
+    const phases = [...(message.phases ?? [])];
+    const phase = phases[gate.phaseIndex];
+    if (
+      !phase ||
+      phase.kind !== "integrationSuggestion" ||
+      phase.connectionStatus !== "waiting"
+    ) {
+      await ctx.db.patch(gate._id, {
+        status: "declined",
+        resolvedAt: Date.now(),
+      });
+      return null;
+    }
+    const now = Date.now();
+    phases[gate.phaseIndex] = {
+      ...phase,
+      connectionStatus: "connected",
+      resolvedAt: now,
+    };
+    await ctx.db.patch(message._id, { phases, updatedAt: now });
+    await ctx.db.patch(gate._id, {
+      status: "connected",
+      resolvedAt: now,
+    });
+    await ctx.db.patch(thread._id, { updatedAt: now });
+
+    const instruction =
+      phase.resumeInstruction?.trim() ||
+      "Continue the user's interrupted request using the newly connected integration.";
+    await appendUserTurn(ctx, {
+      threadId: thread._id,
+      userId: server.userId,
+      content: [
+        "<whirl_system_log>",
+        `${server.name} is now connected. ${instruction}`,
+        "This is a system continuation, not a new user request. Continue the pending work without asking the user to repeat it.",
+        "</whirl_system_log>",
+      ].join("\n"),
+      attachments: undefined,
+      mentions: [{ serverId: server._id, name: server.name }],
+      skillMentions: undefined,
+      options: {
+        thinking: message.thinking ?? false,
+        search: message.search ?? false,
+        model: message.model ?? "Auto",
+      },
+      model: message.model ?? "Auto",
+      userName: undefined,
+      now,
+      systemGenerated: true,
+    });
+    return null;
   },
 });
 

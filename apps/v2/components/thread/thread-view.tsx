@@ -65,6 +65,9 @@ export function ThreadView({
   /* Rollback is a checkpoint action — pointless on the last message, and
      off the table entirely while a reply is still writing itself. */
   const generating = computeIsGenerating(messages);
+  const visibleMessages = messages?.filter(
+    (message) => message.systemGenerated !== true,
+  );
   /* A fresh send's anchor jump becomes a glide (lib/use-send-glide.ts). */
   const viewportRef = useRef<HTMLDivElement>(null);
   useSendGlide(messages, viewportRef);
@@ -74,7 +77,7 @@ export function ThreadView({
        this. Layout survives, the words do not — see lib/replay-guard.ts. */
     <div className={cn("h-full min-h-0", MASK_TEXT)}>
       <AnimatePresence mode="wait" initial={false}>
-        {messages === undefined ? (
+        {visibleMessages === undefined ? (
           <motion.div
             key="thread-loading"
             exit={{ opacity: 0, scale: 0.96 }}
@@ -125,12 +128,12 @@ export function ThreadView({
                       contentClassName,
                     )}
                   >
-                    {messages.map((message, index) => (
+                    {visibleMessages.map((message, index) => (
                       <MessageRow
                         key={`${message.id}:${message.streamId ?? ""}`}
                         message={message}
                         canRollback={
-                          index < messages.length - 1 && !generating
+                          index < visibleMessages.length - 1 && !generating
                         }
                         onRetryMessage={onRetryMessage}
                         onEditMessage={onEditMessage}

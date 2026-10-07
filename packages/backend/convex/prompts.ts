@@ -90,7 +90,7 @@ export const CHAT_HISTORY_SEMANTIC_SYSTEM_INSTRUCTION =
   "Use `searchChatHistory` when the user refers to an earlier chat or it clearly matters. It searches by meaning — describe what you're looking for in natural language; retry once with a different description if needed. Cite the chat title/date, and never invent a memory.";
 
 export const INTEGRATION_SUGGEST_SYSTEM_INSTRUCTION =
-  "Use `suggestIntegrations` once when the user asks to connect an app or needs an unconnected service. Search by app or capability, add one brief line around the cards, and never invent listings.";
+  "Use `suggestIntegrations` once when the user asks to connect an app or needs an unconnected service. Search by app or capability, add one brief line around the cards, and never invent listings. If the current task cannot proceed without that app, show the chosen card with `waitForConnection: true` and a precise private `resumeInstruction`; the durable gate will wait through refreshes and automatically continue the work after connection. Do not ask the user to prompt you again. If the app is merely optional, show the ordinary non-blocking suggestion instead.";
 
 // Backstop, not the fix. The fix is structural: tool records live in a
 // <whirl_system_log> block on the user side of the transcript, so there is

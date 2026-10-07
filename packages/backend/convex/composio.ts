@@ -4,9 +4,11 @@ import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import {
   action,
+  internalAction,
   internalMutation,
   internalQuery,
   query,
+  type ActionCtx,
   type QueryCtx,
 } from "./_generated/server";
 import { isAdminIdentity, requireAdmin } from "./admin";
@@ -234,16 +236,125 @@ const SALES_TOOL_PRIORITY = [
   "CREDIT",
 ] as const;
 
-function prioritizeTools<T extends { name: string }>(slug: string, tools: T[]): T[] {
-  if (slug !== "fuseai") return tools.slice(0, MAX_TOOLS_PER_EXTENSION);
+const WORKFLOW_TOOL_PRIORITY = [
+  "SEARCH",
+  "LIST",
+  "GET",
+  "FIND",
+  "CREATE",
+  "ADD",
+  "INSERT",
+  "UPDATE",
+  "WRITE",
+  "SEND",
+  "SCHEDULE",
+  "EXPORT",
+  "DOWNLOAD",
+  "UPLOAD",
+  "SHARE",
+  "DELETE",
+] as const;
+
+function prioritizeTools<T extends { name: string }>(
+  slug: string,
+  tools: T[],
+): T[] {
+  const priorities =
+    slug === "fuseai"
+      ? [...SALES_TOOL_PRIORITY, ...WORKFLOW_TOOL_PRIORITY]
+      : WORKFLOW_TOOL_PRIORITY;
   const score = (name: string) => {
-    const index = SALES_TOOL_PRIORITY.findIndex((token) => name.includes(token));
-    return index === -1 ? SALES_TOOL_PRIORITY.length : index;
+    const index = priorities.findIndex((token) => name.includes(token));
+    return index === -1 ? priorities.length : index;
   };
   return tools
     .slice()
-    .sort((a, b) => score(a.name) - score(b.name) || a.name.localeCompare(b.name))
+    .sort(
+      (a, b) => score(a.name) - score(b.name) || a.name.localeCompare(b.name),
+    )
     .slice(0, MAX_TOOLS_PER_EXTENSION);
+}
+
+const TOOLKIT_SHELVES: Record<string, string> = {
+  airtable: "Spreadsheets",
+  asana: "Project management",
+  attio: "CRM",
+  calendly: "Calendar",
+  clickup: "Project management",
+  close: "CRM",
+  dropbox: "Storage",
+  excel: "Spreadsheets",
+  fuseai: "LinkedIn & enrichment",
+  gmail: "Email",
+  googlecalendar: "Calendar",
+  googledocs: "Docs",
+  googledrive: "Storage",
+  googlesheets: "Spreadsheets",
+  hubspot: "CRM",
+  linear: "Project management",
+  microsoft_teams: "Communication",
+  notion: "Docs",
+  one_drive: "Storage",
+  outlook: "Email",
+  pipedrive: "CRM",
+  salesforce: "CRM",
+  slack: "Communication",
+  share_point: "Storage",
+  googleslides: "Docs",
+  apollo: "LinkedIn & enrichment",
+  hunter: "LinkedIn & enrichment",
+  clay: "LinkedIn & enrichment",
+  instantly: "Email",
+  lemlist: "Email",
+  mailchimp: "Email",
+  brevo: "Email",
+  sendgrid: "Email",
+  intercom: "Communication",
+  zendesk: "Communication",
+  zoom: "Communication",
+  trello: "Project management",
+  zapier: "Automation",
+};
+
+function toolkitShelf(slug: string, categories: string[]): string {
+  const exact = TOOLKIT_SHELVES[slug];
+  if (exact) return exact;
+  const text = categories.join(" ").toLowerCase();
+  if (/crm|sales/.test(text)) return "CRM";
+  if (/calendar|scheduling/.test(text)) return "Calendar";
+  if (/email/.test(text)) return "Email";
+  if (/spreadsheet|database/.test(text)) return "Spreadsheets";
+  if (/project|task/.test(text)) return "Project management";
+  if (/storage|file/.test(text)) return "Storage";
+  if (/communication|messaging/.test(text)) return "Communication";
+  if (/document|writing/.test(text)) return "Docs";
+  if (/automation/.test(text)) return "Automation";
+  return "Everything else";
+}
+
+function toolkitCategories(toolkit: Record<string, unknown>): string[] {
+  const meta = (toolkit.meta ?? {}) as Record<string, unknown>;
+  return Array.isArray(meta.categories)
+    ? meta.categories
+        .map((entry) =>
+          typeof entry === "string"
+            ? entry
+            : firstString((entry as Record<string, unknown>)?.name),
+        )
+        .filter((entry): entry is string => Boolean(entry))
+    : [];
+}
+
+function customAuthScheme(toolkit: Record<string, unknown>): string {
+  const details = Array.isArray(toolkit.auth_config_details)
+    ? toolkit.auth_config_details
+    : [];
+  for (const detail of details) {
+    if (!detail || typeof detail !== "object") continue;
+    const mode = firstString((detail as Record<string, unknown>).mode);
+    if (mode) return mode;
+  }
+  return "API_KEY";
 }
 
 // --- Connected accounts (install-time auth) ------------------------------------
@@ -293,7 +404,9 @@ export async function isComposioAccountActive(
 // --- Queries -------------------------------------------------------------------
 
 /** Approved store listings that came from Composio, alphabetical. */
-async function addedComposioRows(ctx: QueryCtx): Promise<Doc<"integrations">[]> {
+async function addedComposioRows(
+  ctx: QueryCtx,
+): Promise<Doc<"integrations">[]> {
   const rows = await ctx.db
     .query("integrations")
     .withIndex("by_status", (q) => q.eq("status", "approved"))
@@ -337,6 +450,30 @@ export const listAddedSlugs = internalQuery({
 export const getListing = internalQuery({
   args: { id: v.id("integrations") },
   handler: async (ctx, args) => ctx.db.get(args.id),
+});
+
+/** Keep older Composio rows on the same shelves as newly provisioned ones. */
+export const normalizeCatalog = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db
+      .query("integrations")
+      .withIndex("by_status", (q) => q.eq("status", "approved"))
+      .take(MAX_APPROVED_SCAN);
+    let updated = 0;
+    for (const row of rows) {
+      if (!row.composio) continue;
+      const category = TOOLKIT_SHELVES[row.composio.slug] ?? row.category;
+      if (!category || (row.category === category && row.enabled)) continue;
+      await ctx.db.patch(row._id, {
+        category,
+        enabled: true,
+        updatedAt: Date.now(),
+      });
+      updated += 1;
+    }
+    return { updated };
+  },
 });
 
 // --- Catalog search ---------------------------------------------------------
@@ -415,180 +552,270 @@ export const addToolkit = action({
   args: { slug: v.string() },
   handler: async (ctx, args): Promise<{ id: Id<"integrations"> }> => {
     await requireAdmin(ctx);
-    const slug = args.slug.trim().toLowerCase();
-    if (!slug) throw new Error("Pick a toolkit first.");
+    const identity = await ctx.auth.getUserIdentity();
+    return await provisionToolkit(ctx, args.slug, {
+      id: identity!.subject,
+      name: identity!.name,
+      email: identity!.email,
+    });
+  },
+});
 
-    const addedSlugs: string[] = await ctx.runQuery(
-      internal.composio.listAddedSlugs,
-      {},
-    );
-    if (addedSlugs.includes(slug)) {
-      throw new Error("That toolkit is already in the store.");
-    }
+type ProvisionActor = {
+  id: string;
+  name?: string;
+  email?: string;
+};
 
-    // Toolkit metadata for the listing's branding.
-    const toolkit = await composioFetch(
-      `/api/v3/toolkits/${encodeURIComponent(slug)}`,
-    );
-    const meta = (toolkit.meta ?? {}) as Record<string, unknown>;
-    const name = (firstString(toolkit.name) ?? slug).slice(0, MAX_NAME_LENGTH);
-    const description = firstString(meta.description, toolkit.description)
-      ?.slice(0, MAX_DESCRIPTION_LENGTH);
-    const logoUrl = firstString(meta.logo, toolkit.logo);
-    const noAuth = toolkit.no_auth === true;
+async function provisionToolkit(
+  ctx: ActionCtx,
+  rawSlug: string,
+  actor: ProvisionActor,
+): Promise<{ id: Id<"integrations"> }> {
+  const slug = rawSlug.trim().toLowerCase();
+  if (!slug) throw new Error("Pick a toolkit first.");
 
-    // The toolkit's tools become the listing's status phrases, and cap what
-    // the MCP server may expose (Whirl's runtime reads at most 40 anyway).
-    const toolsJson = await composioFetch(
-      `/api/v3/tools?toolkit_slug=${encodeURIComponent(slug)}&limit=${slug === "fuseai" ? 200 : MAX_TOOLS_PER_EXTENSION}`,
-    );
-    const discoveredTools = listItems(toolsJson)
-      .map((item) => {
-        const toolSlug = firstString(item.slug);
-        if (!toolSlug) return null;
-        const label = toolLabel(
-          firstString(item.display_name, item.name) ?? toolSlug,
-          slug,
-        );
-        const phrases = toolPhrases(label);
-        return {
-          name: toolSlug,
-          description: phrases.running,
-          completed: phrases.done,
-        };
-      })
-      .filter((t): t is NonNullable<typeof t> => t !== null);
-    const tools = prioritizeTools(slug, discoveredTools);
+  const addedSlugs: string[] = await ctx.runQuery(
+    internal.composio.listAddedSlugs,
+    {},
+  );
+  if (addedSlugs.includes(slug)) {
+    throw new Error("That toolkit is already in the store.");
+  }
 
-    // Composio-managed auth: Composio's own OAuth app / key handling. Where a
-    // toolkit doesn't offer it, Composio errors here and the admin sees why.
-    let authJson: Record<string, unknown>;
-    try {
-      authJson = await composioFetch(`/api/v3/auth_configs`, {
-        method: "POST",
-        body: {
-          toolkit: { slug },
-          auth_config: { type: "use_composio_managed_auth" },
-        },
-      });
-    } catch (error) {
-      // API-key toolkits such as FuseAI deliberately have no Composio-owned
-      // credential. An empty custom config means each end user enters their
-      // own key in Composio's hosted connection flow; no provider secret ever
-      // passes through or lands in our database.
-      if (
-        !(error instanceof Error) ||
-        !/managed credentials|default auth config not found/i.test(error.message)
-      ) {
-        throw error;
-      }
-      authJson = await composioFetch(`/api/v3/auth_configs`, {
-        method: "POST",
-        body: {
-          toolkit: { slug },
-          auth_config: {
-            type: "use_custom_auth",
-            authScheme: "API_KEY",
-            credentials: {},
-          },
-        },
-      });
-    }
-    const authConfigId = firstString(
-      (authJson.auth_config as Record<string, unknown> | undefined)?.id,
-      authJson.id,
-    );
-    if (!authConfigId) {
-      throw new Error("Composio didn't return an auth config id.");
-    }
+  // Toolkit metadata for the listing's branding.
+  const toolkit = await composioFetch(
+    `/api/v3/toolkits/${encodeURIComponent(slug)}`,
+  );
+  const meta = (toolkit.meta ?? {}) as Record<string, unknown>;
+  const name = (firstString(toolkit.name) ?? slug).slice(0, MAX_NAME_LENGTH);
+  const description = firstString(meta.description, toolkit.description)?.slice(
+    0,
+    MAX_DESCRIPTION_LENGTH,
+  );
+  const logoUrl = firstString(meta.logo, toolkit.logo);
+  const noAuth = toolkit.no_auth === true;
+  const category = toolkitShelf(slug, toolkitCategories(toolkit));
 
-    let mcpServerId: string | undefined;
-    try {
-      // Composio's tools listing and its MCP-server validator can disagree
-      // about which tools belong to a toolkit (tools are versioned, and the
-      // listing includes deprecated ones). When creation rejects tools by
-      // name, drop exactly those and try again rather than failing the add.
-      let allowedTools = tools.map((t) => t.name);
-      let serverJson: Record<string, unknown> | undefined;
-      let retries = 0;
-      while (serverJson === undefined) {
-        try {
-          serverJson = await composioFetch(`/api/v3/mcp/servers`, {
-            method: "POST",
-            body: {
-              name: composioServerName(slug),
-              auth_config_ids: [authConfigId],
-              ...(allowedTools.length > 0
-                ? { allowed_tools: allowedTools }
-                : {}),
-            },
-          });
-        } catch (error) {
-          const rejected =
-            retries < 3
-              ? rejectedToolSlugs(error, allowedTools)
-              : new Set<string>();
-          if (rejected.size === 0) throw error;
-          retries += 1;
-          allowedTools = allowedTools.filter((name) => !rejected.has(name));
-        }
-      }
-      // Keep the listing's status phrases honest about what survived. If
-      // every tool got rejected the server ends up unrestricted, so the full
-      // scanned list is the closest description we have.
-      const allowedSet = new Set(allowedTools);
-      const listedTools =
-        allowedTools.length > 0
-          ? tools.filter((t) => allowedSet.has(t.name))
-          : tools;
-
-      mcpServerId = firstString(serverJson.id, serverJson.uuid);
-      if (!mcpServerId) {
-        throw new Error("Composio didn't return an MCP server id.");
-      }
-
-      // Prefer the URL Composio hands back; fall back to fetching the server,
-      // then to the documented URL shape as a last resort.
-      let mcpUrl = firstString(serverJson.mcp_url, serverJson.url);
-      if (!mcpUrl) {
-        const detail = await composioFetch(
-          `/api/v3/mcp/servers/${encodeURIComponent(mcpServerId)}`,
-        );
-        mcpUrl = firstString(detail.mcp_url, detail.url);
-      }
-      if (!mcpUrl) {
-        mcpUrl = `${COMPOSIO_API_BASE}/v3/mcp/${mcpServerId}/mcp`;
-      }
-
-      const result: { id: Id<"integrations"> } = await ctx.runMutation(
-        internal.composio.insertListing,
-        {
-          slug,
-          name,
-          description,
-          logoUrl,
-          mcpUrl,
-          tools: listedTools,
-          authConfigId,
-          mcpServerId,
-          noAuth,
-        },
+  // The toolkit's tools become the listing's status phrases, and cap what
+  // the MCP server may expose (Whirl's runtime reads at most 40 anyway).
+  const toolsJson = await composioFetch(
+    `/api/v3/tools?toolkit_slug=${encodeURIComponent(slug)}&limit=${slug === "fuseai" ? 200 : MAX_TOOLS_PER_EXTENSION}`,
+  );
+  const discoveredTools = listItems(toolsJson)
+    .map((item) => {
+      const toolSlug = firstString(item.slug);
+      if (!toolSlug) return null;
+      const label = toolLabel(
+        firstString(item.display_name, item.name) ?? toolSlug,
+        slug,
       );
-      return result;
-    } catch (error) {
-      // Roll back the Composio side so a failed add leaves nothing behind.
-      if (mcpServerId) {
-        await composioFetch(
-          `/api/v3/mcp/servers/${encodeURIComponent(mcpServerId)}`,
-          { method: "DELETE" },
-        ).catch(() => {});
-      }
-      await composioFetch(
-        `/api/v3/auth_configs/${encodeURIComponent(authConfigId)}`,
-        { method: "DELETE" },
-      ).catch(() => {});
+      const phrases = toolPhrases(label);
+      return {
+        name: toolSlug,
+        description: phrases.running,
+        completed: phrases.done,
+      };
+    })
+    .filter((t): t is NonNullable<typeof t> => t !== null);
+  const tools = prioritizeTools(slug, discoveredTools);
+
+  // Composio-managed auth: Composio's own OAuth app / key handling. Where a
+  // toolkit doesn't offer it, Composio errors here and the admin sees why.
+  let authJson: Record<string, unknown>;
+  try {
+    authJson = await composioFetch(`/api/v3/auth_configs`, {
+      method: "POST",
+      body: {
+        toolkit: { slug },
+        auth_config: { type: "use_composio_managed_auth" },
+      },
+    });
+  } catch (error) {
+    // API-key toolkits such as FuseAI deliberately have no Composio-owned
+    // credential. An empty custom config means each end user enters their
+    // own key in Composio's hosted connection flow; no provider secret ever
+    // passes through or lands in our database.
+    if (
+      !(error instanceof Error) ||
+      !/managed credentials|default auth config not found/i.test(error.message)
+    ) {
       throw error;
     }
+    authJson = await composioFetch(`/api/v3/auth_configs`, {
+      method: "POST",
+      body: {
+        toolkit: { slug },
+        auth_config: {
+          type: "use_custom_auth",
+          authScheme: customAuthScheme(toolkit),
+          credentials: {},
+        },
+      },
+    });
+  }
+  const authConfigId = firstString(
+    (authJson.auth_config as Record<string, unknown> | undefined)?.id,
+    authJson.id,
+  );
+  if (!authConfigId) {
+    throw new Error("Composio didn't return an auth config id.");
+  }
+
+  let mcpServerId: string | undefined;
+  try {
+    // Composio's tools listing and its MCP-server validator can disagree
+    // about which tools belong to a toolkit (tools are versioned, and the
+    // listing includes deprecated ones). When creation rejects tools by
+    // name, drop exactly those and try again rather than failing the add.
+    let allowedTools = tools.map((t) => t.name);
+    let serverJson: Record<string, unknown> | undefined;
+    let retries = 0;
+    while (serverJson === undefined) {
+      try {
+        serverJson = await composioFetch(`/api/v3/mcp/servers`, {
+          method: "POST",
+          body: {
+            name: composioServerName(slug),
+            auth_config_ids: [authConfigId],
+            ...(allowedTools.length > 0 ? { allowed_tools: allowedTools } : {}),
+          },
+        });
+      } catch (error) {
+        const rejected =
+          retries < 3
+            ? rejectedToolSlugs(error, allowedTools)
+            : new Set<string>();
+        if (rejected.size === 0) throw error;
+        retries += 1;
+        allowedTools = allowedTools.filter((name) => !rejected.has(name));
+      }
+    }
+    // Keep the listing's status phrases honest about what survived. If
+    // every tool got rejected the server ends up unrestricted, so the full
+    // scanned list is the closest description we have.
+    const allowedSet = new Set(allowedTools);
+    const listedTools =
+      allowedTools.length > 0
+        ? tools.filter((t) => allowedSet.has(t.name))
+        : tools;
+
+    mcpServerId = firstString(serverJson.id, serverJson.uuid);
+    if (!mcpServerId) {
+      throw new Error("Composio didn't return an MCP server id.");
+    }
+
+    // Prefer the URL Composio hands back; fall back to fetching the server,
+    // then to the documented URL shape as a last resort.
+    let mcpUrl = firstString(serverJson.mcp_url, serverJson.url);
+    if (!mcpUrl) {
+      const detail = await composioFetch(
+        `/api/v3/mcp/servers/${encodeURIComponent(mcpServerId)}`,
+      );
+      mcpUrl = firstString(detail.mcp_url, detail.url);
+    }
+    if (!mcpUrl) {
+      mcpUrl = `${COMPOSIO_API_BASE}/v3/mcp/${mcpServerId}/mcp`;
+    }
+
+    const result: { id: Id<"integrations"> } = await ctx.runMutation(
+      internal.composio.insertListing,
+      {
+        slug,
+        name,
+        description,
+        logoUrl,
+        mcpUrl,
+        tools: listedTools,
+        authConfigId,
+        mcpServerId,
+        noAuth,
+        category,
+        ownerId: actor.id,
+        ownerName: actor.name,
+        ownerEmail: actor.email,
+      },
+    );
+    return result;
+  } catch (error) {
+    // Roll back the Composio side so a failed add leaves nothing behind.
+    if (mcpServerId) {
+      await composioFetch(
+        `/api/v3/mcp/servers/${encodeURIComponent(mcpServerId)}`,
+        { method: "DELETE" },
+      ).catch(() => {});
+    }
+    await composioFetch(
+      `/api/v3/auth_configs/${encodeURIComponent(authConfigId)}`,
+      { method: "DELETE" },
+    ).catch(() => {});
+    throw error;
+  }
+}
+
+const CURATED_TOOLKITS = [
+  "googlesheets",
+  "googledocs",
+  "googledrive",
+  "googleslides",
+  "excel",
+  "one_drive",
+  "share_point",
+  "notion",
+  "airtable",
+  "apollo",
+  "hunter",
+  "clay",
+  "attio",
+  "close",
+  "linear",
+  "clickup",
+  "asana",
+  "trello",
+  "outlook",
+  "microsoft_teams",
+  "calendly",
+  "dropbox",
+  "zoom",
+  "intercom",
+  "zendesk",
+  "mailchimp",
+  "sendgrid",
+  "instantly",
+  "lemlist",
+] as const;
+
+/** Idempotent deployment task for the app's first-party integration shelf. */
+export const seedCuratedToolkits = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    await ctx.runMutation(internal.composio.normalizeCatalog, {});
+    const existing = new Set(
+      await ctx.runQuery(internal.composio.listAddedSlugs, {}),
+    );
+    const added: string[] = [];
+    const skipped: string[] = [];
+    const failed: { slug: string; error: string }[] = [];
+    for (const slug of CURATED_TOOLKITS) {
+      if (existing.has(slug)) {
+        skipped.push(slug);
+        continue;
+      }
+      try {
+        await provisionToolkit(ctx, slug, {
+          id: "system:composio-catalog",
+          name: "Oso-Ahia",
+        });
+        added.push(slug);
+        existing.add(slug);
+      } catch (error) {
+        failed.push({
+          slug,
+          error: error instanceof Error ? error.message : "Provisioning failed",
+        });
+      }
+    }
+    return { added, skipped, failed };
   },
 });
 
@@ -609,15 +836,18 @@ export const insertListing = internalMutation({
     authConfigId: v.string(),
     mcpServerId: v.string(),
     noAuth: v.boolean(),
+    category: v.string(),
+    ownerId: v.string(),
+    ownerName: v.optional(v.string()),
+    ownerEmail: v.optional(v.string()),
   },
   handler: async (ctx, args): Promise<{ id: Id<"integrations"> }> => {
-    await requireAdmin(ctx);
-    const identity = await ctx.auth.getUserIdentity();
     const now = Date.now();
     const id = await ctx.db.insert("integrations", {
-      userId: identity!.subject,
+      userId: args.ownerId,
       name: args.name,
       description: args.description,
+      category: args.category,
       author: "Composio",
       verified: true,
       logoUrl: args.logoUrl,
@@ -627,15 +857,14 @@ export const insertListing = internalMutation({
       // itself collects nothing up front.
       authMode: "none",
       tools: args.tools,
-      // Drafts first: a fresh extension stays off the storefront until the
-      // admin flips it live from the Extensions page, so there's room to
-      // polish names, descriptions, and tool phrases before anyone sees it.
-      enabled: false,
+      // Curated extensions are reviewed by the administrator who provisions
+      // them and go live immediately; they can still be disabled in console.
+      enabled: true,
       // Admin-added => pre-approved; no reason to queue behind yourself.
       status: "approved",
-      requestedByName: identity!.name,
-      requestedByEmail: identity!.email,
-      reviewedBy: identity!.subject,
+      requestedByName: args.ownerName,
+      requestedByEmail: args.ownerEmail,
+      reviewedBy: args.ownerId,
       reviewedAt: now,
       composio: {
         slug: args.slug,

@@ -27,10 +27,10 @@ export function PhaseSources({ sources }: { sources: SearchSource[] }) {
             {hostname(source.url).charAt(0) || "•"}
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[13px]/4.5 text-foreground/85">
+            <span className="block truncate text-[15px]/6 text-foreground/85">
               {source.title || hostname(source.url)}
             </span>
-            <span className="mt-0.5 block truncate text-[11.5px]/4 text-muted-foreground">
+            <span className="mt-0.5 block truncate text-[13px]/5 text-muted-foreground">
               {hostname(source.url)}
               {source.author ? ` · ${source.author}` : ""}
             </span>
