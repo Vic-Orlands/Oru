@@ -93,30 +93,34 @@ export function DeskHome({
     setText("");
   };
 
+  const peak = Math.max(...desk.bars, 1);
+
   return (
     <div className="h-full min-h-0 overflow-y-auto">
-      <div className="relative h-[200px] overflow-hidden md:h-[240px]">
+      <div className="relative h-[248px] overflow-hidden md:h-[292px]">
         <img
           src="/brand/hero-loft.jpg"
           alt=""
-          className="absolute inset-0 h-full w-full object-cover object-[center_40%]"
+          className="absolute inset-0 h-full w-full object-cover object-[center_38%]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/25 to-surface" />
-      </div>
-
-      <div className="relative z-10 -mt-28 px-4 pb-10 md:px-8">
-        <h1 className="mb-4 text-center text-[22px] font-medium tracking-tight text-white md:text-[26px]">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/55" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-background" />
+        <h1 className="absolute inset-x-4 bottom-[6.25rem] text-center text-[22px] font-medium tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.75)] md:text-[26px]">
           Who should we reach today?
         </h1>
+      </div>
 
-        <div className="mx-auto w-full max-w-[680px] overflow-hidden rounded-2xl bg-card/95 shadow-lg ring-1 ring-white/10 backdrop-blur-md">
+      <div className="relative z-10 -mt-16 px-4 pb-10 md:px-8">
+        <div className="mx-auto w-full max-w-[680px] overflow-hidden rounded-2xl bg-card shadow-[0_16px_40px_-18px_rgba(0,0,0,0.45)] ring-1 ring-black/10 dark:ring-white/12">
           <div className="flex items-center gap-1 border-b border-border px-2 py-1.5">
             <TabButton active={tab === "new"} onClick={() => setTab("new")}>
               New chat
             </TabButton>
             <TabButton active={tab === "running"} onClick={() => setTab("running")}>
               Running agents
-              <span className="ml-1 rounded-full bg-accent px-1.5 text-[10px] tabular-nums">1</span>
+              <span className="ml-1.5 rounded-full bg-primary px-1.5 py-px text-[10px] leading-none text-primary-foreground tabular-nums">
+                1
+              </span>
             </TabButton>
           </div>
           {tab === "new" ? (
@@ -134,18 +138,20 @@ export function DeskHome({
                 placeholder="Describe who you want, or a list to write to…"
                 className="w-full resize-none bg-transparent px-3.5 py-3 text-[13.5px]/5 outline-none placeholder:text-muted-foreground"
               />
-              <div className="flex items-center gap-1.5 px-2.5 pb-2.5">
-                <Chip>Workspace · Oso</Chip>
-                <Chip>
-                  <IconSparkles size={12} />
-                  {modelName}
-                </Chip>
-                <Chip>Gmail · Calendar</Chip>
+              <div className="flex items-center gap-2 px-2.5 pb-2.5">
+                <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
+                  <Chip>Workspace · Oso</Chip>
+                  <Chip>
+                    <IconSparkles size={12} />
+                    {modelName}
+                  </Chip>
+                  <Chip>Gmail · Calendar</Chip>
+                </div>
                 <button
                   type="button"
                   onClick={send}
                   aria-label="Send"
-                  className="ml-auto flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground"
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
                 >
                   <IconArrowUp size={16} />
                 </button>
@@ -233,11 +239,13 @@ export function DeskHome({
             {widgets.has("pipeline") && (
               <Widget title="Pipeline" meta="4 meetings">
                 {desk.pipeline.slice(0, 4).map((stage) => (
-                  <div key={stage.stage} className="flex items-center justify-between text-[12px]">
-                    <span className="text-muted-foreground">{stage.stage}</span>
-                    <span className="tabular-nums">
-                      {stage.count}
-                      <span className="ml-1 text-muted-foreground">{stage.rate}</span>
+                  <div key={stage.stage} className="flex items-baseline gap-2 text-[12px]">
+                    <span className="min-w-0 flex-1 truncate text-muted-foreground">
+                      {stage.stage}
+                    </span>
+                    <span className="shrink-0 tabular-nums">{stage.count}</span>
+                    <span className="w-9 shrink-0 text-right tabular-nums text-muted-foreground">
+                      {stage.rate}
                     </span>
                   </div>
                 ))}
@@ -245,14 +253,21 @@ export function DeskHome({
             )}
             {widgets.has("campaign") && (
               <Widget title="Campaign" meta="7 days">
-                <div className="flex h-16 items-end gap-1.5">
+                <div className="flex h-[4.5rem] items-end gap-1.5">
                   {desk.bars.map((value, index) => (
-                    <div key={DAYS[index]} className="flex flex-1 flex-col items-center gap-1">
+                    <div
+                      key={`${DAYS[index]}-${index}`}
+                      className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1"
+                    >
                       <div
-                        className="w-full rounded-sm bg-primary/80"
-                        style={{ height: `${value * 2}px` }}
+                        className="w-full rounded-[3px] bg-primary/85"
+                        style={{
+                          height: `${Math.max(4, Math.round((value / peak) * 40))}px`,
+                        }}
                       />
-                      <span className="text-[10px] text-muted-foreground">{DAYS[index]}</span>
+                      <span className="text-[10px] leading-none text-muted-foreground">
+                        {DAYS[index]}
+                      </span>
                     </div>
                   ))}
                 </div>

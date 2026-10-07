@@ -156,7 +156,7 @@ function SuggestionTile({
           </span>
           {ready ? (
             <span className="line-clamp-2 text-[11.5px]/4 text-muted-foreground">
-              {entry.description ?? "A new set of tools for Whirl."}
+              {entry.description ?? "A new set of tools for the desk."}
             </span>
           ) : (
             <span

@@ -407,7 +407,7 @@ export function IntegrationInstallModal({
       {step === "done" && (
         <SuccessStep
           title={`${listing.name} is in!`}
-          body="Whirl can now use its tools in any chat. Manage it anytime from the Installed tab."
+          body="The desk can now use its tools in any chat. Manage it anytime from settings."
           onDone={onClose}
         />
       )}

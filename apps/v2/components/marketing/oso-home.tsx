@@ -303,8 +303,8 @@ function ProductFrame() {
     >
       <div className="relative h-36">
         <img src="/brand/hero-loft.jpg" alt="" className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-card" />
-        <div className="absolute inset-x-0 bottom-3 text-center text-[15px] font-medium text-white">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/65" />
+        <div className="absolute inset-x-3 bottom-3 text-center text-[15px] font-medium text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">
           Who should we reach today?
         </div>
       </div>

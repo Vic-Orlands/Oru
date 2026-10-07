@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 /* Theme lives in localStorage under "theme" (same key as the main app) and
    is applied as a `.dark` class on <html>. A blocking inline script in the
@@ -10,7 +10,7 @@ export type Theme = "light" | "dark" | "system";
 
 const THEMES: Theme[] = ["light", "dark", "system"];
 
-function readTheme(): Theme {
+export function readTheme(): Theme {
   try {
     const stored = localStorage.getItem("theme");
     return THEMES.includes(stored as Theme) ? (stored as Theme) : "system";
@@ -19,12 +19,22 @@ function readTheme(): Theme {
   }
 }
 
-function applyTheme(theme: Theme) {
-  const dark =
+export function themeIsDark(theme: Theme): boolean {
+  return (
     theme === "dark" ||
     (theme === "system" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-  document.documentElement.classList.toggle("dark", dark);
+      window.matchMedia("(prefers-color-scheme: dark)").matches)
+  );
+}
+
+export function applyTheme(theme: Theme) {
+  document.documentElement.classList.toggle("dark", themeIsDark(theme));
+}
+
+/** Paint the stored theme onto <html>. Hydration resets the class the
+ *  boot script set, so this has to run again after React commits. */
+export function applyStoredTheme() {
+  applyTheme(readTheme());
 }
 
 /* Whether dark mode is currently in effect, tracked live off the `.dark`
@@ -48,8 +58,10 @@ export function useIsDark() {
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>("system");
 
-  useEffect(() => {
-    setThemeState(readTheme());
+  useLayoutEffect(() => {
+    const stored = readTheme();
+    setThemeState(stored);
+    applyTheme(stored);
   }, []);
 
   useEffect(() => {

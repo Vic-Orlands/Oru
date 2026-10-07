@@ -7,9 +7,9 @@ import { publicPageMetadata } from "@/lib/seo";
    or ?s=<skill> — the client face reads and strips them on mount. */
 
 export const metadata: Metadata = publicPageMetadata({
-  title: "Integrations · Whirl",
+  title: "Integrations · Oso-Ahia",
   description:
-    "Browse and install integrations that give Whirl new tools — connect your favorite apps in a couple of clicks.",
+    "Browse and install the tools the desk sells with — CRM, mail, calendar, and enrichment.",
   path: "/integrations",
 });
 

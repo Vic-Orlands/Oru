@@ -78,14 +78,14 @@ export function IntegrationLogo({
     );
   }
 
-  return (
-    <span
-      aria-hidden
-      title={name}
-      className={`flex shrink-0 items-center justify-center bg-black/[0.05] text-muted-foreground ring-1 ring-black/[0.06] dark:bg-white/[0.08] dark:ring-white/[0.08] ${className}`}
-      style={{ width: size, height: size, borderRadius: radius }}
-    >
-      {iconSvg ? (
+  if (iconSvg) {
+    return (
+      <span
+        aria-hidden
+        title={name}
+        className={`flex shrink-0 items-center justify-center bg-black/[0.05] text-muted-foreground ring-1 ring-black/[0.06] dark:bg-white/[0.08] dark:ring-white/[0.08] ${className}`}
+        style={{ width: size, height: size, borderRadius: radius }}
+      >
         <span
           className="bg-current"
           style={{
@@ -101,11 +101,66 @@ export function IntegrationLogo({
             maskPosition: "center",
           }}
         />
-      ) : (
-        <IconPlugConnected size={Math.round(size * 0.6)} stroke={2} />
-      )}
+      </span>
+    );
+  }
+
+  const label = monogram(name);
+  return (
+    <span
+      aria-hidden
+      title={name}
+      className={`flex shrink-0 items-center justify-center font-medium tracking-tight text-white ring-1 ring-black/10 dark:ring-white/15 ${className}`}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: radius,
+        backgroundColor: tileColor(name),
+        fontSize: Math.max(10, Math.round(size * (label.length > 1 ? 0.32 : 0.48))),
+      }}
+    >
+      {label || <IconPlugConnected size={Math.round(size * 0.6)} stroke={2} />}
     </span>
   );
+}
+
+/** Stable tile colour so a catalog without hosted logos still reads as a
+ *  store, not a column of identical plugs. Known tools get a recognisable
+ *  hue; everything else hashes into the same palette. */
+const NAMED_TILES: Record<string, string> = {
+  HubSpot: "#ff7a59",
+  Salesforce: "#00a1e0",
+  Pipedrive: "#017737",
+  Attio: "#5c6bc0",
+  Gmail: "#ea4335",
+  Outlook: "#0f6cbd",
+  "Google Calendar": "#1a73e8",
+  Calendly: "#006bff",
+  Apollo: "#e85d04",
+  LinkedIn: "#0a66c2",
+  Hunter: "#f97316",
+  Slack: "#611f69",
+  "Google Sheets": "#0f9d58",
+  Notion: "#3f3f46",
+  "Google Docs": "#4285f4",
+};
+
+const TILE_PALETTE = ["#9a3412", "#9f1239", "#1d4e89", "#166534", "#854d0e", "#6d28d9", "#0f766e"];
+
+function tileColor(name: string): string {
+  const named = NAMED_TILES[name];
+  if (named) return named;
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash + name.charCodeAt(i) * (i + 3)) % TILE_PALETTE.length;
+  return TILE_PALETTE[hash] ?? "#9a3412";
+}
+
+function monogram(name: string): string {
+  const parts = name.split(/[^A-Za-z0-9]+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? ""}`.toUpperCase();
+  }
+  return (parts[0]?.[0] ?? "").toUpperCase();
 }
 
 /** A console-provided monochrome integration mark without its store tile.

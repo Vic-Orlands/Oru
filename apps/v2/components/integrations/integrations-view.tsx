@@ -156,7 +156,7 @@ export function IntegrationsView() {
   const toListing = (row: StoreIntegration): StoreListing => ({
     id: row.id,
     name: row.name,
-    description: row.description ?? "An MCP integration for Whirl",
+    description: row.description ?? "An MCP integration for the desk",
     logoUrl: row.logoUrl,
     iconSvg: row.iconSvg,
     verified: row.verified,
@@ -170,7 +170,7 @@ export function IntegrationsView() {
   const toSkillListing = (row: StoreSkill): StoreListing => ({
     id: row.id,
     name: row.name,
-    description: row.description ?? "A skill for Whirl",
+    description: row.description ?? "A skill for the desk",
     logoUrl: row.logoUrl,
     iconSvg: row.iconSvg,
     verified: row.verified,
@@ -303,7 +303,7 @@ export function IntegrationsView() {
                 ) : (
                   <EmptyState
                     title="No skills on the shelves yet"
-                    body="Skills are instruction packs Whirl picks up mid-chat. Approved ones will show up here as developers publish them."
+                    body="Skills are instruction packs the desk picks up mid-chat. Approved ones show up here as they are published."
                   />
                 )
               ) : skillShelves ? (

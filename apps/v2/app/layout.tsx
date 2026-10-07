@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ViewportInsets } from "@/components/mobile/viewport-insets";
+import { ThemeSync } from "@/components/theme-sync";
 import { PerformanceInsights } from "@/components/performance-insights";
 import { ServiceWorker } from "@/components/pwa/service-worker";
 import { ThemeColor } from "@/components/pwa/theme-color";
@@ -149,6 +150,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: SIDEBAR_BOOT_SCRIPT }} />
       </head>
       <body className="h-full">
+        <ThemeSync />
         <WebVitals />
         <PerformanceInsights />
         <ThemeColor />

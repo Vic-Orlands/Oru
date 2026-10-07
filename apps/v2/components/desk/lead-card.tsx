@@ -120,9 +120,12 @@ function SequenceCard({ text }: { text?: string }) {
     >
       <ol className="flex flex-col gap-1.5 px-3 py-2.5">
         {(data?.steps ?? []).map((step) => (
-          <li key={step.subject} className="flex items-baseline gap-2 text-[12.5px]">
-            <span className="w-12 shrink-0 tabular-nums text-muted-foreground">Day {step.day}</span>
-            <span className="w-16 shrink-0 text-muted-foreground">{step.channel}</span>
+          <li
+            key={step.subject}
+            className="grid grid-cols-[2.75rem_4.5rem_minmax(0,1fr)] items-baseline gap-2 text-[12.5px]"
+          >
+            <span className="tabular-nums text-muted-foreground">Day {step.day}</span>
+            <span className="text-muted-foreground">{step.channel}</span>
             <span className="min-w-0 truncate">{step.subject}</span>
           </li>
         ))}
