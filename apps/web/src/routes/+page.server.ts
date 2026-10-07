@@ -1,8 +1,8 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { APIError } from 'better-auth/api';
 import type { Actions, PageServerLoad } from './$types';
-import { auth, googleAuthEnabled } from '$lib/server/auth';
-import { flags } from '$lib/server/flags';
+import { auth, googleAuthEnabled } from '#lib/server/auth.js';
+import { flags } from '#lib/server/flags.js';
 
 export const load: PageServerLoad = ({ locals }) => {
 	const state = flags();

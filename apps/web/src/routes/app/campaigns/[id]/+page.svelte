@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import Badge from '$lib/components/ui/badge.svelte';
+	import Badge from '#lib/components/ui/badge.svelte';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();

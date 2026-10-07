@@ -1,8 +1,8 @@
 <script lang="ts">
 	import './layout.css';
 	import { Toaster } from 'svelte-sonner';
-	import favicon from '$lib/assets/favicon.svg';
-	import { syncTheme, theme } from '$lib/theme.svelte';
+	import favicon from '#lib/assets/favicon.svg';
+	import { syncTheme, theme } from '#lib/theme.svelte.js';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();

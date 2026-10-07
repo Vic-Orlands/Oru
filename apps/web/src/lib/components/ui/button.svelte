@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tv, type VariantProps } from 'tailwind-variants';
-	import { cn } from '$lib/utils';
+	import { cn } from '#lib/utils.js';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 
 	const styles = tv({

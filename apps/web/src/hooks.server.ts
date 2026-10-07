@@ -4,8 +4,8 @@ import { redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { claimWorkspace } from '@oso-ahia/db';
-import { auth } from '$lib/server/auth';
-import { db } from '$lib/server/db';
+import { auth } from '#lib/server/auth.js';
+import { db } from '#lib/server/db.js';
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
 	if (building) return resolve(event);

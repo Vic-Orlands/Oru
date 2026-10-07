@@ -1,6 +1,6 @@
 import { listApprovals } from '@oso-ahia/db';
-import { flags } from '$lib/server/flags';
-import { db } from '$lib/server/db';
+import { flags } from '#lib/server/flags.js';
+import { db } from '#lib/server/db.js';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals }) => {

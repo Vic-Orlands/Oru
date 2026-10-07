@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import Badge from '$lib/components/ui/badge.svelte';
-	import { shortDate } from '$lib/utils';
+	import Badge from '#lib/components/ui/badge.svelte';
+	import { shortDate } from '#lib/utils.js';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();

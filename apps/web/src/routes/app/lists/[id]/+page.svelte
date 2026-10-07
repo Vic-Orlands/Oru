@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import Badge from '$lib/components/ui/badge.svelte';
-	import EmptyState from '$lib/components/ui/empty-state.svelte';
-	import { fullName } from '$lib/utils';
+	import Badge from '#lib/components/ui/badge.svelte';
+	import EmptyState from '#lib/components/ui/empty-state.svelte';
+	import { fullName } from '#lib/utils.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

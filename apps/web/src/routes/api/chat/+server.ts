@@ -19,14 +19,14 @@ import {
 	type UIMessage
 } from 'ai';
 import { z } from 'zod';
-import { db } from '$lib/server/db';
-import { resolvedModels } from '$lib/server/flags';
+import { db } from '#lib/server/db.js';
+import { resolvedModels } from '#lib/server/flags.js';
 import {
 	runCampaignSummary,
 	runCreateTask,
 	runDraftEmail,
 	runFindLeads
-} from '$lib/server/agent-runs';
+} from '#lib/server/agent-runs.js';
 
 function lastUserText(messages: UIMessage[]) {
 	const message = [...messages].reverse().find((item) => item.role === 'user');

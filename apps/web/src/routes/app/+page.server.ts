@@ -1,8 +1,8 @@
 import { dashboard } from '@oso-ahia/db';
 import { funnelFromFurthest } from '@oso-ahia/domain';
-import { weeklyBuckets } from '$lib/weeks';
-import { db } from '$lib/server/db';
-import { requireDesk } from '$lib/server/guard';
+import { weeklyBuckets } from '#lib/weeks.js';
+import { db } from '#lib/server/db.js';
+import { requireDesk } from '#lib/server/guard.js';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {

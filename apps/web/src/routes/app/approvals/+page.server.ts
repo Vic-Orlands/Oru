@@ -1,9 +1,9 @@
 import { fail } from '@sveltejs/kit';
 import { assertTransition } from '@oso-ahia/domain';
 import { getApproval, listApprovals, patchApproval } from '@oso-ahia/db';
-import { db } from '$lib/server/db';
-import { requireDesk } from '$lib/server/guard';
-import { sendApproval } from '$lib/server/send';
+import { db } from '#lib/server/db.js';
+import { requireDesk } from '#lib/server/guard.js';
+import { sendApproval } from '#lib/server/send.js';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, url }) => {

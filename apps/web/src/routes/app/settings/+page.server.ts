@@ -13,9 +13,9 @@ import {
 	upsertConnection
 } from '@oso-ahia/db';
 import { BETTER_AUTH_URL, COMPOSIO_API_KEY, DEMO_MODE } from '$app/env/private';
-import { db } from '$lib/server/db';
-import { flags, resolvedModels } from '$lib/server/flags';
-import { requireDesk } from '$lib/server/guard';
+import { db } from '#lib/server/db.js';
+import { flags, resolvedModels } from '#lib/server/flags.js';
+import { requireDesk } from '#lib/server/guard.js';
 import type { Actions, PageServerLoad } from './$types';
 
 function splitList(value: string) {

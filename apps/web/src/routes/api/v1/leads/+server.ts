@@ -1,7 +1,7 @@
 import { hashApiKey } from '@oso-ahia/domain';
 import { findApiKey, queryLeads, touchApiKey } from '@oso-ahia/db';
 import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
+import { db } from '#lib/server/db.js';
 
 export const GET = async ({ request, url }) => {
 	const header = request.headers.get('authorization') ?? '';

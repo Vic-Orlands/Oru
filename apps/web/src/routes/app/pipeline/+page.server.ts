@@ -1,8 +1,8 @@
 import { fail } from '@sveltejs/kit';
 import { DEAL_STAGES, funnelFromFurthest, type DealStage } from '@oso-ahia/domain';
 import { createDeal, listDeals, moveDeal } from '@oso-ahia/db';
-import { db } from '$lib/server/db';
-import { requireDesk } from '$lib/server/guard';
+import { db } from '#lib/server/db.js';
+import { requireDesk } from '#lib/server/guard.js';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {

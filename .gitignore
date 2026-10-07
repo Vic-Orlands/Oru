@@ -1,14 +1,26 @@
 node_modules
 .turbo
+.cache
+.vite
 .output
 .svelte-kit
 build
 dist
+coverage
+*.tsbuildinfo
 .DS_Store
 .env
 .env.*
 !.env.example
 !.env.test
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+.dev.vars
+.secrets
+.secrets.*
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 test-results
@@ -17,3 +29,8 @@ playwright-report
 .vercel
 .netlify
 .wrangler
+
+# Local AI tooling
+.agents/
+.claude/
+skills-lock.json

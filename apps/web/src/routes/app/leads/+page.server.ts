@@ -24,9 +24,9 @@ import {
 	OPENROUTER_JUDGE_FALLBACK_MODEL,
 	OPENROUTER_JUDGE_MODEL
 } from '$app/env/private';
-import { db } from '$lib/server/db';
-import { resolvedModels } from '$lib/server/flags';
-import { requireDesk } from '$lib/server/guard';
+import { db } from '#lib/server/db.js';
+import { resolvedModels } from '#lib/server/flags.js';
+import { requireDesk } from '#lib/server/guard.js';
 import type { Actions, PageServerLoad } from './$types';
 
 function ids(data: FormData) {

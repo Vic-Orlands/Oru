@@ -10,7 +10,7 @@ import {
 	type ModelSettings,
 	type Prospect
 } from '@oso-ahia/domain';
-import { and, asc, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, ilike, inArray, isNotNull, lte, or, sql } from 'drizzle-orm';
 import type { Database } from './client.js';
 import {
 	activities,
@@ -798,5 +798,5 @@ export async function dueTasks(db: Database, now: Date) {
 	return db
 		.select()
 		.from(tasks)
-		.where(and(eq(tasks.status, 'open'), sql`${tasks.dueAt} is not null and ${tasks.dueAt} <= ${now}`));
+		.where(and(eq(tasks.status, 'open'), isNotNull(tasks.dueAt), lte(tasks.dueAt, now)));
 }

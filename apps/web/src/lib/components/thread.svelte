@@ -3,7 +3,7 @@
 	import { Chat } from '@ai-sdk/svelte';
 	import { DefaultChatTransport, type UIMessage } from 'ai';
 	import { toast } from 'svelte-sonner';
-	import ToolCard from '$lib/components/tool-card.svelte';
+	import ToolCard from '#lib/components/tool-card.svelte';
 
 	let { conversationId, messages }: { conversationId: string; messages: UIMessage[] } = $props();
 

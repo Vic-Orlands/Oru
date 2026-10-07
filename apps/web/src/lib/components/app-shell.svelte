@@ -3,8 +3,8 @@
 	import { fade } from 'svelte/transition';
 	import Mark from './mark.svelte';
 	import CommandPalette from './command-palette.svelte';
-	import { syncTheme, toggleTheme, theme } from '$lib/theme.svelte';
-	import { togglePalette } from '$lib/palette.svelte';
+	import { syncTheme, toggleTheme, theme } from '#lib/theme.svelte.js';
+	import { togglePalette } from '#lib/palette.svelte.js';
 	import type { Snippet } from 'svelte';
 
 	let {

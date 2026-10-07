@@ -2,9 +2,9 @@
 	import { enhance } from '$app/forms';
 	import { fade, fly } from 'svelte/transition';
 	import { animate } from 'motion';
-	import Mark from '$lib/components/mark.svelte';
-	import CommandPalette from '$lib/components/command-palette.svelte';
-	import { syncTheme, toggleTheme, theme } from '$lib/theme.svelte';
+	import Mark from '#lib/components/mark.svelte';
+	import CommandPalette from '#lib/components/command-palette.svelte';
+	import { syncTheme, toggleTheme, theme } from '#lib/theme.svelte.js';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();

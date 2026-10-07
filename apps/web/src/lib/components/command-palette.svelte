@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Command, Dialog } from 'bits-ui';
-	import { toggleTheme } from '$lib/theme.svelte';
-	import { palette, togglePalette } from '$lib/palette.svelte';
+	import { toggleTheme } from '#lib/theme.svelte.js';
+	import { palette, togglePalette } from '#lib/palette.svelte.js';
 
 	const items = [
 		{ href: '/app', label: 'Overview' },

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { shortDate } from '$lib/utils';
-	import Thread from '$lib/components/thread.svelte';
+	import { shortDate } from '#lib/utils.js';
+	import Thread from '#lib/components/thread.svelte';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

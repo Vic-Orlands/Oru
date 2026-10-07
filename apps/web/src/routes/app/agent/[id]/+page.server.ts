@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit';
 import { getConversation, listConversations } from '@oso-ahia/db';
 import type { UIMessage } from 'ai';
-import { db } from '$lib/server/db';
-import { requireDesk } from '$lib/server/guard';
+import { db } from '#lib/server/db.js';
+import { requireDesk } from '#lib/server/guard.js';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params }) => {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BarChart } from 'layerchart';
-	import Badge from '$lib/components/ui/badge.svelte';
-	import { money, shortDate } from '$lib/utils';
+	import Badge from '#lib/components/ui/badge.svelte';
+	import { money, shortDate } from '#lib/utils.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
