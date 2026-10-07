@@ -18,7 +18,7 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
 };
 
 const handleWorkspace: Handle = async ({ event, resolve }) => {
-	if (event.locals.user && event.url.pathname.startsWith('/app')) {
+	if (event.locals.user) {
 		event.locals.workspace = await claimWorkspace(db, {
 			id: event.locals.user.id,
 			email: event.locals.user.email,

@@ -64,16 +64,42 @@ test('main pages render in light and dark', async ({ page }) => {
 	await theme(page, 'dark');
 	await shot(page, 'campaign-detail-dark');
 
-	await page.goto('/app/leads?status=qualified');
+	await page.goto('/app/leads');
+	await page.getByPlaceholder('Filter name, company, email').fill('Amara');
+	await page.getByRole('button', { name: 'Apply' }).click();
 	await expect(page.getByRole('link', { name: 'Amara Diallo' })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Grace Mwangi' })).toHaveCount(0);
 	await page.getByRole('link', { name: 'Amara Diallo' }).click();
 	await expect(page.getByRole('heading', { name: 'Amara Diallo' })).toBeVisible();
+	await expect(page.locator('aside').getByText('Kolaform', { exact: true })).toBeVisible();
+
+	await page.goto('/app/approvals');
+	const pendingBefore = await page.getByRole('button', { name: 'Approve' }).count();
+	expect(pendingBefore).toBeGreaterThan(0);
+	await page.getByRole('button', { name: 'Approve' }).first().click();
+	await expect(page.getByRole('button', { name: 'Approve' })).toHaveCount(pendingBefore - 1);
+
+	await page.goto('/app/pipeline');
+	const kola = page.getByRole('listitem').filter({ hasText: 'Kolaform intro' });
+	await kola.getByRole('combobox').selectOption('qualified');
+	await expect(
+		page.getByRole('group', { name: 'qualified' }).getByText('Kolaform intro')
+	).toBeVisible();
+
+	await page.goto('/app/tasks?view=calendar');
+	await expect(page.getByText('Mon')).toBeVisible();
+	await expect(page.getByText('Morning queue sweep')).toBeVisible();
+
+	await page.keyboard.press('Control+K');
+	const palette = page.getByRole('dialog');
+	await expect(palette.getByText('Command palette')).toBeAttached();
+	await palette.getByText('Leads', { exact: true }).click();
+	await expect(page).toHaveURL(/\/app\/leads/);
 
 	await page.goto('/app/agent');
 	await page.getByRole('link', { name: /Find fintech/ }).click();
-	await page.getByLabel('Message').fill('Find fintech VPs in Lagos');
+	await page.getByLabel('Message').fill('Remind me to call Harbor tomorrow');
 	await page.getByRole('button', { name: 'Send' }).click();
-	await expect(page.getByText('Find leads').or(page.getByText(/find leads/i))).toBeVisible({
-		timeout: 20_000
-	});
+	await expect(page.getByText('Adding that to the desk')).toBeVisible({ timeout: 20_000 });
+	await expect(page.getByText('Remind me to call Harbor tomorrow')).toBeVisible();
 });
