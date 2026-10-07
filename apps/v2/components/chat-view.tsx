@@ -617,7 +617,11 @@ export function ChatView({
             !inThread && "hidden",
           )}
         >
-          <div className="mx-auto w-full max-w-2xl">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-background from-40% via-background/80 to-transparent"
+          />
+          <div className="relative mx-auto w-full max-w-2xl">
             <AnimatePresence mode="popLayout" initial={false}>
               {!inThread && (
                 <motion.div key="greeting" {...TRIM_FADE}>

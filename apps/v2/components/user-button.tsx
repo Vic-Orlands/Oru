@@ -9,6 +9,7 @@ import { AuthModal } from "@/components/auth/auth-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { isDemoMode } from "@/lib/auth/mode";
 import { useDeploymentFeatures } from "@/lib/deployment-features";
 import { useCachedPlan, type PlanSummary } from "@/lib/plan-cache";
 import { ANALYTICS_EVENTS, captureEvent } from "@/lib/posthog";
@@ -71,12 +72,20 @@ function SignInRow() {
   );
 }
 
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const letters = parts.slice(0, 2).map((part) => part.slice(0, 1));
+  return letters.join("").toUpperCase() || "?";
+}
+
 function SignedInRow({
   name,
+  initialsName,
   imageUrl,
   plan,
 }: {
   name: string;
+  initialsName: string;
   imageUrl: string;
   plan: PlanSummary;
 }) {
@@ -87,8 +96,10 @@ function SignedInRow({
     <DropdownMenu stableContentWidth>
       <DropdownMenuTrigger className={`group ${ROW}`}>
         <Avatar className={`sidebar-collapsed:-ml-1 ${RAIL_GLIDE}`}>
-          <AvatarImage src={imageUrl} alt="" />
-          <AvatarFallback>{name.slice(0, 1).toUpperCase()}</AvatarFallback>
+          {imageUrl ? <AvatarImage src={imageUrl} alt="" /> : null}
+          <AvatarFallback className="bg-primary text-[11px] font-medium text-primary-foreground">
+            {initials(initialsName)}
+          </AvatarFallback>
         </Avatar>
         <span className={`flex min-w-0 flex-col items-start gap-0.5 ${FADE}`}>
           <span className="max-w-full truncate text-sm leading-4 font-medium text-foreground-soft">
@@ -127,23 +138,30 @@ function SignedInRow({
    name, and a chevron that flips open a context menu floating above it.
    Everything reveals together — Clerk plus a (cached) plan — so the badge
    doesn't pop in after the rest of the row. */
+const DEMO_PLAN: PlanSummary = { planId: null, planName: "Desk" };
+
 export function UserButton() {
   const { user, isLoaded } = useUser();
+  const demo = isDemoMode();
   const { customer, isLoading: customerLoading, error } = useCustomer();
   /* Errored fetches (the pre-auth window) read as unsettled — the cached
-     plan holds the badge instead of a false "Free" flash. */
+     plan holds the badge instead of a false "Free" flash. Demo mode has
+     no billing customer, so waiting on one leaves the skeleton up. */
   const plan = useCachedPlan(
     user?.id,
     customer,
     customerLoading || error != null,
   );
 
-  const revealed = isLoaded && (!user || plan !== null);
+  const revealed = isLoaded && (demo || !user || plan !== null);
   const name =
+    user?.firstName ??
     user?.fullName ??
     user?.username ??
     user?.primaryEmailAddress?.emailAddress ??
     "You";
+  const initialsName = user?.fullName ?? name;
+  const shownPlan = demo ? DEMO_PLAN : plan;
 
   return (
     <SkeletonReveal
@@ -153,7 +171,14 @@ export function UserButton() {
     >
       {isLoaded &&
         (user ? (
-          plan && <SignedInRow name={name} imageUrl={user.imageUrl} plan={plan} />
+          shownPlan && (
+            <SignedInRow
+              name={name}
+              initialsName={initialsName}
+              imageUrl={user.imageUrl}
+              plan={shownPlan}
+            />
+          )
         ) : (
           <SignInRow />
         ))}

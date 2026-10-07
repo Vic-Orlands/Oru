@@ -94,7 +94,7 @@ export function StoreGrid({
                   </span>
                   {item.verified && <VerifiedBadge size={14} />}
                 </span>
-                <span className="truncate text-[12.5px] text-muted-foreground">
+                <span className="line-clamp-2 text-[12.5px]/4 text-pretty text-muted-foreground">
                   {item.description}
                 </span>
               </span>

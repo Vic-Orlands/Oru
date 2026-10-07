@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 
 /* The accent lives in localStorage under "accent" and is applied as a
    data-accent attribute on <html> — app/accents.css maps each name onto
@@ -87,7 +87,7 @@ export function accentLabel(accent: Accent): string {
   return ACCENT_OPTIONS.find((option) => option.value === accent)!.label;
 }
 
-function readAccent(): Accent {
+export function readAccent(): Accent {
   try {
     const stored = localStorage.getItem("accent");
     return ACCENTS.includes(stored as Accent)
@@ -98,17 +98,26 @@ function readAccent(): Accent {
   }
 }
 
-function applyAccent(accent: Accent) {
+/** Graphite is the only accent that clears the attribute. Copper is the
+ *  product default and still has to set data-accent, because the stock
+ *  --primary in globals.css is monochrome. */
+export function applyAccent(accent: Accent) {
   const el = document.documentElement;
-  if (accent === DEFAULT_ACCENT) el.removeAttribute("data-accent");
+  if (accent === "graphite") el.removeAttribute("data-accent");
   else el.setAttribute("data-accent", accent);
+}
+
+export function applyStoredAccent() {
+  applyAccent(readAccent());
 }
 
 export function useAccent() {
   const [accent, setAccentState] = useState<Accent>(DEFAULT_ACCENT);
 
-  useEffect(() => {
-    setAccentState(readAccent());
+  useLayoutEffect(() => {
+    const stored = readAccent();
+    setAccentState(stored);
+    applyAccent(stored);
   }, []);
 
   const setAccent = (next: Accent) => {
