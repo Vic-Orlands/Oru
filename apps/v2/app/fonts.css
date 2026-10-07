@@ -1,0 +1,18 @@
+/* Geist, self-hosted from the geist package. The family name is literal so a
+   failed custom property can never collapse the root font to Times. */
+
+@font-face {
+  font-family: GeistVariable;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/GeistVariable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: GeistVariable;
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/GeistVariable-Italic.woff2") format("woff2");
+}

@@ -1,66 +1,76 @@
 # Oso-Ahia
 
-A human-in-the-loop sales desk. The agent finds leads and drafts outreach. Nothing is sent until someone on the workspace approves it.
+A chat-first AI sales desk. You describe who to reach. Oso-Ahia finds and scores prospects, writes a sequence, and queues email until you approve it.
 
-The name is Igbo: *oso ahịa*, the rush of a market. The seeded workspace is Ahịa Studio, owned by Chimezie.
+The chat, streaming, artifacts, and motion come from [Whirl](https://github.com/whirlchat/whirl) by [Anterra](https://whirl.chat), published under the MIT license. This repository keeps that license. The product on top — prospects, approvals, sequences, pipeline, and the desk — is Oso-Ahia.
 
-## Architecture
+## Run it
 
-```
-apps/web        SvelteKit 3, Svelte 5, Tailwind 4. The product and the HTTP API.
-apps/worker     Polls sequence steps and recurring tasks.
-packages/domain Pure rules: ICP score, dedupe, funnel, sequence, CSV, agent routing.
-packages/db     Drizzle schema, queries, migrations, seed.
-packages/ai     Jev judge, generateObject fallback, agent instructions.
-packages/integrations  Composio toolkit catalog and REST client.
-packages/jobs   One tick of the sequence engine and the task clock.
-```
-
-Postgres is the source of truth. better-auth owns `user`, `session`, `account`, and `verification`. Everything else is scoped by `workspace_id`. A member row is claimed on first visit to `/app` by matching the sign-in email, which is how the seeded owner becomes Chimezie’s account.
-
-The chat route streams UI message parts. In demo mode (no `OPENROUTER_API_KEY`) a small router picks a tool and writes tokens before the database work. With a key, `streamText` calls Kimi through OpenRouter and the same tool functions run. Approvals are the only path to Gmail.
-
-## Setup
+Requires [Bun](https://bun.sh).
 
 ```bash
-docker compose up -d
-pnpm install
-pnpm db:migrate
-pnpm db:seed
-pnpm dev
+bun install
+cp apps/v2/.env.example apps/v2/.env.local
+cp packages/backend/.env.example packages/backend/.env.local
 ```
 
-The web app is http://localhost:5173. The worker starts with `pnpm dev` as well and ticks every `WORKER_INTERVAL_MS` (default 30s). `POST /api/cron` with header `x-cron-secret` runs the same tick if you would rather schedule it outside the process.
+Demo mode is on when `NEXT_PUBLIC_DEMO_MODE=true` (the example file). No Convex, Google, OpenRouter, or Composio keys are required. The desk, a mid-stream chat, and the integrations catalog are fixtures.
 
-Copy `.env.example` to `apps/web/.env` (and the repo root, which Drizzle and the worker also read). With `DEMO_MODE=true` and empty provider keys, the landing page offers a demo sign-in:
+```bash
+bun run --cwd apps/v2 dev
+```
 
-- email `chimezie@osoahia.dev`
-- password `oso-ahia-demo-password`
+Open http://localhost:3000 for the marketing site and http://localhost:3000/app for the desk.
 
-Google sign-in appears only when both Google client variables are set. The agent and judge stay on the local stand-in until `OPENROUTER_API_KEY` is set. Connect on Settings simulates a toolkit until `COMPOSIO_API_KEY` is set. Set `DEMO_MODE=false` before any real deployment.
+## Convex, when you have keys
 
-## Scripts
+Use `bunx convex dev` while building. Do not use `bunx convex deploy` except for production.
 
-| Command | What it does |
-| --- | --- |
-| `pnpm dev` | Web and worker |
-| `pnpm build` | Production build |
-| `pnpm check` | `svelte-check` and `tsc` |
-| `pnpm lint` | Prettier and ESLint |
-| `pnpm test` | Vitest |
-| `pnpm --filter @oso-ahia/web test:e2e` | Playwright smoke of the main pages |
-| `pnpm db:generate` | Drizzle migration from the schema |
-| `pnpm db:migrate` | Apply migrations |
-| `pnpm db:seed` | Replace the Ahịa Studio workspace with sample data |
+```bash
+# packages/backend/.env.local
+CONVEX_AGENT_MODE=anonymous   # cloud agents only; skip this on your own machine
+
+cd packages/backend
+bunx convex dev
+```
+
+Set the deployment URL and site URL (`*.convex.site`) in `apps/v2/.env.local`, then turn demo mode off:
+
+```
+NEXT_PUBLIC_DEMO_MODE=false
+```
+
+Sign in with Google, then seed the sample workspace from the Convex dashboard:
+
+```bash
+bunx convex run leads:seed
+```
 
 ## Environment
 
-See `.env.example`. Required to boot: `DATABASE_URL` and `BETTER_AUTH_SECRET` (32+ characters). Optional keys: Google, OpenRouter, Composio. Model ids: `OPENROUTER_CHAT_MODEL`, `OPENROUTER_JUDGE_MODEL`, `OPENROUTER_JUDGE_FALLBACK_MODEL`. Reasoning for those defaults is in [docs/models.md](docs/models.md).
+| | |
+| --- | --- |
+| `apps/v2/.env.example` | Next.js: demo flag, Convex URLs, site URL, Google client |
+| `packages/backend/.env.example` | Convex: better-auth secret, Google, OpenRouter, Kimi + Jev model ids, Composio, MCP |
 
-`GET /api/v1/leads` expects `Authorization: Bearer <key>`. Keys are created in Settings and stored as a SHA-256 hash. The seeded key prefix is `oso_live_seeded` and the raw demo value is `oso_live_seeded_demo_only_rotate_me`. Rotate it.
+Chat defaults to `moonshotai/kimi-k2.6` (`OPENROUTER_CHAT_MODEL`). Yes/no checks (fit, intent, duplicates, approval) call OpenRouter's Decisions API with `typesafe/jev-1.13` (`OPENROUTER_JUDGE_MODEL`) and fall back to `OPENROUTER_JUDGE_FALLBACK_MODEL`.
 
-## Further reading
+## What the desk does
 
-- [docs/research.md](docs/research.md) — what we took from other sales desks
-- [docs/design-system.md](docs/design-system.md) — tokens
-- [docs/models.md](docs/models.md) — Kimi K2.5 and Jev
+- Find and enrich a short list from an ICP, scored by the judge
+- Save lists, write multi-step sequences, queue drafts for approval
+- Send only after approval, through Composio (Gmail, Outlook, Calendar, HubSpot, Salesforce, Pipedrive, Apollo, LinkedIn, Slack, Sheets) plus any MCP server
+- Tasks, pipeline conversion, and a weekly performance chart
+- Integrations live at `/integrations`, not inside settings
+
+## Checks
+
+```bash
+bun run --cwd packages/backend typecheck
+bun run --cwd apps/v2 lint
+bun run --cwd apps/v2 build
+```
+
+## Still needs real keys
+
+Google OAuth, `BETTER_AUTH_SECRET`, OpenRouter, and Composio. Without them, demo mode is the way through the product. Legacy, mobile, and console apps from the Whirl tree are not the product and still mention Clerk; `apps/v2` does not.
