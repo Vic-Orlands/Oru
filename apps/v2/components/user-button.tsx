@@ -96,7 +96,13 @@ function SignedInRow({
     <DropdownMenu stableContentWidth>
       <DropdownMenuTrigger className={`group ${ROW}`}>
         <Avatar className={`sidebar-collapsed:-ml-1 ${RAIL_GLIDE}`}>
-          {imageUrl ? <AvatarImage src={imageUrl} alt="" /> : null}
+          {imageUrl ? (
+            <AvatarImage
+              src={imageUrl}
+              alt={`${name}'s profile photo`}
+              referrerPolicy="no-referrer"
+            />
+          ) : null}
           <AvatarFallback className="bg-primary text-[11px] font-medium text-primary-foreground">
             {initials(initialsName)}
           </AvatarFallback>

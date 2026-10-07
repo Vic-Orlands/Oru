@@ -2,7 +2,6 @@ import { jsonSchema, tool } from "ai";
 
 import { internal } from "../_generated/api";
 import type { ActionCtx } from "../_generated/server";
-import { PROSPECT_CATALOG } from "../leads";
 
 export const LEAD_TOOL_NAMES = new Set([
   "findProspects",
@@ -16,15 +15,16 @@ export const LEAD_TOOL_NAMES = new Set([
 
 type Card = { name?: string; title: string; text: string };
 
-function matches(icp: string) {
-  const words = icp.toLowerCase().split(/[^a-z0-9]+/).filter((word) => word.length > 3);
-  const ranked = PROSPECT_CATALOG.map((row) => {
-    const hay = `${row.title} ${row.company} ${row.location} ${row.list}`.toLowerCase();
-    const hits = words.filter((word) => hay.includes(word)).length;
-    return { row, hits };
-  });
-  const picked = ranked.filter((item) => item.hits > 0).map((item) => item.row);
-  return (picked.length > 0 ? picked : PROSPECT_CATALOG).slice(0, 4);
+function webUrl(value: string, field: string): string {
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+      return parsed.toString();
+    }
+  } catch {
+    // The provider returned something that is not a URL.
+  }
+  throw new Error(`${field} must be a public http(s) URL from the lead provider.`);
 }
 
 export function createLeadTools(opts: {
@@ -36,28 +36,100 @@ export function createLeadTools(opts: {
   return {
     findProspects: tool({
       description:
-        "Find and score prospects from an ICP description. Returns a prospect table card.",
-      inputSchema: jsonSchema<{ icp: string }>({
+        "Save real prospects returned by a connected prospecting integration such as FuseAI. Call the live integration first. Every row must include a source URL; never invent people, links, or emails.",
+      inputSchema: jsonSchema<{
+        icp: string;
+        rows: Array<{
+          name: string;
+          title: string;
+          company: string;
+          email?: string;
+          emailVerification: "verified" | "risky" | "invalid" | "unknown";
+          location: string;
+          score: number;
+          fit: "Strong" | "Possible" | "Weak";
+          scoreReason: string;
+          sourceUrl: string;
+          sourceProvider: string;
+          profileUrl?: string;
+          companyUrl?: string;
+          evidence: string[];
+        }>;
+      }>({
         type: "object",
-        properties: { icp: { type: "string" } },
-        required: ["icp"],
+        properties: {
+          icp: { type: "string" },
+          rows: {
+            type: "array",
+            minItems: 1,
+            maxItems: 25,
+            items: {
+              type: "object",
+              properties: {
+                name: { type: "string" },
+                title: { type: "string" },
+                company: { type: "string" },
+                email: { type: "string" },
+                emailVerification: {
+                  type: "string",
+                  enum: ["verified", "risky", "invalid", "unknown"],
+                },
+                location: { type: "string" },
+                score: { type: "number", minimum: 0, maximum: 100 },
+                fit: { type: "string", enum: ["Strong", "Possible", "Weak"] },
+                scoreReason: { type: "string" },
+                sourceUrl: { type: "string", format: "uri" },
+                sourceProvider: { type: "string" },
+                profileUrl: { type: "string", format: "uri" },
+                companyUrl: { type: "string", format: "uri" },
+                evidence: { type: "array", items: { type: "string" } },
+              },
+              required: [
+                "name", "title", "company", "emailVerification", "location",
+                "score", "fit", "scoreReason", "sourceUrl", "sourceProvider", "evidence",
+              ],
+              additionalProperties: false,
+            },
+          },
+        },
+        required: ["icp", "rows"],
         additionalProperties: false,
       }),
-      execute: async ({ icp }) => {
-        const rows = matches(icp);
-        await ctx.runMutation(internal.leads.recordProspects, { userId, rows });
+      execute: async ({ icp, rows }) => {
+        const enrichedAt = Date.now();
+        const persisted = rows.map((row) => ({
+          ...row,
+          email: row.email ?? "",
+          sourceUrl: webUrl(row.sourceUrl, "sourceUrl"),
+          ...(row.profileUrl
+            ? { profileUrl: webUrl(row.profileUrl, "profileUrl") }
+            : {}),
+          ...(row.companyUrl
+            ? { companyUrl: webUrl(row.companyUrl, "companyUrl") }
+            : {}),
+          list: icp.slice(0, 80),
+          status: "New" as const,
+          enrichedAt,
+        }));
+        await ctx.runMutation(internal.leads.recordProspects, {
+          userId,
+          rows: persisted,
+        });
         const text = JSON.stringify({
           title: icp.slice(0, 80),
-          rows: rows.map((row) => ({
+          rows: persisted.map((row) => ({
             name: row.name,
             title: row.title,
             company: row.company,
             score: row.score,
             fit: row.fit,
+            sourceUrl: row.sourceUrl,
+            profileUrl: row.profileUrl,
+            emailVerification: row.emailVerification,
           })),
         });
         await onCard({ title: "Prospects", text });
-        return { count: rows.length, names: rows.map((row) => row.name) };
+        return { count: persisted.length, names: persisted.map((row) => row.name) };
       },
     }),
     qualifyLead: tool({

@@ -161,7 +161,11 @@ export function AccountSection() {
                   uploadingPhoto ? "opacity-50" : ""
                 }`}
               >
-                <AvatarImage src={photoPreview ?? user.imageUrl} alt="" />
+                <AvatarImage
+                  src={photoPreview ?? user.imageUrl}
+                  alt={`${user.fullName ?? "Your"} profile photo`}
+                  referrerPolicy="no-referrer"
+                />
                 <AvatarFallback>{name.slice(0, 1).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">

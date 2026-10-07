@@ -17,6 +17,13 @@ function heuristic(question: string, state: string): "yes" | "no" {
 function readAnswer(payload: unknown): string | null {
   if (!payload || typeof payload !== "object") return null;
   const record = payload as Record<string, unknown>;
+  if (record.answers && typeof record.answers === "object") {
+    const answer = (record.answers as Record<string, unknown>).fit;
+    if (answer && typeof answer === "object") {
+      const choice = (answer as Record<string, unknown>).choice;
+      if (typeof choice === "string" && choice.trim()) return choice.trim();
+    }
+  }
   const buckets = [record.answers, record.decisions, record.results];
   for (const bucket of buckets) {
     if (!Array.isArray(bucket) || bucket.length === 0) continue;
@@ -43,14 +50,16 @@ async function jevDecision(
     body: JSON.stringify({
       model: JUDGE_MODEL,
       state,
-      questions: [
-        {
-          id: "q",
+      questions: {
+        fit: {
           type: "choice",
-          prompt: question,
-          options: ["yes", "no"],
+          instructions: question,
+          criteria: {
+            yes: "The available evidence supports contacting this prospect.",
+            no: "The available evidence does not support contacting this prospect.",
+          },
         },
-      ],
+      },
     }),
   });
   if (!response.ok) {

@@ -15,7 +15,15 @@ export type DemoProspect = {
   title: string;
   company: string;
   email: string;
+  emailVerification?: "verified" | "risky" | "invalid" | "unknown";
   location: string;
+  sourceUrl?: string;
+  sourceProvider?: string;
+  profileUrl?: string;
+  companyUrl?: string;
+  evidence?: string[];
+  scoreReason?: string;
+  enrichedAt?: number;
   score: number;
   fit: "Strong" | "Possible" | "Weak";
   list: string;
@@ -313,6 +321,7 @@ function listing(row: ListingInput): StoreIntegration {
 }
 
 const CATALOG: ListingInput[] = [
+  { id: "fuseai", name: "FuseAI", description: "Find, enrich, score, and campaign to real prospects with source-backed sales data.", category: "LinkedIn & enrichment", tools: 141 },
   { id: "hubspot", name: "HubSpot", description: "Pipeline, contacts, and the deals already in motion.", category: "CRM", tools: 42 },
   { id: "salesforce", name: "Salesforce", description: "Read and update opportunities from the thread.", category: "CRM", tools: 38 },
   { id: "pipedrive", name: "Pipedrive", description: "A pipeline for teams that live in stages.", category: "CRM", tools: 24 },

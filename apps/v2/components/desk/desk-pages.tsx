@@ -3,6 +3,7 @@
 import { useDeskData } from "@/lib/desk-data";
 import type { DeskPage } from "@/lib/view";
 import { showToast } from "@/lib/toasts";
+import { IconExternalLink } from "@tabler/icons-react";
 
 const COPY: Record<DeskPage, { title: string; lede: string }> = {
   prospects: {
@@ -80,7 +81,20 @@ function Prospects() {
             {prospects.map((row) => (
               <tr key={row.id} className="border-b border-border last:border-0">
                 <td className="px-3 py-2">
-                  <div className="font-medium">{row.name}</div>
+                  <div className="flex items-center gap-1.5 font-medium">
+                    <span>{row.name}</span>
+                    {(row.profileUrl ?? row.sourceUrl) && (
+                      <a
+                        href={row.profileUrl ?? row.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Open source for ${row.name}`}
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <IconExternalLink size={13} />
+                      </a>
+                    )}
+                  </div>
                   <div className="text-[11.5px] text-muted-foreground">{row.title}</div>
                 </td>
                 <td className="px-3 py-2">{row.company}</td>
@@ -100,7 +114,7 @@ function Prospects() {
 function Approvals() {
   const { approvals } = useDeskData();
   return (
-    <div className="grid max-w-3xl gap-3">
+    <div className="grid w-full gap-3 xl:grid-cols-2">
       {approvals.map((draft) => (
         <Panel key={draft.id}>
           <div className="px-4 py-3">
@@ -135,7 +149,8 @@ function Approvals() {
 function Campaigns() {
   const { campaigns } = useDeskData();
   return (
-    <Panel>
+    <div className="w-full overflow-x-auto">
+      <Panel>
       <table className="w-full text-left text-[12.5px]">
         <thead className="text-[11px] tracking-wide text-muted-foreground uppercase">
           <tr className="border-b border-border">
@@ -158,7 +173,8 @@ function Campaigns() {
           ))}
         </tbody>
       </table>
-    </Panel>
+      </Panel>
+    </div>
   );
 }
 
@@ -166,7 +182,7 @@ function Pipeline() {
   const { pipeline } = useDeskData();
   const max = pipeline[0]?.count ?? 1;
   return (
-    <div className="grid max-w-xl gap-2">
+    <div className="grid w-full gap-2 md:grid-cols-2 xl:grid-cols-3">
       {pipeline.map((stage) => (
         <div key={stage.stage} className="rounded-xl bg-card px-3 py-2.5 ring-1 ring-border">
           <div className="mb-1.5 flex items-baseline justify-between text-[12.5px]">
@@ -213,7 +229,7 @@ function Performance() {
   const replies = campaigns.reduce((sum, row) => sum + row.replies, 0);
   const meetings = campaigns.reduce((sum, row) => sum + row.meetings, 0);
   return (
-    <div className="grid max-w-3xl gap-3 md:grid-cols-3">
+    <div className="grid w-full gap-3 md:grid-cols-3">
       {[
         ["Sent", String(sent)],
         ["Replies", String(replies)],

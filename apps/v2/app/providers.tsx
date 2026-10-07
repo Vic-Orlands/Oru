@@ -25,6 +25,13 @@ function AutumnBridge({ children }: { children: React.ReactNode }) {
   const gatedConvex = useMemo(
     () => ({
       action: (ref: unknown, args: unknown) => {
+        // Billing is optional in this deployment. Autumn's provider eagerly
+        // creates a customer and lists products even when every billing
+        // surface is hidden, so short-circuit those calls locally unless the
+        // deployment explicitly enables Autumn.
+        if (process.env.NEXT_PUBLIC_AUTUMN_ENABLED !== "true") {
+          return Promise.resolve({ data: null, error: null });
+        }
         if (!authRef.current) {
           return Promise.reject(new Error("Signed-out — skipping billing call"));
         }
@@ -44,7 +51,11 @@ function AutumnBridge({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated]);
 
   return (
-    <AutumnProvider convex={gatedConvex} convexApi={api.autumn}>
+    <AutumnProvider
+      convex={gatedConvex}
+      convexApi={api.autumn}
+      suppressLogs
+    >
       <FunnelTracker />
       {children}
     </AutumnProvider>

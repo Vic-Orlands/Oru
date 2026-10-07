@@ -76,7 +76,7 @@ export const WEB_FETCH_SYSTEM_INSTRUCTION =
   "Use `fetchUrl` to read specific URLs, even when search is off. Never claim to have read a page unless it succeeds.";
 
 export const LEAD_SYSTEM_INSTRUCTION =
-  "The sales desk is available on every turn. Use findProspects when the user describes who to reach. Use qualifyLead before recommending a send. Use saveList, writeSequence, and queueEmail to file the work — queueEmail never sends. Use createDeskTask for follow-ups and reportPerformance when they ask how a campaign is doing. The user sees the tool cards, so don't paste the same table back as markdown. Do not invent email addresses the tool did not return.";
+  "The sales desk is available on every turn. Real lead discovery must begin with a connected prospecting or enrichment integration such as FuseAI; if none is connected, use suggestIntegrations and explain that connection is required. Only call findProspects after a live provider returns the rows, preserving its source/profile/company URLs and email verification state. Never invent a person, company, URL, email, enrichment fact, or campaign metric. Use qualifyLead before recommending a send. Use saveList, writeSequence, and queueEmail to file the work — queueEmail never sends. Use createDeskTask for follow-ups and reportPerformance only for campaign data returned by a connected provider. The user sees the tool cards, so don't paste the same table back as markdown.";
 
 export const WEATHER_SYSTEM_INSTRUCTION =
   "Use `getWeather` for every weather question. Omit `location` for 'here'; otherwise pass the named place. Give a short useful take because the widget has details. Ask for a city if needed and label approximate locations honestly.";

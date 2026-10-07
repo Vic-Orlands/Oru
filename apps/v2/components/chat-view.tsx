@@ -351,7 +351,7 @@ export function ChatView({
         return;
       }
       showToast("Sign in to start chatting");
-      throw new Error("Not signed in");
+      return;
     }
 
     /* A locked thread never touches sendUserMessage: the prompt is sealed

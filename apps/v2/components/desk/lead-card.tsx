@@ -11,6 +11,9 @@ type ProspectRow = {
   company: string;
   score: number;
   fit: string;
+  sourceUrl?: string;
+  profileUrl?: string;
+  emailVerification?: string;
 };
 
 type SequenceStep = { day: number; channel: string; subject: string };
@@ -96,7 +99,20 @@ function ProspectCard({ title, text }: { title?: string; text?: string }) {
         {rows.map((row) => (
           <li key={row.name} className="flex items-center gap-3 px-3 py-2">
             <div className="min-w-0 flex-1">
-              <div className="truncate text-[13px] font-medium">{row.name}</div>
+              <div className="flex min-w-0 items-center gap-1.5">
+                <span className="truncate text-[13px] font-medium">{row.name}</span>
+                {(row.profileUrl ?? row.sourceUrl) && (
+                  <a
+                    href={row.profileUrl ?? row.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Open source for ${row.name}`}
+                    className="shrink-0 text-muted-foreground hover:text-foreground"
+                  >
+                    <IconArrowUpRight size={13} />
+                  </a>
+                )}
+              </div>
               <div className="truncate text-[12px] text-muted-foreground">
                 {row.title} · {row.company}
               </div>

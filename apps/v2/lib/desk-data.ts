@@ -24,10 +24,20 @@ const FIXTURES = {
   bars: DEMO_BARS,
 };
 
+const EMPTY_DESK = {
+  prospects: [],
+  lists: [],
+  approvals: [],
+  tasks: [],
+  campaigns: [],
+  pipeline: [],
+  bars: [],
+};
+
 export function useDeskData() {
   const demo = isDemoMode();
   const live = useQuery(api.leads.snapshot, demo ? "skip" : {});
-  if (demo || live === undefined) return FIXTURES;
-  if (live.prospects.length === 0 && live.campaigns.length === 0) return FIXTURES;
+  if (demo) return FIXTURES;
+  if (live === undefined) return EMPTY_DESK;
   return live;
 }

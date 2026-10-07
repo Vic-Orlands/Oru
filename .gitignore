@@ -1,6 +1,17 @@
 .DS_Store
 .env
+.env.*
+!.env.example
+!**/.env.example
 node_modules/
+
+# Local credentials and signing material
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+service-account*.json
 
 # bun is the package manager here — keep npm/yarn/pnpm lockfiles out
 # (a committed package-lock.json makes Vercel pick npm, which chokes on workspace:*)
@@ -14,8 +25,6 @@ build/
 
 # clerk configuration (can include secrets)
 .clerk/
-
-.env.local
 
 # Vite / Nitro (React Router production build)
 apps/*/dist/

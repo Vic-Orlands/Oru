@@ -218,6 +218,34 @@ function toolPhrases(label: string): { running: string; done: string } {
   return { running: `${forms[0]} ${tail}`, done: `${forms[1]} ${tail}` };
 }
 
+const SALES_TOOL_PRIORITY = [
+  "SEARCH_PROSPECTS",
+  "SEARCH_COMPANIES",
+  "RESOLVE_CONTACT",
+  "ENRICH",
+  "PROSPECT_LIST",
+  "LIST_PROSPECT",
+  "SAVED_SEARCH",
+  "RESEARCH",
+  "CAMPAIGN",
+  "SCHEDULED_SEND",
+  "ANALYTICS",
+  "WEBSITE_INTENT",
+  "CREDIT",
+] as const;
+
+function prioritizeTools<T extends { name: string }>(slug: string, tools: T[]): T[] {
+  if (slug !== "fuseai") return tools.slice(0, MAX_TOOLS_PER_EXTENSION);
+  const score = (name: string) => {
+    const index = SALES_TOOL_PRIORITY.findIndex((token) => name.includes(token));
+    return index === -1 ? SALES_TOOL_PRIORITY.length : index;
+  };
+  return tools
+    .slice()
+    .sort((a, b) => score(a.name) - score(b.name) || a.name.localeCompare(b.name))
+    .slice(0, MAX_TOOLS_PER_EXTENSION);
+}
+
 // --- Connected accounts (install-time auth) ------------------------------------
 
 export type ComposioConnectLink = {
@@ -369,6 +397,7 @@ function rejectedToolSlugs(error: unknown, allowed: string[]): Set<string> {
 
 /** Composio MCP server names allow 4-30 chars: alphanumeric, space, hyphen. */
 function composioServerName(slug: string): string {
+  if (slug === "fuseai") return "oso fuseai sales";
   const cleaned = `whirl ${slug}`
     .replace(/[^a-zA-Z0-9 -]/g, "-")
     .slice(0, 30)
@@ -411,9 +440,9 @@ export const addToolkit = action({
     // The toolkit's tools become the listing's status phrases, and cap what
     // the MCP server may expose (Whirl's runtime reads at most 40 anyway).
     const toolsJson = await composioFetch(
-      `/api/v3/tools?toolkit_slug=${encodeURIComponent(slug)}&limit=${MAX_TOOLS_PER_EXTENSION}`,
+      `/api/v3/tools?toolkit_slug=${encodeURIComponent(slug)}&limit=${slug === "fuseai" ? 200 : MAX_TOOLS_PER_EXTENSION}`,
     );
-    const tools = listItems(toolsJson)
+    const discoveredTools = listItems(toolsJson)
       .map((item) => {
         const toolSlug = firstString(item.slug);
         if (!toolSlug) return null;
@@ -428,18 +457,43 @@ export const addToolkit = action({
           completed: phrases.done,
         };
       })
-      .filter((t): t is NonNullable<typeof t> => t !== null)
-      .slice(0, MAX_TOOLS_PER_EXTENSION);
+      .filter((t): t is NonNullable<typeof t> => t !== null);
+    const tools = prioritizeTools(slug, discoveredTools);
 
     // Composio-managed auth: Composio's own OAuth app / key handling. Where a
     // toolkit doesn't offer it, Composio errors here and the admin sees why.
-    const authJson = await composioFetch(`/api/v3/auth_configs`, {
-      method: "POST",
-      body: {
-        toolkit: { slug },
-        auth_config: { type: "use_composio_managed_auth" },
-      },
-    });
+    let authJson: Record<string, unknown>;
+    try {
+      authJson = await composioFetch(`/api/v3/auth_configs`, {
+        method: "POST",
+        body: {
+          toolkit: { slug },
+          auth_config: { type: "use_composio_managed_auth" },
+        },
+      });
+    } catch (error) {
+      // API-key toolkits such as FuseAI deliberately have no Composio-owned
+      // credential. An empty custom config means each end user enters their
+      // own key in Composio's hosted connection flow; no provider secret ever
+      // passes through or lands in our database.
+      if (
+        !(error instanceof Error) ||
+        !/managed credentials|default auth config not found/i.test(error.message)
+      ) {
+        throw error;
+      }
+      authJson = await composioFetch(`/api/v3/auth_configs`, {
+        method: "POST",
+        body: {
+          toolkit: { slug },
+          auth_config: {
+            type: "use_custom_auth",
+            authScheme: "API_KEY",
+            credentials: {},
+          },
+        },
+      });
+    }
     const authConfigId = firstString(
       (authJson.auth_config as Record<string, unknown> | undefined)?.id,
       authJson.id,

@@ -21,7 +21,22 @@ const prospectValidator = v.object({
   title: v.string(),
   company: v.string(),
   email: v.string(),
+  emailVerification: v.optional(
+    v.union(
+      v.literal("verified"),
+      v.literal("risky"),
+      v.literal("invalid"),
+      v.literal("unknown"),
+    ),
+  ),
   location: v.string(),
+  sourceUrl: v.optional(v.string()),
+  sourceProvider: v.optional(v.string()),
+  profileUrl: v.optional(v.string()),
+  companyUrl: v.optional(v.string()),
+  evidence: v.optional(v.array(v.string())),
+  scoreReason: v.optional(v.string()),
+  enrichedAt: v.optional(v.number()),
   score: v.number(),
   fit,
   list: v.string(),
@@ -220,7 +235,15 @@ export const snapshot = query({
         title: row.title,
         company: row.company,
         email: row.email,
+        emailVerification: row.emailVerification,
         location: row.location,
+        sourceUrl: row.sourceUrl,
+        sourceProvider: row.sourceProvider,
+        profileUrl: row.profileUrl,
+        companyUrl: row.companyUrl,
+        evidence: row.evidence,
+        scoreReason: row.scoreReason,
+        enrichedAt: row.enrichedAt,
         score: row.score,
         fit: row.fit,
         list: row.list,
@@ -305,7 +328,22 @@ const prospectInput = v.object({
   title: v.string(),
   company: v.string(),
   email: v.string(),
+  emailVerification: v.optional(
+    v.union(
+      v.literal("verified"),
+      v.literal("risky"),
+      v.literal("invalid"),
+      v.literal("unknown"),
+    ),
+  ),
   location: v.string(),
+  sourceUrl: v.optional(v.string()),
+  sourceProvider: v.optional(v.string()),
+  profileUrl: v.optional(v.string()),
+  companyUrl: v.optional(v.string()),
+  evidence: v.optional(v.array(v.string())),
+  scoreReason: v.optional(v.string()),
+  enrichedAt: v.optional(v.number()),
   score: v.number(),
   fit,
   list: v.string(),
@@ -320,10 +358,20 @@ export const recordProspects = internalMutation({
       .query("prospects")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .take(80);
-    const seen = new Set(existing.map((item) => item.email));
+    const keyOf = (item: {
+      email: string;
+      sourceUrl?: string;
+      name: string;
+      company: string;
+    }) =>
+      item.email.trim().toLowerCase() ||
+      item.sourceUrl?.trim().toLowerCase() ||
+      `${item.name}|${item.company}`.toLowerCase();
+    const seen = new Set(existing.map(keyOf));
     for (const row of args.rows) {
-      if (seen.has(row.email)) continue;
-      seen.add(row.email);
+      const key = keyOf(row);
+      if (seen.has(key)) continue;
+      seen.add(key);
       await ctx.db.insert("prospects", { userId: args.userId, ...row });
     }
     return null;
