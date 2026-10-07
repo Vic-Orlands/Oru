@@ -30,7 +30,7 @@ function sameName(left: string, right: string): boolean {
 
 /**
  * Resolve developer-configured lifecycle copy without assuming any provider.
- * Google Sheets and Linear are ordinary fixtures; custom MCP servers without
+ * Google Sheets and Linear use the same metadata path; custom MCP servers without
  * store metadata intentionally return an empty object for the generic UI path.
  */
 export function resolveMcpLifecycleMetadata(

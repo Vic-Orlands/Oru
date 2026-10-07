@@ -44,7 +44,7 @@ export function OpenSourceAnnouncement() {
   );
 }
 
-/** The announcement itself, ungated, so /debug can open it on demand. */
+/** The announcement itself, exported separately from its seen-state gate. */
 export function OpenSourceDialog({
   open,
   onOpenChange,

@@ -1,7 +1,6 @@
 "use client";
 
 import { authClient } from "./client";
-import { isDemoMode } from "./mode";
 
 /** The slice of a user the rest of the app already reads. */
 export type SessionUser = {
@@ -12,16 +11,6 @@ export type SessionUser = {
   username: string | null;
   imageUrl: string;
   primaryEmailAddress: { emailAddress: string } | null;
-};
-
-const DEMO_USER: SessionUser = {
-  id: "demo-chimezie",
-  firstName: "Chimezie",
-  lastName: "Okafor",
-  fullName: "Chimezie Okafor",
-  username: "chimezie",
-  imageUrl: "",
-  primaryEmailAddress: { emailAddress: "chimezie@osoahia.com" },
 };
 
 function fromBetterAuth(user: {
@@ -48,9 +37,6 @@ function fromBetterAuth(user: {
 
 export function useUser() {
   const session = authClient.useSession();
-  if (isDemoMode()) {
-    return { user: DEMO_USER, isLoaded: true, isSignedIn: true as const };
-  }
   const raw = session.data?.user;
   const user = raw ? fromBetterAuth(raw) : null;
   return {
@@ -72,7 +58,6 @@ export function useAuth() {
 export function useClerk() {
   return {
     signOut: async () => {
-      if (isDemoMode()) return;
       await authClient.signOut();
     },
     openUserProfile: () => {
@@ -82,7 +67,6 @@ export function useClerk() {
 }
 
 export async function signInWithGoogle() {
-  if (isDemoMode()) return;
   await authClient.signIn.social({
     provider: "google",
     callbackURL: "/app",

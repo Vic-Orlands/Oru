@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth/client";
-import { isDemoMode } from "@/lib/auth/mode";
 import { useClerk, useUser } from "@/lib/auth/session";
 import { IconLogin2, IconLogout } from "@tabler/icons-react";
 
@@ -36,7 +35,7 @@ export function AccountSection() {
   const [lastName, setLastName] = useState("");
   const savingNamesRef = useRef(false);
 
-  /* Re-seed when a different user signs in — but never on every render,
+  /* Reset when a different user signs in — but never on every render,
      or in-progress edits would be clobbered. */
   useEffect(() => {
     if (!user) return;
@@ -71,10 +70,6 @@ export function AccountSection() {
 
     savingNamesRef.current = true;
     try {
-      if (isDemoMode()) {
-        showToast("Demo profile stays as Chimezie.");
-        return;
-      }
       await authClient.updateUser({
         name: [trimmedFirst, trimmedLast].filter(Boolean).join(" "),
       });
@@ -106,11 +101,7 @@ export function AccountSection() {
     setUploadingPhoto(true);
 
     try {
-      showToast(
-        isDemoMode()
-          ? "Demo profile stays as Chimezie."
-          : "Profile photos come from your Google account.",
-      );
+      showToast("Profile photos come from your Google account.");
     } catch (err) {
       setPhotoPreview((prev) => {
         if (prev) URL.revokeObjectURL(prev);

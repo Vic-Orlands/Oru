@@ -7,7 +7,6 @@ import { api } from "@whirl/backend/convex/_generated/api";
 import { useCustomer } from "autumn-js/react";
 import { useMutation } from "convex/react";
 
-import { isDemoMode } from "@/lib/auth/mode";
 import { captureVisitorLanded } from "@/lib/funnel";
 import { findActivePlanProduct } from "@/lib/plan";
 
@@ -77,6 +76,5 @@ export function FunnelTracker() {
   /* Autumn is only asked about people who could plausibly be paying — a
      signed-out visitor reading the marketing site never triggers a customer
      fetch. Conditional rendering, not a conditional hook. */
-  if (isDemoMode()) return null;
   return isSignedIn ? <PaidWatcher /> : null;
 }

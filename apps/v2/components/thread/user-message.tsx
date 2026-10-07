@@ -27,7 +27,7 @@ export function UserMessage({
 }: {
   message: ChatMessage;
   /** Save an edited prompt (and regenerate the reply that follows).
-   *  Absent — debug fixtures, signed-out views — hides the affordance. */
+   *  Absent in signed-out, read-only views — hides the affordance. */
   onEdit?: (content: string) => void;
 }) {
   const [editing, setEditing] = useState(false);

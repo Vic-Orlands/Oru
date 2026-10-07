@@ -32,7 +32,7 @@ const STAGES = [
     title: "Clinic groups that still book by hand",
     body: (
       <ul className="flex flex-col gap-1.5 text-[12.5px]">
-        {["Amaka Adeyemi · Halcyon", "Jonah Ellis · Fieldnote", "Priya Raman · Northspan"].map(
+        {["Decision maker · Verified source", "Company signal · Live evidence", "Contact route · Verification state"].map(
           (row) => (
             <li key={row} className="flex items-center justify-between gap-3">
               <span className="truncate">{row}</span>
@@ -49,15 +49,14 @@ const STAGES = [
     body: (
       <ul className="flex flex-col gap-1.5 text-[12.5px]">
         {[
-          ["Amaka Adeyemi", "92"],
-          ["Jonah Ellis", "81"],
-          ["Priya Raman", "74"],
-        ].map(([name, score]) => (
+          ["ICP fit", "Strong"],
+          ["Timing signal", "Found"],
+          ["Contact confidence", "Verified"],
+        ].map(([name, status]) => (
           <li key={name} className="flex items-center gap-2">
             <span className="min-w-0 flex-1 truncate">{name}</span>
-            <span className="tabular-nums text-neutral-500">{score}</span>
             <span className="rounded-full bg-[#f3e6d8] px-1.5 py-0.5 text-[10px] text-[#7a4e2d]">
-              Strong
+              {status}
             </span>
           </li>
         ))}
@@ -69,8 +68,8 @@ const STAGES = [
     title: "A quieter way to fill Thursday’s clinics",
     body: (
       <p className="text-[12.5px]/5 text-neutral-600">
-        Amaka — Halcyon’s Ikeja site still shows an 11-day wait. We book the first consult before
-        the coordinators open the spreadsheet.
+        Drafts use live provider evidence and your ICP. Review the source-backed context before
+        anything is queued.
       </p>
     ),
   },
@@ -126,8 +125,8 @@ const FAQ = [
     "Gmail and a calendar are enough. The store is Composio, plus any MCP server you already trust.",
   ],
   [
-    "Can I look around without keys?",
-    "Yes. Demo mode opens a sample workspace: the desk, the lists, and a chat already mid-reply.",
+    "What do I need to get started?",
+    "Sign in, connect a prospecting provider, and describe the buyers you want to reach. Every saved prospect keeps its source.",
   ],
 ];
 
@@ -337,7 +336,7 @@ export function OsoHome() {
               body="Prospects from a sentence, not a filter maze."
               visual={
                 <div className="w-full space-y-1 text-[11px]">
-                  {["Amaka · Halcyon", "Jonah · Fieldnote"].map((row) => (
+                  {["Verified source", "Live company evidence"].map((row) => (
                     <div key={row} className="flex items-center justify-between rounded-md bg-accent px-2 py-1">
                       <span className="truncate">{row}</span>
                       <span className="text-muted-foreground">new</span>
@@ -366,8 +365,8 @@ export function OsoHome() {
               body="Multi-step sequences that sound like a person."
               visual={
                 <p className="line-clamp-2 text-[12px]/4 text-muted-foreground">
-                  Amaka — the Ikeja site still shows an 11-day wait. We book the first consult
-                  before the spreadsheet opens.
+                  Drafts cite the evidence used to personalize each message, so reviewers can
+                  verify the claim before sending.
                 </p>
               }
             />
@@ -397,18 +396,12 @@ export function OsoHome() {
               body="Replies, meetings, and the funnel between them."
               visual={
                 <div className="flex w-full items-end gap-2 text-[11px] text-muted-foreground">
-                  {[
-                    ["106", "found"],
-                    ["41", "fit"],
-                    ["9", "replies"],
-                    ["4", "meetings"],
-                  ].map(([n, label], index) => (
+                  {["found", "fit", "replies", "meetings"].map((label, index) => (
                     <div key={label} className="flex-1">
                       <div
                         className="mb-1 rounded-sm bg-primary/80"
                         style={{ height: 28 - index * 6 }}
                       />
-                      <div className="tabular-nums text-foreground">{n}</div>
                       <div>{label}</div>
                     </div>
                   ))}
@@ -436,8 +429,8 @@ export function OsoHome() {
               A quieter way to fill Thursday’s clinics
             </div>
             <p className="mt-2 text-[13px]/5 text-muted-foreground">
-              Amaka — Halcyon’s Ikeja site still shows an 11-day wait. We book the first consult
-              before your coordinators open the spreadsheet.
+              Every draft carries the source-backed context used to write it. Review the evidence,
+              edit the message, then approve or hold it.
             </p>
             <div className="mt-4 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[12.5px] font-medium text-primary-foreground">
               <IconCircleCheckFilled size={14} />
@@ -455,7 +448,7 @@ export function OsoHome() {
           </p>
           <div className="mt-8 grid gap-3 md:grid-cols-3">
             {[
-              ["Desk", "One person, their own outbound, the sample workspace you can open now.", "Private"],
+              ["Desk", "One person, their own sourced prospects and outbound workflow.", "Private"],
               ["Team", "Shared lists, shared approvals, one voice across the seats.", "Private"],
               ["House", "Your CRM, your domain, your rules. Talk to us when the send path is live.", "Conversation"],
             ].map(([name, body, price]) => (
@@ -485,7 +478,7 @@ export function OsoHome() {
       <section>
         <div className="mx-auto flex max-w-6xl flex-col items-start gap-4 px-5 py-16 md:flex-row md:items-center md:justify-between">
           <h2 className="max-w-md text-[28px] font-medium tracking-tight">
-            Open the desk. The sample workspace is already warm.
+            Open the desk. Build your first real prospect list.
           </h2>
           <Link
             href="/app"

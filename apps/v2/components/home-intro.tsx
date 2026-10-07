@@ -104,8 +104,8 @@ export function HomeGreeting() {
      shows it is already the real line; the server branch keeps SSR
      deterministic (nothing renders it before hydration anyway). */
   /* The server always paints the first line. A client-only roll here
-     mismatches hydration the moment the name is already known (demo mode,
-     a warm session). The boot script's pick is adopted after hydration,
+     mismatches hydration the moment the name is already known from a warm
+     session. The boot script's pick is adopted after hydration,
      and only when that script actually painted the empty slot. */
   const [greeting, setGreeting] = useState(DEFAULT_GREETING);
   useLayoutEffect(() => {

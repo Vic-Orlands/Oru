@@ -2408,7 +2408,7 @@ export async function runAssistantTurn(
                     readBinding: readIntegrationSource,
                     warmBindings: async (htmlId, entries) => {
                       await runMutation(
-                        internal.artifactData.seedArtifactBindings,
+                        internal.artifactData.initializeArtifactBindings,
                         { htmlId, entries },
                       );
                     },

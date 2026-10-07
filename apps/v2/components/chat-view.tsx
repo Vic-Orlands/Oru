@@ -43,8 +43,6 @@ import { runMutation as run, showToast } from "@/lib/toasts";
 import { cn } from "@/lib/utils";
 import { useView } from "@/lib/view";
 import { useThreadActions, type ThreadSummary } from "@/lib/threads";
-import { isDemoMode } from "@/lib/auth/mode";
-import { DemoThread } from "./desk/demo-thread";
 import { DeskHome } from "./desk/desk-home";
 import { ChatComposer } from "./chat-composer";
 import type { ComposerGates, ComposerMentions } from "./composer";
@@ -345,11 +343,6 @@ export function ChatView({
     mentions: ComposerMentions,
   ) => {
     if (!isAuthenticated) {
-      if (isDemoMode()) {
-        setComposerDraft("");
-        openThread("demo-reach");
-        return;
-      }
       showToast("Sign in to start chatting");
       return;
     }
@@ -554,9 +547,7 @@ export function ChatView({
                 className="h-full min-h-0"
               >
                 <ThreadErrorBoundary onBackHome={openHome}>
-                  {threadId.startsWith("demo-") ? (
-                    <DemoThread key={threadId} threadId={threadId} />
-                  ) : isLocked ? (
+                  {isLocked ? (
                     <LockedThread
                       key={threadId}
                       threadId={threadId}

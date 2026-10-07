@@ -838,7 +838,7 @@ const CURATED_TOOLKITS = [
 ] as const;
 
 /** Idempotent deployment task for the app's first-party integration shelf. */
-export const seedCuratedToolkits = internalAction({
+export const initializeCuratedToolkits = internalAction({
   args: {},
   handler: async (ctx) => {
     await ctx.runMutation(internal.composio.normalizeCatalog, {});

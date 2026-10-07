@@ -8,9 +8,11 @@ import {
   IconMail,
   IconSparkles,
 } from "@tabler/icons-react";
+import { useConvexAuth } from "convex/react";
 
 import { useDeskData } from "@/lib/desk-data";
 import { CHAT_MODELS } from "@/lib/models";
+import { useRunningThreadIds, useThreads } from "@/lib/threads";
 import { useView } from "@/lib/view";
 
 const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
@@ -59,8 +61,14 @@ export function DeskHome({
   model: string;
   onSubmit: (text: string) => void;
 }) {
-  const { openDesk } = useView();
+  const { isAuthenticated } = useConvexAuth();
+  const { openDesk, openThread } = useView();
   const desk = useDeskData();
+  const threads = useThreads(isAuthenticated) ?? [];
+  const runningThreadIds = useRunningThreadIds(isAuthenticated);
+  const runningThreads = threads.filter((thread) =>
+    runningThreadIds.has(thread.id),
+  );
   const [tab, setTab] = useState<"new" | "running">("new");
   const [text, setText] = useState("");
   const [widgets, setWidgets] = useState<Set<WidgetId>>(() => new Set(WIDGETS));
@@ -94,6 +102,14 @@ export function DeskHome({
   };
 
   const peak = Math.max(...desk.bars, 1);
+  const meetingCount =
+    desk.pipeline.find((stage) =>
+      stage.stage.toLowerCase().includes("meeting"),
+    )?.count ?? 0;
+  const replyCount = desk.campaigns.reduce(
+    (total, campaign) => total + campaign.replies,
+    0,
+  );
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto xl:overflow-hidden">
@@ -119,7 +135,7 @@ export function DeskHome({
             <TabButton active={tab === "running"} onClick={() => setTab("running")}>
               Running agents
               <span className="ml-1.5 rounded-full bg-primary px-1.5 py-px text-[10px] leading-none text-primary-foreground tabular-nums">
-                1
+                {runningThreads.length}
               </span>
             </TabButton>
           </div>
@@ -145,7 +161,7 @@ export function DeskHome({
                     <IconSparkles size={12} />
                     {modelName}
                   </Chip>
-                  <Chip>Gmail · Calendar</Chip>
+                  <Chip>Real sources only</Chip>
                 </div>
                 <button
                   type="button"
@@ -157,20 +173,26 @@ export function DeskHome({
                 </button>
               </div>
             </>
+          ) : runningThreads.length > 0 ? (
+            <div className="divide-y divide-border">
+              {runningThreads.map((thread) => (
+                <button
+                  key={thread.id}
+                  type="button"
+                  onClick={() => openThread(thread.id)}
+                  className="flex w-full items-center gap-3 px-3.5 py-3 text-left hover:bg-accent/60"
+                >
+                  <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-emerald-500" />
+                  <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
+                    {thread.title}
+                  </span>
+                </button>
+              ))}
+            </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => openDesk("tasks")}
-              className="flex w-full items-center gap-3 px-3.5 py-3 text-left hover:bg-accent/60"
-            >
-              <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-emerald-500" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-medium">
-                  Clinic groups that still book by hand
-                </span>
-                <span className="text-[12px] text-muted-foreground">Qualifying · 20s</span>
-              </span>
-            </button>
+            <p className="px-3.5 py-4 text-[12.5px] text-muted-foreground">
+              No agents are running right now.
+            </p>
           )}
         </div>
 
@@ -208,18 +230,28 @@ export function DeskHome({
 
           <div className="grid flex-1 grid-cols-1 content-start gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:grid-rows-2 xl:content-stretch">
             {widgets.has("working") && (
-              <Widget title="Working now" meta="1" className="sm:col-span-1">
-                <button
-                  type="button"
-                  onClick={() => openDesk("tasks")}
-                  className="flex w-full items-start gap-2 text-left"
-                >
-                  <span className="mt-1 size-1.5 shrink-0 rounded-full bg-emerald-500" />
-                  <span>
-                    <span className="block text-[13px] font-medium">Tune the clinic search</span>
-                    <span className="text-[11.5px] text-muted-foreground">2m 13s · kimi</span>
-                  </span>
-                </button>
+              <Widget
+                title="Working now"
+                meta={String(runningThreads.length)}
+                className="sm:col-span-1"
+              >
+                {runningThreads.length > 0 ? (
+                  runningThreads.slice(0, 3).map((thread) => (
+                    <button
+                      key={thread.id}
+                      type="button"
+                      onClick={() => openThread(thread.id)}
+                      className="flex w-full items-start gap-2 text-left"
+                    >
+                      <span className="mt-1 size-1.5 shrink-0 rounded-full bg-emerald-500" />
+                      <span className="min-w-0 truncate text-[13px] font-medium">
+                        {thread.title}
+                      </span>
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-[12px] text-muted-foreground">No active work.</p>
+                )}
               </Widget>
             )}
             {widgets.has("approvals") && (
@@ -237,7 +269,7 @@ export function DeskHome({
               </Widget>
             )}
             {widgets.has("pipeline") && (
-              <Widget title="Pipeline" meta="4 meetings">
+              <Widget title="Pipeline" meta={`${meetingCount} meetings`}>
                 {desk.pipeline.slice(0, 4).map((stage) => (
                   <div key={stage.stage} className="flex items-baseline gap-2 text-[12px]">
                     <span className="min-w-0 flex-1 truncate text-muted-foreground">
@@ -252,27 +284,33 @@ export function DeskHome({
               </Widget>
             )}
             {widgets.has("campaign") && (
-              <Widget title="Campaign" meta="7 days">
-                <div className="flex h-20 items-end gap-1.5">
-                  {desk.bars.map((value, index) => (
-                    <div
-                      key={`${DAYS[index]}-${index}`}
-                      className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1"
-                    >
-                      <div className="flex w-full flex-1 items-end">
-                        <div
-                          className="w-full rounded-[3px] bg-primary/85"
-                          style={{
-                            height: `${Math.max(18, Math.round((value / peak) * 100))}%`,
-                          }}
-                        />
+              <Widget title="Campaign" meta={String(desk.campaigns.length)}>
+                {desk.bars.length > 0 ? (
+                  <div className="flex h-20 items-end gap-1.5">
+                    {desk.bars.map((value, index) => (
+                      <div
+                        key={`${DAYS[index]}-${index}`}
+                        className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1"
+                      >
+                        <div className="flex w-full flex-1 items-end">
+                          <div
+                            className="w-full rounded-[3px] bg-primary/85"
+                            style={{
+                              height: `${Math.max(18, Math.round((value / peak) * 100))}%`,
+                            }}
+                          />
+                        </div>
+                        <span className="text-[10px] leading-none text-muted-foreground">
+                          {DAYS[index]}
+                        </span>
                       </div>
-                      <span className="text-[10px] leading-none text-muted-foreground">
-                        {DAYS[index]}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[12px] text-muted-foreground">
+                    No campaign activity yet.
+                  </p>
+                )}
               </Widget>
             )}
             {widgets.has("tasks") && (
@@ -307,17 +345,19 @@ export function DeskHome({
               </Widget>
             )}
             {widgets.has("replies") && (
-              <Widget title="Replies">
+              <Widget title="Replies" meta={String(replyCount)}>
                 <button
                   type="button"
-                  onClick={() => openDesk("approvals")}
+                  onClick={() => openDesk("campaigns")}
                   className="flex w-full items-start gap-2 text-left"
                 >
                   <IconMail size={14} className="mt-0.5 text-muted-foreground" />
                   <span>
-                    <span className="block text-[12.5px] font-medium">Elena Voss · Fieldnote</span>
+                    <span className="block text-[12.5px] font-medium">
+                      {replyCount > 0 ? `${replyCount} campaign replies` : "No replies yet"}
+                    </span>
                     <span className="text-[11.5px] text-muted-foreground">
-                      Asked for Thursday. Draft a reply?
+                      Open campaign activity
                     </span>
                   </span>
                 </button>

@@ -7,8 +7,9 @@ import type { Id } from "@whirl/backend/convex/_generated/dataModel";
 
 /* Live bodies for the artifacts a message phase points at. The cards and
    the side panel read the same reactive rows, so a streaming document
-   fills in everywhere at once. /debug injects canned rows through the
-   fixture provider instead — the hooks never touch Convex there. */
+   fills in everywhere at once. Public share pages provide their authorized
+   artifact snapshot directly, so those read-only views do not query private
+   Convex rows by id. */
 
 export type LiveDocument = {
   title: string;
@@ -56,47 +57,47 @@ export function readsLiveData(
   return (artifact?.bindings?.length ?? 0) > 0;
 }
 
-export type FixtureArtifacts = {
+export type ArtifactSnapshot = {
   documents: Record<string, LiveDocument>;
   html: Record<string, LiveHtmlArtifact>;
 };
 
-const FixtureContext = createContext<FixtureArtifacts | null>(null);
+const ArtifactSnapshotContext = createContext<ArtifactSnapshot | null>(null);
 
-/** Canned artifact rows for /debug — inside it, the live hooks resolve
- * from these instead of querying Convex with fake ids. */
-export function FixtureArtifactsProvider({
+/** Authorized artifact bodies embedded in a public shared-thread payload. */
+export function ArtifactSnapshotProvider({
   value,
   children,
 }: {
-  value: FixtureArtifacts;
+  value: ArtifactSnapshot;
   children: ReactNode;
 }) {
   return (
-    <FixtureContext.Provider value={value}>{children}</FixtureContext.Provider>
+    <ArtifactSnapshotContext.Provider value={value}>
+      {children}
+    </ArtifactSnapshotContext.Provider>
   );
 }
 
-/** Whether artifact bodies come from canned fixtures (/debug) — mirrors a
- * share page's read-only posture: no saving edits back, no add-to-chat. */
-export function useIsFixtureArtifacts(): boolean {
-  return useContext(FixtureContext) !== null;
+/** Shared artifact snapshots are read-only: no save-back or add-to-chat. */
+export function useHasArtifactSnapshot(): boolean {
+  return useContext(ArtifactSnapshotContext) !== null;
 }
 
 /** The live `documents` row: `undefined` while loading, `null` if missing. */
 export function useLiveDocument(
   documentId: string | undefined,
 ): LiveDocument | null | undefined {
-  const fixtures = useContext(FixtureContext);
+  const snapshot = useContext(ArtifactSnapshotContext);
   const queried = useQuery(
     api.documents.getDocument,
-    !fixtures && documentId
+    !snapshot && documentId
       ? { documentId: documentId as Id<"documents"> }
       : "skip",
   );
-  if (fixtures) {
+  if (snapshot) {
     if (!documentId) return undefined;
-    return fixtures.documents[documentId] ?? null;
+    return snapshot.documents[documentId] ?? null;
   }
   return queried;
 }
@@ -105,14 +106,14 @@ export function useLiveDocument(
 export function useLiveHtmlArtifact(
   htmlId: string | undefined,
 ): LiveHtmlArtifact | null | undefined {
-  const fixtures = useContext(FixtureContext);
+  const snapshot = useContext(ArtifactSnapshotContext);
   const queried = useQuery(
     api.html.getHtmlArtifact,
-    !fixtures && htmlId ? { htmlId: htmlId as Id<"htmlArtifacts"> } : "skip",
+    !snapshot && htmlId ? { htmlId: htmlId as Id<"htmlArtifacts"> } : "skip",
   );
-  if (fixtures) {
+  if (snapshot) {
     if (!htmlId) return undefined;
-    return fixtures.html[htmlId] ?? null;
+    return snapshot.html[htmlId] ?? null;
   }
   return queried;
 }

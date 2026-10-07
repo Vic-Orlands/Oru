@@ -4,7 +4,6 @@ import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { api } from "@whirl/backend/convex/_generated/api";
 import { AutumnProvider } from "autumn-js/react";
 import {
-  ConvexProviderWithAuth,
   ConvexReactClient,
   useConvex,
   useConvexAuth,
@@ -14,7 +13,6 @@ import { Toaster } from "sonner";
 import { mutate } from "swr";
 
 import { authClient } from "@/lib/auth/client";
-import { isDemoMode } from "@/lib/auth/mode";
 import { FunnelTracker } from "@/components/analytics/funnel-tracker";
 
 function AutumnBridge({ children }: { children: React.ReactNode }) {
@@ -62,57 +60,13 @@ function AutumnBridge({ children }: { children: React.ReactNode }) {
   );
 }
 
-function useDemoAuth() {
-  return {
-    isLoading: false,
-    isAuthenticated: false,
-    fetchAccessToken: async () => null,
-  };
-}
-
-/** Demo mode has no deployment. A socket that never opens keeps the
- *  provider's hooks quiet instead of hitting a fake *.convex.cloud host,
- *  which answers with a fatal "couldn't parse deployment name". */
-class DemoSocket {
-  static CONNECTING = 0;
-  static OPEN = 1;
-  static CLOSING = 2;
-  static CLOSED = 3;
-  readyState = DemoSocket.CONNECTING;
-  binaryType: BinaryType = "blob";
-  url: string;
-  protocol = "";
-  extensions = "";
-  bufferedAmount = 0;
-  onopen: ((event: Event) => void) | null = null;
-  onclose: ((event: CloseEvent) => void) | null = null;
-  onerror: ((event: Event) => void) | null = null;
-  onmessage: ((event: MessageEvent) => void) | null = null;
-  constructor(url: string) {
-    this.url = url;
-  }
-  send() {}
-  close() {
-    this.readyState = DemoSocket.CLOSED;
-  }
-  addEventListener() {}
-  removeEventListener() {}
-  dispatchEvent() {
-    return false;
-  }
-}
-
 export function Providers({ children }: { children: React.ReactNode }) {
-  const demo = isDemoMode();
   const [convex] = useState(() => {
-    const convexUrl =
-      process.env.NEXT_PUBLIC_CONVEX_URL || "https://placeholder.convex.cloud";
-    if (demo) {
-      return new ConvexReactClient(convexUrl, {
-        logger: false,
-        unsavedChangesWarning: false,
-        webSocketConstructor: DemoSocket as unknown as typeof WebSocket,
-      });
+    const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+    if (!convexUrl) {
+      throw new Error(
+        "NEXT_PUBLIC_CONVEX_URL is required. Add the real Convex deployment URL to apps/v2/.env.local.",
+      );
     }
     return new ConvexReactClient(convexUrl, { unsavedChangesWarning: false });
   });
@@ -129,14 +83,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <AutumnBridge>{children}</AutumnBridge>
     </>
   );
-
-  if (demo) {
-    return (
-      <ConvexProviderWithAuth client={convex} useAuth={useDemoAuth}>
-        {tree}
-      </ConvexProviderWithAuth>
-    );
-  }
 
   return (
     <ConvexBetterAuthProvider

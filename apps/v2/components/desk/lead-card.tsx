@@ -1,9 +1,8 @@
 "use client";
 
-import { IconArrowUpRight, IconCircleCheckFilled } from "@tabler/icons-react";
+import { IconArrowUpRight } from "@tabler/icons-react";
 
 import { openLeadPanel } from "@/lib/artifact-panel";
-import { showToast } from "@/lib/toasts";
 
 type ProspectRow = {
   name: string;
@@ -172,23 +171,9 @@ function ApprovalCard({ text }: { text?: string }) {
           To {draft.to} · {draft.company} · {draft.step}
         </div>
         <p className="mt-1.5 text-[15px]/6">{draft.preview}</p>
-        <div className="mt-3 flex gap-2">
-          <button
-            type="button"
-            onClick={() => showToast("Approved. It sends on the next pass.")}
-            className="inline-flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1 text-[12px] font-medium text-primary-foreground"
-          >
-            <IconCircleCheckFilled size={13} />
-            Approve
-          </button>
-          <button
-            type="button"
-            onClick={() => showToast("Held. Nothing was sent.")}
-            className="rounded-lg px-2.5 py-1 text-[12px] text-muted-foreground ring-1 ring-border hover:bg-accent"
-          >
-            Hold
-          </button>
-        </div>
+        <p className="mt-3 text-[12px]/4 text-muted-foreground">
+          Review this draft in Approvals before anything can proceed.
+        </p>
       </div>
     </CardShell>
   );

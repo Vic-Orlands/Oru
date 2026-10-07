@@ -20,8 +20,8 @@ import { Toaster } from "@/components/toaster";
 import { WhirlLogo } from "@/components/whirl-logo";
 import { closeArtifactPanel } from "@/lib/artifact-panel";
 import {
-  FixtureArtifactsProvider,
-  type FixtureArtifacts,
+  ArtifactSnapshotProvider,
+  type ArtifactSnapshot,
 } from "@/lib/live-artifacts";
 import type { ChatMessage, MessagePhase } from "@/lib/messages";
 import type { SharedThreadPayload } from "@/lib/thread-transcript";
@@ -31,7 +31,7 @@ import { showToast } from "@/lib/toasts";
    its read-only manners. The unauthenticated getSharedThread query hands
    back a trimmed payload (messages plus completed documents and
    visualizations — never reasoning, sources, or attachments); the artifact
-   bodies ride in through the fixture provider, so the same cards and side
+   bodies ride in through the snapshot provider, so the same cards and side
    panel work without auth and without touching Convex per-artifact.
 
    It's live: revoking the link drops the page to "not available" in
@@ -58,7 +58,7 @@ export function SharedThread({ shareId }: { shareId: string }) {
 
   const view = useMemo(() => {
     if (!thread) return null;
-    const fixtures: FixtureArtifacts = {
+    const artifacts: ArtifactSnapshot = {
       documents: Object.fromEntries(
         Object.entries(thread.documents).map(([id, doc]) => [
           id,
@@ -127,14 +127,14 @@ export function SharedThread({ shareId }: { shareId: string }) {
         ...(phases.length > 0 ? { phases } : {}),
       };
     });
-    return { fixtures, messages };
+    return { artifacts, messages };
   }, [thread]);
 
   return (
     <div className="flex h-dvh w-full flex-col bg-background p-2">
       <main className="raised relative flex min-h-0 flex-1 overflow-hidden rounded-lg border border-border bg-surface">
         {view ? (
-          <FixtureArtifactsProvider value={view.fixtures}>
+          <ArtifactSnapshotProvider value={view.artifacts}>
             {/* min-w-0 matters: without it a wide artifact card or code
                 block sets the column's intrinsic width and the whole page
                 lays out beyond a phone screen, clipped by main's
@@ -149,7 +149,7 @@ export function SharedThread({ shareId }: { shareId: string }) {
               </div>
             </div>
             <ArtifactPanel />
-          </FixtureArtifactsProvider>
+          </ArtifactSnapshotProvider>
         ) : thread === undefined ? (
           <div className="flex flex-1 items-center justify-center">
             <IconLoader2

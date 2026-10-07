@@ -10,7 +10,6 @@ export const LEAD_TOOL_NAMES = new Set([
   "writeSequence",
   "queueEmail",
   "createDeskTask",
-  "reportPerformance",
 ]);
 
 type Card = { name?: string; title: string; text: string };
@@ -256,24 +255,6 @@ export function createLeadTools(opts: {
       execute: async (task) => {
         await ctx.runMutation(internal.leads.recordTask, { userId, ...task });
         return { created: task.title };
-      },
-    }),
-    reportPerformance: tool({
-      description: "Summarise campaign performance for the user.",
-      inputSchema: jsonSchema<{ campaign: string }>({
-        type: "object",
-        properties: { campaign: { type: "string" } },
-        required: ["campaign"],
-        additionalProperties: false,
-      }),
-      execute: async ({ campaign }) => {
-        return {
-          campaign,
-          sent: 186,
-          replies: 24,
-          meetings: 7,
-          note: "Reply rate is 13%. The Thursday send outperformed Monday.",
-        };
       },
     }),
   };

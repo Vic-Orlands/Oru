@@ -50,7 +50,7 @@ export function ComposerQueue({
   onRemove,
 }: {
   items: QueuedTurn[];
-  /** Absent — fixtures, read-only hosts — hides the ×. */
+  /** Absent on read-only hosts — hides the ×. */
   onRemove?: (item: QueuedTurn) => void;
 }) {
   return (

@@ -9,7 +9,6 @@ import { AuthModal } from "@/components/auth/auth-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { isDemoMode } from "@/lib/auth/mode";
 import { useDeploymentFeatures } from "@/lib/deployment-features";
 import { useCachedPlan, type PlanSummary } from "@/lib/plan-cache";
 import { ANALYTICS_EVENTS, captureEvent } from "@/lib/posthog";
@@ -142,26 +141,18 @@ function SignedInRow({
   );
 }
 
-/* The signed-in row at the bottom of the sidebar: pfp, name, plan under the
-   name, and a chevron that flips open a context menu floating above it.
-   Everything reveals together — Clerk plus a (cached) plan — so the badge
-   doesn't pop in after the rest of the row. */
-const DEMO_PLAN: PlanSummary = { planId: null, planName: "Desk" };
-
 export function UserButton() {
   const { user, isLoaded } = useUser();
-  const demo = isDemoMode();
   const { customer, isLoading: customerLoading, error } = useCustomer();
   /* Errored fetches (the pre-auth window) read as unsettled — the cached
-     plan holds the badge instead of a false "Free" flash. Demo mode has
-     no billing customer, so waiting on one leaves the skeleton up. */
+     plan holds the badge instead of a false "Free" flash. */
   const plan = useCachedPlan(
     user?.id,
     customer,
     customerLoading || error != null,
   );
 
-  const revealed = isLoaded && (demo || !user || plan !== null);
+  const revealed = isLoaded && (!user || plan !== null);
   const name =
     user?.firstName ??
     user?.fullName ??
@@ -170,7 +161,6 @@ export function UserButton() {
     "You";
   const initialsName = user?.fullName ?? name;
   const email = user?.primaryEmailAddress?.emailAddress ?? null;
-  const shownPlan = demo ? DEMO_PLAN : plan;
 
   return (
     <SkeletonReveal
@@ -180,13 +170,13 @@ export function UserButton() {
     >
       {isLoaded &&
         (user ? (
-          shownPlan && (
+          plan && (
             <SignedInRow
               name={name}
               email={email}
               initialsName={initialsName}
               imageUrl={user.imageUrl}
-              plan={shownPlan}
+              plan={plan}
             />
           )
         ) : (

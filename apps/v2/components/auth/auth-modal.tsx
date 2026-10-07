@@ -3,7 +3,6 @@
 import { IconBrandGoogleFilled, IconX } from "@tabler/icons-react";
 
 import { signInWithGoogle } from "@/lib/auth/session";
-import { isDemoMode } from "@/lib/auth/mode";
 import { OsoLogo } from "@/components/oso-logo";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
@@ -16,8 +15,6 @@ export function AuthModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const demo = isDemoMode();
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent aria-label="Sign in to Oso-Ahia" className="top-1/2 -translate-y-1/2 p-6">
@@ -38,11 +35,6 @@ export function AuthModal({
           <Button
             className="mt-5 w-full"
             onClick={() => {
-              if (demo) {
-                showToast("Demo mode is already signed in as Chimezie.");
-                onOpenChange(false);
-                return;
-              }
               void signInWithGoogle().catch(() => {
                 showToast("Google sign-in didn’t start. Check the OAuth keys.");
               });
@@ -51,11 +43,6 @@ export function AuthModal({
             <IconBrandGoogleFilled size={16} />
             Continue with Google
           </Button>
-          {demo && (
-            <p className="mt-3 text-[12px]/4 text-muted-foreground">
-              Keys aren’t set, so this workspace is a live demo.
-            </p>
-          )}
         </div>
       </DialogContent>
     </Dialog>

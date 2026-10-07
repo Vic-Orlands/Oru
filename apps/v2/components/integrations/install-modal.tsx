@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAction } from "convex/react";
 
-import { isDemoMode } from "@/lib/auth/mode";
-import { showToast } from "@/lib/toasts";
 import { IconArrowLeft, IconKeyFilled, IconTool } from "@tabler/icons-react";
 
 import { api } from "@whirl/backend/convex/_generated/api";
@@ -108,11 +106,6 @@ export function IntegrationInstallModal({
 
   const onInstall = async () => {
     if (!listing || busy) return;
-    if (isDemoMode()) {
-      showToast(`${listing.name} is ready in demo. Add a Composio key to connect it.`);
-      onClose();
-      return;
-    }
     if (onRequireAuth) {
       onRequireAuth();
       return;

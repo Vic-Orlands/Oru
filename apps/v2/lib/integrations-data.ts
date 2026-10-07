@@ -4,8 +4,6 @@ import { useEffect, useMemo, useRef } from "react";
 import { useAction, useConvexAuth, useQuery } from "convex/react";
 import { ConvexError } from "convex/values";
 
-import { isDemoMode } from "@/lib/auth/mode";
-import { DEMO_INTEGRATIONS } from "@/lib/demo/data";
 import { api } from "@whirl/backend/convex/_generated/api";
 import type { Id } from "@whirl/backend/convex/_generated/dataModel";
 import { useCachedList } from "./cached-list";
@@ -86,8 +84,7 @@ export function canReconnect(row: InstalledIntegration): boolean {
 /** Every store listing, cache-then-live. Null only before the first-ever
  *  answer (no cache yet) — the browse card's skeleton state. */
 export function useIntegrationStore(): StoreIntegration[] | null {
-  const demo = isDemoMode();
-  const live = useQuery(api.integrationStore.listStore, demo ? "skip" : {});
+  const live = useQuery(api.integrationStore.listStore, {});
   const rows = useMemo(
     () =>
       live?.map(
@@ -113,7 +110,7 @@ export function useIntegrationStore(): StoreIntegration[] | null {
     [live],
   );
   const cached = useCachedList(STORE_CACHE_KEY, rows);
-  return demo ? DEMO_INTEGRATIONS : cached;
+  return cached;
 }
 
 /** The live store entries attached to an assistant suggestion phase.

@@ -24,14 +24,14 @@ import { UserMessage } from "./user-message";
 /* The transcript: a message-scroller that opens at the live edge, pins
    itself there while replies stream, and anchors each fresh user turn to
    the top with a peek of what came before. Purely presentational — the
-   live face (chat-view.tsx) feeds it Convex messages, the debug page
-   feeds it fixtures.
+   live face (chat-view.tsx) feeds it Convex messages, while public shares
+   feed it their authorized transcript snapshot.
 
    The tall bottom padding keeps the last turn clear of the translucent
    composer floating over this pane. It reads --dock-clearance (published
    by chat-view's dock observer) so a tall composer face — the question
    form — reserves real room instead of covering the transcript; the
-   11rem floor keeps standalone uses (share viewer, debug) unchanged. */
+   11rem floor keeps standalone share views unchanged. */
 
 const PREVIOUS_TURN_PEEK_PX = 72;
 const EDGE_THRESHOLD_PX = 128;
@@ -73,7 +73,7 @@ export function ThreadView({
   useSendGlide(messages, viewportRef);
   return (
     /* Censored in session replay, at the one place every transcript passes
-       through: the chat face, the share viewer and the debug page all mount
+       through: the chat face and the share viewer both mount
        this. Layout survives, the words do not — see lib/replay-guard.ts. */
     <div className={cn("h-full min-h-0", MASK_TEXT)}>
       <AnimatePresence mode="wait" initial={false}>

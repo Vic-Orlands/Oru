@@ -9,7 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: [
         "/api/",
-        "/debug",
         "/settings",
         "/thread/",
         "/sso-callback",
@@ -19,4 +18,3 @@ export default function robots(): MetadataRoute.Robots {
     host: SITE_URL,
   };
 }
-

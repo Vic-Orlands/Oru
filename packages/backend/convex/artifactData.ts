@@ -167,7 +167,7 @@ export const writeCachedBinding = internalMutation({
 });
 
 /**
- * Seed an artifact's cache with the reads its authoring pass already made.
+ * Initialize an artifact's cache with the reads its authoring pass already made.
  *
  * The tool runs every declared binding once before the artifact is finalized
  * (that's what keeps a wrong tool name from shipping), and throwing those
@@ -175,7 +175,7 @@ export const writeCachedBinding = internalMutation({
  * hands them straight to the frame instead: a dashboard with live data opens
  * showing it, rather than opening on five spinners.
  */
-export const seedArtifactBindings = internalMutation({
+export const initializeArtifactBindings = internalMutation({
   args: {
     htmlId: v.id("htmlArtifacts"),
     entries: v.array(

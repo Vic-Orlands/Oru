@@ -22,7 +22,7 @@ import { api } from "@whirl/backend/convex/_generated/api";
 import { SIGNED_OUT, supportBackend, verifiedCustomer } from "@/lib/median-backend";
 
 /* The pages the agent may take somebody to, listed rather than scanned. A
-   scan would also hand it /debug, /platinum, and every share and artifact
+   scan would also hand it /platinum and every share and artifact
    route; a page the model was never given is one it cannot name, guess, or be
    talked into. */
 const NAVIGABLE_ROUTES = [

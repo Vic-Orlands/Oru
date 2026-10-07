@@ -42,7 +42,7 @@ import { formatSize } from "@/lib/attachments";
 import { addDocumentSelection } from "@/lib/composer-ingest";
 import {
   readsLiveData,
-  useIsFixtureArtifacts,
+  useHasArtifactSnapshot,
   useLiveDocument,
   useLiveHtmlArtifact,
 } from "@/lib/live-artifacts";
@@ -162,8 +162,7 @@ function DocumentPanelBody({
   documentId: string;
   fullscreen: boolean;
 }) {
-  /* On /debug the doc comes from canned fixtures (no auth to save back). */
-  const fixtures = useIsFixtureArtifacts();
+  const readOnlySnapshot = useHasArtifactSnapshot();
   const doc = useLiveDocument(documentId);
   const updateContent = useMutation(api.documents.updateDocumentContent);
   const ensureShareId = useMutation(api.documents.ensureDocumentShareId);
@@ -176,11 +175,11 @@ function DocumentPanelBody({
      before tokens existed get one minted on first open, so the copy-link
      button shows up for old documents too. Best-effort. */
   useEffect(() => {
-    if (fixtures || !doc || streaming || doc.shortId) return;
+    if (readOnlySnapshot || !doc || streaming || doc.shortId) return;
     void ensureShareId({
       documentId: documentId as Id<"documents">,
     }).catch(() => {});
-  }, [fixtures, doc, streaming, documentId, ensureShareId]);
+  }, [readOnlySnapshot, doc, streaming, documentId, ensureShareId]);
 
   /* The text the editor renders. Swapped on initial load, on every
      streaming tick, and on a whirl edit — but never on the user's own save
@@ -277,7 +276,7 @@ function DocumentPanelBody({
             )}
           </span>
         </span>
-        {doc?.shortId && !fixtures ? (
+        {doc?.shortId && !readOnlySnapshot ? (
           <CopyLinkButton
             url={documentUrl(doc.shortId)}
             label="Copy share link"
@@ -304,22 +303,22 @@ function DocumentPanelBody({
               <CodeDocumentEditor
                 value={displayValue}
                 onChange={handleCodeChange}
-                editable={!streaming && !fixtures}
+                editable={!streaming && !readOnlySnapshot}
                 stickToBottom={streaming}
                 onAddSelectionToChat={
-                  streaming || fixtures ? undefined : handleAddSelection
+                  streaming || readOnlySnapshot ? undefined : handleAddSelection
                 }
               />
             ) : (
               <MarkdownEditor
                 value={displayValue}
                 onChange={handleChange}
-                editable={!streaming && !fixtures}
+                editable={!streaming && !readOnlySnapshot}
                 onEditorReady={setEditor}
                 stickToBottom={streaming}
                 highlightEdits={highlightEdits}
                 onAddSelectionToChat={
-                  streaming || fixtures ? undefined : handleAddSelection
+                  streaming || readOnlySnapshot ? undefined : handleAddSelection
                 }
               />
             )}

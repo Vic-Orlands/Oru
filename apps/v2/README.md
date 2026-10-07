@@ -1,16 +1,14 @@
 # Whirl web app
 
-The Next.js app behind [whirl.chat](https://whirl.chat). It talks to the
-Convex backend in [`packages/backend`](../../packages/backend) for nearly
-everything, and signs people in with Clerk.
+The production Oso-Ahia Next.js app. It talks to the Convex backend in
+[`packages/backend`](../../packages/backend) and signs people in with Better Auth.
 
 ## Running it
 
-Set up the backend and environment first; the
-[self-hosting guide](../../docs/self-hosting.md) walks through it. Then:
+Set up the backend and real environment values first. Then:
 
 ```sh
-cp .env.example .env.local   # fill in Convex + Clerk
+cp .env.example .env.local   # fill in Convex + Google OAuth
 bun run dev                  # http://localhost:3000
 ```
 
@@ -27,9 +25,6 @@ the bundle sandboxed React artifacts run on.
 | `lib/`          | Hooks, caches, and helpers; `lib/site.ts` holds the instance's name and links |
 | `public/`       | Static assets, fonts, and the service worker                   |
 | `scripts/`      | Build helpers and screenshot tooling                           |
-
-`/debug` is a workbench for the thread view: every message state, a fake
-streaming reply, and previews of one-off modals, all without a backend.
 
 ## Checks
 

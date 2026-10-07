@@ -1,11 +1,16 @@
 "use client";
 
-import { IconLayoutDashboard } from "@tabler/icons-react";
+import {
+  IconExternalLink,
+  IconInfoCircle,
+  IconLayoutDashboard,
+} from "@tabler/icons-react";
 
-import { DEMO_APPROVALS, DEMO_PROSPECTS } from "@/lib/demo/data";
-import { showToast } from "@/lib/toasts";
+import { useDeskData } from "@/lib/desk-data";
+import { ApprovalActions } from "./approval-actions";
 
 export function LeadPanelBody({ leadId }: { leadId: string }) {
+  const desk = useDeskData();
   return (
     <div className="flex h-full min-h-0 flex-col">
       <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-4">
@@ -17,21 +22,29 @@ export function LeadPanelBody({ leadId }: { leadId: string }) {
             {leadId === "approval"
               ? "Email draft"
               : leadId === "sequence"
-                ? "Clinic revival"
+                ? "Sequence"
                 : "Prospect list"}
           </span>
           <span className="text-[13px]/5 text-muted-foreground">Artifact</span>
         </span>
       </header>
       <div className="min-h-0 flex-1 overflow-y-auto p-4 text-[15px]/6">
-        {leadId === "approval" ? <Approval /> : leadId === "sequence" ? <Sequence /> : <List />}
+        {leadId === "approval" ? (
+          <Approval approvals={desk.approvals} />
+        ) : leadId === "sequence" ? (
+          <SequenceNotice />
+        ) : (
+          <List rows={desk.prospects} />
+        )}
       </div>
     </div>
   );
 }
 
-function List() {
-  const rows = DEMO_PROSPECTS.filter((row) => row.fit === "Strong");
+function List({ rows }: { rows: ReturnType<typeof useDeskData>["prospects"] }) {
+  if (rows.length === 0) {
+    return <EmptyCopy>No prospects have been saved yet.</EmptyCopy>;
+  }
   return (
     <ul className="divide-y divide-border">
       {rows.map((row) => (
@@ -40,33 +53,39 @@ function List() {
           <div className="text-[13px]/5 text-muted-foreground">
             {row.title}, {row.company} · {row.score}
           </div>
+          {(row.profileUrl ?? row.sourceUrl) && (
+            <a
+              href={row.profileUrl ?? row.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 inline-flex items-center gap-1 text-[12px]/4 text-muted-foreground hover:text-foreground"
+            >
+              Open source
+              <IconExternalLink size={12} />
+            </a>
+          )}
         </li>
       ))}
     </ul>
   );
 }
 
-function Sequence() {
-  const steps = [
-    "Day 0 · Email · A quieter way to fill Thursday’s clinics",
-    "Day 3 · Email · The waitlist number, if it’s useful",
-    "Day 7 · LinkedIn · A short note, not a pitch",
-    "Day 12 · Email · I’ll leave this here",
-  ];
+function SequenceNotice() {
   return (
-    <ol className="flex flex-col gap-2">
-      {steps.map((step) => (
-        <li key={step} className="rounded-lg bg-accent/60 px-3 py-2 text-[13px]/5">
-          {step}
-        </li>
-      ))}
-    </ol>
+    <EmptyCopy>
+      Sequence details stay with the chat that created them. Open the sequence
+      card in that conversation to review the real steps.
+    </EmptyCopy>
   );
 }
 
-function Approval() {
-  const draft = DEMO_APPROVALS[0];
-  if (!draft) return null;
+function Approval({
+  approvals,
+}: {
+  approvals: ReturnType<typeof useDeskData>["approvals"];
+}) {
+  const draft = approvals.at(-1);
+  if (!draft) return <EmptyCopy>No drafts are waiting for approval.</EmptyCopy>;
   return (
     <div>
       <div className="text-[13px]/5 text-muted-foreground">
@@ -74,13 +93,18 @@ function Approval() {
       </div>
       <h2 className="mt-2 text-[15px] font-medium">{draft.subject}</h2>
       <p className="mt-3 text-[15px]/6">{draft.preview}</p>
-      <button
-        type="button"
-        onClick={() => showToast("Approved from the side panel.")}
-        className="mt-4 rounded-lg bg-primary px-3 py-1.5 text-[12.5px] font-medium text-primary-foreground"
-      >
-        Approve and queue
-      </button>
+      <div className="mt-4">
+        <ApprovalActions approvalId={draft.id} recipient={draft.to} />
+      </div>
+    </div>
+  );
+}
+
+function EmptyCopy({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-2 rounded-xl bg-well px-3 py-2.5 text-[13px]/5 text-muted-foreground ring-1 ring-border">
+      <IconInfoCircle size={16} className="mt-0.5 shrink-0" />
+      <p>{children}</p>
     </div>
   );
 }

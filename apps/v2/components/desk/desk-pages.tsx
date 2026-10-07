@@ -2,8 +2,9 @@
 
 import { useDeskData } from "@/lib/desk-data";
 import type { DeskPage } from "@/lib/view";
-import { showToast } from "@/lib/toasts";
 import { IconExternalLink } from "@tabler/icons-react";
+import { ApprovalActions } from "./approval-actions";
+import { DeskEmptyState } from "./desk-empty-state";
 
 const COPY: Record<DeskPage, { title: string; lede: string }> = {
   prospects: {
@@ -56,6 +57,14 @@ function Panel({ children }: { children: React.ReactNode }) {
 
 function Prospects() {
   const { lists, prospects } = useDeskData();
+  if (prospects.length === 0) {
+    return (
+      <DeskEmptyState
+        title="No prospects yet"
+        description="Ask the chat to find people matching your ICP. Only sourced results from a connected provider will appear here."
+      />
+    );
+  }
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-2">
@@ -113,6 +122,14 @@ function Prospects() {
 
 function Approvals() {
   const { approvals } = useDeskData();
+  if (approvals.length === 0) {
+    return (
+      <DeskEmptyState
+        title="Nothing is waiting"
+        description="Drafts created from real prospect work will wait here until you approve or hold them."
+      />
+    );
+  }
   return (
     <div className="grid w-full gap-3 xl:grid-cols-2">
       {approvals.map((draft) => (
@@ -123,21 +140,11 @@ function Approvals() {
             </div>
             <h2 className="mt-1 text-[14px] font-medium">{draft.subject}</h2>
             <p className="mt-2 text-[13px]/5 text-foreground/90">{draft.preview}</p>
-            <div className="mt-3 flex gap-2">
-              <button
-                type="button"
-                onClick={() => showToast(`Approved the note to ${draft.to}.`)}
-                className="rounded-lg bg-primary px-3 py-1.5 text-[12.5px] font-medium text-primary-foreground"
-              >
-                Approve and queue
-              </button>
-              <button
-                type="button"
-                onClick={() => showToast("Held. The sequence waits.")}
-                className="rounded-lg px-3 py-1.5 text-[12.5px] ring-1 ring-border"
-              >
-                Hold
-              </button>
+            <div className="mt-3">
+              <ApprovalActions
+                approvalId={draft.id}
+                recipient={draft.to}
+              />
             </div>
           </div>
         </Panel>
@@ -148,6 +155,14 @@ function Approvals() {
 
 function Campaigns() {
   const { campaigns } = useDeskData();
+  if (campaigns.length === 0) {
+    return (
+      <DeskEmptyState
+        title="No campaigns yet"
+        description="Campaigns will appear after a connected sending platform returns real activity."
+      />
+    );
+  }
   return (
     <div className="w-full overflow-x-auto">
       <Panel>
@@ -180,6 +195,14 @@ function Campaigns() {
 
 function Pipeline() {
   const { pipeline } = useDeskData();
+  if (pipeline.length === 0) {
+    return (
+      <DeskEmptyState
+        title="Your pipeline is empty"
+        description="Qualified prospects and their real outcomes will build this pipeline."
+      />
+    );
+  }
   const max = pipeline[0]?.count ?? 1;
   return (
     <div className="grid w-full gap-2 md:grid-cols-2 xl:grid-cols-3">
@@ -205,6 +228,14 @@ function Pipeline() {
 
 function Tasks() {
   const { tasks } = useDeskData();
+  if (tasks.length === 0) {
+    return (
+      <DeskEmptyState
+        title="No open tasks"
+        description="Ask the chat to schedule a real follow-up, review, or research task."
+      />
+    );
+  }
   return (
     <Panel>
       <ul className="divide-y divide-border">
@@ -224,6 +255,14 @@ function Tasks() {
 
 function Performance() {
   const { bars, campaigns } = useDeskData();
+  if (bars.length === 0 && campaigns.length === 0) {
+    return (
+      <DeskEmptyState
+        title="No performance data yet"
+        description="Metrics will appear after connected campaign tools report actual sends, replies, and meetings."
+      />
+    );
+  }
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const sent = campaigns.reduce((sum, row) => sum + row.sent, 0);
   const replies = campaigns.reduce((sum, row) => sum + row.replies, 0);

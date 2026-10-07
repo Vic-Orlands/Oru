@@ -3,8 +3,6 @@
 import { useMemo } from "react";
 import { useConvexAuth, useQuery } from "convex/react";
 
-import { isDemoMode } from "@/lib/auth/mode";
-import { DEMO_SKILLS } from "@/lib/demo/data";
 import { api } from "@whirl/backend/convex/_generated/api";
 import type { Id } from "@whirl/backend/convex/_generated/dataModel";
 import { useCachedList } from "./cached-list";
@@ -50,8 +48,7 @@ export type InstalledSkill = {
 /** Every skill listing, cache-then-live. Null only before the first-ever
  *  answer (no cache yet) — the browse tab's skeleton state. */
 export function useSkillStore(): StoreSkill[] | null {
-  const demo = isDemoMode();
-  const live = useQuery(api.skillStore.listStore, demo ? "skip" : {});
+  const live = useQuery(api.skillStore.listStore, {});
   const rows = useMemo(
     () =>
       live?.map(
@@ -71,7 +68,7 @@ export function useSkillStore(): StoreSkill[] | null {
     [live],
   );
   const cached = useCachedList(STORE_CACHE_KEY, rows);
-  return demo ? DEMO_SKILLS : cached;
+  return cached;
 }
 
 /** The signed-in user's skill installs, cache-then-live. Empty array while
