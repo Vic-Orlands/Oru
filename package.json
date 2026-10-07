@@ -1,20 +1,24 @@
 {
-	"name": "oso-ahia",
-	"private": true,
-	"packageManager": "pnpm@10.33.3",
-	"scripts": {
-		"dev": "turbo dev",
-		"build": "turbo build",
-		"lint": "turbo lint",
-		"check": "turbo check",
-		"test": "turbo test",
-		"test:unit": "turbo test:unit",
-		"db:migrate": "pnpm --filter @oso-ahia/db db:migrate",
-		"db:seed": "pnpm --filter @oso-ahia/db db:seed",
-		"db:generate": "pnpm --filter @oso-ahia/db db:generate",
-		"format": "pnpm --filter @oso-ahia/web format"
-	},
-	"devDependencies": {
-		"turbo": "^2.6.1"
-	}
+  "name": "oso-ahia",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n v2,console,convex -c cyan,magenta,yellow \"bun run dev:v2\" \"bun run dev:console\" \"bun run dev:backend\"",
+    "dev:v2": "bun run --cwd apps/v2 dev",
+    "dev:legacy": "bun run --cwd apps/legacy dev",
+    "dev:backend": "bun run --cwd packages/backend dev",
+    "dev:console": "bun run --cwd apps/console dev",
+    "build": "bun run --cwd apps/v2 build",
+    "build:legacy": "bun run --cwd apps/legacy build",
+    "build:console": "bun run --cwd apps/console build",
+    "dev:mobile": "bun run --cwd apps/mobile start",
+    "dev:waitlist": "bun run --cwd apps/waitlist dev",
+    "build:waitlist": "bun run --cwd apps/waitlist build"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
 }

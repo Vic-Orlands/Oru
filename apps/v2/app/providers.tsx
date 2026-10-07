@@ -1,0 +1,104 @@
+"use client";
+
+import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
+import { api } from "@whirl/backend/convex/_generated/api";
+import { AutumnProvider } from "autumn-js/react";
+import {
+  ConvexProviderWithAuth,
+  ConvexReactClient,
+  useConvex,
+  useConvexAuth,
+} from "convex/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Toaster } from "sonner";
+import { mutate } from "swr";
+
+import { authClient } from "@/lib/auth/client";
+import { isDemoMode } from "@/lib/auth/mode";
+import { FunnelTracker } from "@/components/analytics/funnel-tracker";
+
+function AutumnBridge({ children }: { children: React.ReactNode }) {
+  const convex = useConvex();
+  const { isAuthenticated } = useConvexAuth();
+  const authRef = useRef(isAuthenticated);
+
+  const gatedConvex = useMemo(
+    () => ({
+      action: (ref: unknown, args: unknown) => {
+        if (!authRef.current) {
+          return Promise.reject(new Error("Signed-out — skipping billing call"));
+        }
+        return convex.action(
+          ref as Parameters<ConvexReactClient["action"]>[0],
+          args as never,
+        );
+      },
+    }),
+    [convex],
+  );
+
+  useEffect(() => {
+    authRef.current = isAuthenticated;
+    if (!isAuthenticated) return;
+    void mutate(() => true);
+  }, [isAuthenticated]);
+
+  return (
+    <AutumnProvider convex={gatedConvex} convexApi={api.autumn}>
+      <FunnelTracker />
+      {children}
+    </AutumnProvider>
+  );
+}
+
+function useDemoAuth() {
+  return {
+    isLoading: false,
+    isAuthenticated: false,
+    fetchAccessToken: async () => null,
+  };
+}
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  const [convex] = useState(() => {
+    const convexUrl =
+      process.env.NEXT_PUBLIC_CONVEX_URL || "https://placeholder.convex.cloud";
+    return new ConvexReactClient(convexUrl);
+  });
+  const demo = isDemoMode();
+
+  const tree = (
+    <>
+      <Toaster
+        theme="system"
+        position="bottom-right"
+        toastOptions={{
+          className:
+            "!bg-popover !text-popover-foreground !border-border !text-[13px]",
+        }}
+      />
+      <AutumnBridge>{children}</AutumnBridge>
+    </>
+  );
+
+  if (demo) {
+    return (
+      <ConvexProviderWithAuth client={convex} useAuth={useDemoAuth}>
+        {tree}
+      </ConvexProviderWithAuth>
+    );
+  }
+
+  return (
+    <ConvexBetterAuthProvider
+      client={convex}
+      authClient={
+        authClient as unknown as React.ComponentProps<
+          typeof ConvexBetterAuthProvider
+        >["authClient"]
+      }
+    >
+      {tree}
+    </ConvexBetterAuthProvider>
+  );
+}
