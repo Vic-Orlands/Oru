@@ -108,7 +108,7 @@ export function IntegrationSuggestionCard({
         initial={animate ? { opacity: 0, y: 5 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-        className="mb-2 flex w-[26rem] max-w-full flex-col gap-2"
+        className="mb-2 flex w-full min-w-0 flex-col gap-2"
       >
         {entries.map((entry) => (
           <SuggestionTile
@@ -168,7 +168,7 @@ function SuggestionTile({
   const needsConnection = entry.installedServerId !== null && !installed;
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-well px-3.5 py-3 shadow-[inset_0_0_0_1px_var(--well-outline),inset_0_1px_0_0_var(--well-highlight)] transition-colors duration-150 hover:bg-accent">
+    <div className="flex min-w-0 flex-col gap-3 rounded-2xl bg-well px-3.5 py-3 shadow-[inset_0_0_0_1px_var(--well-outline),inset_0_1px_0_0_var(--well-highlight)] transition-colors duration-150 hover:bg-accent sm:flex-row sm:items-center">
       <button
         type="button"
         disabled={!ready}
@@ -179,7 +179,7 @@ function SuggestionTile({
           name={entry.name}
           logoUrl={entry.logoUrl}
           iconSvg={entry.iconSvg}
-          size={38}
+          size={44}
         />
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="flex min-w-0 items-center gap-1.5">
@@ -202,19 +202,19 @@ function SuggestionTile({
       </button>
 
       {connectionStatus === "declined" ? (
-        <span className="inline-flex shrink-0 items-center gap-1 text-[13px]/5 font-medium text-muted-foreground">
+        <span className="inline-flex shrink-0 self-end items-center gap-1 text-[13px]/5 font-medium text-muted-foreground sm:self-auto">
           <IconX size={14} />
           Skipped
         </span>
       ) : installed || connectionStatus === "connected" ? (
-        <span className="inline-flex shrink-0 items-center gap-1 text-[13px]/5 font-medium text-emerald-600 dark:text-emerald-400">
+        <span className="inline-flex shrink-0 self-end items-center gap-1 text-[13px]/5 font-medium text-emerald-600 sm:self-auto dark:text-emerald-400">
           <IconCircleCheckFilled size={14} />
           {connectionStatus === "connected"
             ? "Connected · resumed"
             : "Installed"}
         </span>
       ) : (
-        <span className="flex shrink-0 items-center gap-1.5">
+        <span className="flex shrink-0 self-end items-center gap-1.5 sm:self-auto">
           {connectionStatus === "waiting" && onDecline && (
             <Button
               type="button"
