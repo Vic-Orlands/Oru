@@ -620,6 +620,74 @@ async function provisionToolkit(
     .filter((t): t is NonNullable<typeof t> => t !== null);
   const tools = prioritizeTools(slug, discoveredTools);
 
+  const insertProvisionedListing = async ({
+    authConfigId,
+    mcpServerId,
+    mcpUrl,
+    allowedTools,
+  }: {
+    authConfigId: string;
+    mcpServerId: string;
+    mcpUrl: string;
+    allowedTools?: string[];
+  }) => {
+    const allowedSet = new Set(allowedTools ?? []);
+    const listedTools =
+      allowedSet.size > 0
+        ? tools.filter((tool) => allowedSet.has(tool.name))
+        : tools;
+    return await ctx.runMutation(internal.composio.insertListing, {
+      slug,
+      name,
+      description,
+      logoUrl,
+      mcpUrl,
+      tools: listedTools,
+      authConfigId,
+      mcpServerId,
+      noAuth,
+      category,
+      ownerId: actor.id,
+      ownerName: actor.name,
+      ownerEmail: actor.email,
+    });
+  };
+
+  // The dev and production Convex deployments may share one Composio
+  // project. Reuse a server another deployment already provisioned instead
+  // of treating its globally unique name as a failure.
+  const serverName = composioServerName(slug);
+  const existingServers = listItems(
+    await composioFetch("/api/v3/mcp/servers?limit=100"),
+  );
+  const existingServer = existingServers.find(
+    (server) => firstString(server.name) === serverName,
+  );
+  if (existingServer) {
+    const authConfigIds = Array.isArray(existingServer.auth_config_ids)
+      ? existingServer.auth_config_ids
+      : [];
+    const authConfigId = firstString(authConfigIds[0]);
+    const mcpServerId = firstString(existingServer.id, existingServer.uuid);
+    const mcpUrl = firstString(existingServer.mcp_url, existingServer.url);
+    const allowedTools = Array.isArray(existingServer.allowed_tools)
+      ? existingServer.allowed_tools.filter(
+          (tool): tool is string => typeof tool === "string",
+        )
+      : undefined;
+    if (!authConfigId || !mcpServerId || !mcpUrl) {
+      throw new Error(
+        `The existing Composio server for ${name} is missing its connection metadata.`,
+      );
+    }
+    return await insertProvisionedListing({
+      authConfigId,
+      mcpServerId,
+      mcpUrl,
+      allowedTools,
+    });
+  }
+
   // Composio-managed auth: Composio's own OAuth app / key handling. Where a
   // toolkit doesn't offer it, Composio errors here and the admin sees why.
   let authJson: Record<string, unknown>;
@@ -676,7 +744,7 @@ async function provisionToolkit(
         serverJson = await composioFetch(`/api/v3/mcp/servers`, {
           method: "POST",
           body: {
-            name: composioServerName(slug),
+              name: serverName,
             auth_config_ids: [authConfigId],
             ...(allowedTools.length > 0 ? { allowed_tools: allowedTools } : {}),
           },
@@ -691,15 +759,6 @@ async function provisionToolkit(
         allowedTools = allowedTools.filter((name) => !rejected.has(name));
       }
     }
-    // Keep the listing's status phrases honest about what survived. If
-    // every tool got rejected the server ends up unrestricted, so the full
-    // scanned list is the closest description we have.
-    const allowedSet = new Set(allowedTools);
-    const listedTools =
-      allowedTools.length > 0
-        ? tools.filter((t) => allowedSet.has(t.name))
-        : tools;
-
     mcpServerId = firstString(serverJson.id, serverJson.uuid);
     if (!mcpServerId) {
       throw new Error("Composio didn't return an MCP server id.");
@@ -718,25 +777,12 @@ async function provisionToolkit(
       mcpUrl = `${COMPOSIO_API_BASE}/v3/mcp/${mcpServerId}/mcp`;
     }
 
-    const result: { id: Id<"integrations"> } = await ctx.runMutation(
-      internal.composio.insertListing,
-      {
-        slug,
-        name,
-        description,
-        logoUrl,
-        mcpUrl,
-        tools: listedTools,
-        authConfigId,
-        mcpServerId,
-        noAuth,
-        category,
-        ownerId: actor.id,
-        ownerName: actor.name,
-        ownerEmail: actor.email,
-      },
-    );
-    return result;
+    return await insertProvisionedListing({
+      authConfigId,
+      mcpServerId,
+      mcpUrl,
+      allowedTools,
+    });
   } catch (error) {
     // Roll back the Composio side so a failed add leaves nothing behind.
     if (mcpServerId) {
