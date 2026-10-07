@@ -50,7 +50,7 @@ export function IntegrationLogo({
     return (
       <span
         title={name}
-        className={`relative block shrink-0 overflow-hidden ring-1 ring-black/[0.06] dark:ring-white/[0.08] ${className}`}
+        className={`relative block shrink-0 overflow-hidden bg-white ring-1 ring-black/[0.08] dark:ring-white/[0.14] ${className}`}
         style={{ width: size, height: size, borderRadius: radius }}
       >
         {!loaded && (
@@ -70,7 +70,7 @@ export function IntegrationLogo({
           }}
           onLoad={(event) => settle(event.currentTarget)}
           onError={() => setFailed(true)}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+          className={`absolute inset-[14%] object-contain transition-opacity duration-300 ${
             loaded ? "opacity-100" : "opacity-0"
           }`}
         />

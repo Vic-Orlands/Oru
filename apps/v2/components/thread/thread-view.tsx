@@ -121,7 +121,7 @@ export function ThreadView({
                 >
                   <MessageScrollerContent
                     className={cn(
-                      "mx-auto w-full max-w-2xl pt-8 pb-[max(11rem,calc(var(--dock-clearance,0px)+0.75rem))]",
+                      "mx-auto w-full max-w-2xl pt-8 pb-[calc(var(--dock-clearance,6.5rem)+2.25rem)]",
                       contentClassName,
                     )}
                   >
@@ -140,7 +140,7 @@ export function ThreadView({
                     ))}
                   </MessageScrollerContent>
                 </MessageScrollerViewport>
-                <MessageScrollerButton className="bottom-32" />
+                <MessageScrollerButton className="bottom-[calc(var(--dock-clearance,6.5rem)+0.75rem)]" />
               </MessageScroller>
             </MessageScrollerProvider>
           </motion.div>

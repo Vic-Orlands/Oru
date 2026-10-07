@@ -49,7 +49,8 @@ export default function manifest(): MetadataRoute.Manifest {
        question, not the whole of one (lib/share-target.ts). */
     share_target: {
       action: "/",
-      method: "get",
+      method: "GET",
+      enctype: "application/x-www-form-urlencoded",
       params: { title: "title", text: "text", url: "url" },
     },
   };

@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useUser } from "@/lib/auth/session";
 import { IconGhost2Filled } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
 
-import { DEFAULT_GREETING, GREETINGS, pickGreeting } from "@/lib/greetings";
+import { DEFAULT_GREETING, GREETINGS } from "@/lib/greetings";
 import { useShowSuggestionsPref } from "@/lib/home-prefs";
 import { useHomeSuggestions } from "@/lib/home-suggestions";
 import { pickIncognitoTagline, useIncognitoState } from "@/lib/incognito";
@@ -103,14 +103,13 @@ export function HomeGreeting() {
   /* Randomized in the initializer (not an effect) so the first paint that
      shows it is already the real line; the server branch keeps SSR
      deterministic (nothing renders it before hydration anyway). */
-  const [greeting] = useState(() => {
-    if (typeof window === "undefined") return DEFAULT_GREETING;
-    /* Adopt the boot script's pick so the hydration swap keeps the very
-       line already on screen; without one, roll fresh. */
-    return window.__whirlGreeting ?? pickGreeting();
-  });
-  /* Consumed — a later home visit (thread → home) rolls a new line. */
-  useEffect(() => {
+  /* The server always paints the first line. A client-only roll here
+     mismatches hydration the moment the name is already known (demo mode,
+     a warm session). The boot script's pick is adopted after hydration,
+     and only when that script actually painted the empty slot. */
+  const [greeting, setGreeting] = useState(DEFAULT_GREETING);
+  useLayoutEffect(() => {
+    if (window.__whirlGreeting) setGreeting(window.__whirlGreeting);
     delete window.__whirlGreeting;
   }, []);
 

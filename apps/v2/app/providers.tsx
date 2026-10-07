@@ -59,14 +59,52 @@ function useDemoAuth() {
   };
 }
 
+/** Demo mode has no deployment. A socket that never opens keeps the
+ *  provider's hooks quiet instead of hitting a fake *.convex.cloud host,
+ *  which answers with a fatal "couldn't parse deployment name". */
+class DemoSocket {
+  static CONNECTING = 0;
+  static OPEN = 1;
+  static CLOSING = 2;
+  static CLOSED = 3;
+  readyState = DemoSocket.CONNECTING;
+  binaryType: BinaryType = "blob";
+  url: string;
+  protocol = "";
+  extensions = "";
+  bufferedAmount = 0;
+  onopen: ((event: Event) => void) | null = null;
+  onclose: ((event: CloseEvent) => void) | null = null;
+  onerror: ((event: Event) => void) | null = null;
+  onmessage: ((event: MessageEvent) => void) | null = null;
+  constructor(url: string) {
+    this.url = url;
+  }
+  send() {}
+  close() {
+    this.readyState = DemoSocket.CLOSED;
+  }
+  addEventListener() {}
+  removeEventListener() {}
+  dispatchEvent() {
+    return false;
+  }
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
+  const demo = isDemoMode();
   const [convex] = useState(() => {
     const convexUrl =
       process.env.NEXT_PUBLIC_CONVEX_URL || "https://placeholder.convex.cloud";
-    return new ConvexReactClient(convexUrl);
+    if (demo) {
+      return new ConvexReactClient(convexUrl, {
+        logger: false,
+        unsavedChangesWarning: false,
+        webSocketConstructor: DemoSocket as unknown as typeof WebSocket,
+      });
+    }
+    return new ConvexReactClient(convexUrl, { unsavedChangesWarning: false });
   });
-  const demo = isDemoMode();
-
   const tree = (
     <>
       <Toaster

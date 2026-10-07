@@ -2,6 +2,7 @@
 
 import { useLayoutEffect } from "react";
 
+import { applyStoredAccent, readAccent } from "@/lib/accent";
 import { applyStoredTheme, readTheme, themeIsDark } from "@/lib/theme";
 
 /* React hydration writes the server className back onto <html> and drops
@@ -12,6 +13,7 @@ import { applyStoredTheme, readTheme, themeIsDark } from "@/lib/theme";
 export function ThemeSync() {
   useLayoutEffect(() => {
     applyStoredTheme();
+    applyStoredAccent();
 
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const onSystem = () => {
@@ -24,8 +26,15 @@ export function ThemeSync() {
       if (root.classList.contains("dark") !== themeIsDark(readTheme())) {
         applyStoredTheme();
       }
+      const accent = readAccent();
+      const current = root.getAttribute("data-accent");
+      const want = accent === "graphite" ? null : accent;
+      if (current !== want) applyStoredAccent();
     });
-    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["class", "data-accent"],
+    });
 
     return () => {
       media.removeEventListener("change", onSystem);

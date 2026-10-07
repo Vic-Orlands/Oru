@@ -96,8 +96,8 @@ export function DeskHome({
   const peak = Math.max(...desk.bars, 1);
 
   return (
-    <div className="h-full min-h-0 overflow-y-auto">
-      <div className="relative h-[248px] overflow-hidden md:h-[292px]">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto xl:overflow-hidden">
+      <div className="relative h-[200px] shrink-0 overflow-hidden md:h-[228px]">
         <img
           src="/brand/hero-loft.jpg"
           alt=""
@@ -105,12 +105,12 @@ export function DeskHome({
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/55" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-background" />
-        <h1 className="absolute inset-x-4 bottom-[6.25rem] text-center text-[22px] font-medium tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.75)] md:text-[26px]">
+        <h1 className="absolute inset-x-4 bottom-[5.75rem] text-center text-[22px] font-medium tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.75)] md:text-[26px]">
           Who should we reach today?
         </h1>
       </div>
 
-      <div className="relative z-10 -mt-16 px-4 pb-10 md:px-8">
+      <div className="relative z-10 -mt-10 flex min-h-0 flex-1 flex-col px-4 pb-4 md:px-8">
         <div className="mx-auto w-full max-w-[680px] overflow-hidden rounded-2xl bg-card shadow-[0_16px_40px_-18px_rgba(0,0,0,0.45)] ring-1 ring-black/10 dark:ring-white/12">
           <div className="flex items-center gap-1 border-b border-border px-2 py-1.5">
             <TabButton active={tab === "new"} onClick={() => setTab("new")}>
@@ -174,7 +174,7 @@ export function DeskHome({
           )}
         </div>
 
-        <div className="mx-auto mt-5 w-full max-w-[920px]">
+        <div className="mx-auto mt-4 flex w-full min-h-0 max-w-[1080px] flex-1 flex-col">
           <div className="mb-2 flex justify-end">
             <div className="relative">
               <button
@@ -206,7 +206,7 @@ export function DeskHome({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid flex-1 grid-cols-1 content-start gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:grid-rows-2 xl:content-stretch">
             {widgets.has("working") && (
               <Widget title="Working now" meta="1" className="sm:col-span-1">
                 <button
@@ -253,7 +253,7 @@ export function DeskHome({
             )}
             {widgets.has("campaign") && (
               <Widget title="Campaign" meta="7 days">
-                <div className="flex h-[4.5rem] items-end gap-1.5">
+                <div className="flex h-full min-h-[7.5rem] items-end gap-1.5">
                   {desk.bars.map((value, index) => (
                     <div
                       key={`${DAYS[index]}-${index}`}
@@ -262,7 +262,7 @@ export function DeskHome({
                       <div
                         className="w-full rounded-[3px] bg-primary/85"
                         style={{
-                          height: `${Math.max(4, Math.round((value / peak) * 40))}px`,
+                          height: `${Math.max(12, Math.round((value / peak) * 100))}%`,
                         }}
                       />
                       <span className="text-[10px] leading-none text-muted-foreground">
@@ -370,12 +370,12 @@ function Widget({
   className?: string;
 }) {
   return (
-    <section className={`rounded-xl bg-card p-3 ring-1 ring-border ${className}`}>
+    <section className={`flex h-full min-h-0 flex-col rounded-xl bg-card p-3.5 ring-1 ring-border ${className}`}>
       <header className="mb-2 flex items-center justify-between text-[11.5px] font-medium text-muted-foreground">
         <span>{title}</span>
         {meta && <span className="tabular-nums">{meta}</span>}
       </header>
-      <div className="flex flex-col gap-1.5">{children}</div>
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-2">{children}</div>
     </section>
   );
 }
