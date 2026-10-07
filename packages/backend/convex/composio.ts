@@ -800,6 +800,12 @@ async function provisionToolkit(
 }
 
 const CURATED_TOOLKITS = [
+  "fuseai",
+  "gmail",
+  "googlecalendar",
+  "hubspot",
+  "salesforce",
+  "slack",
   "googlesheets",
   "googledocs",
   "googledrive",
