@@ -178,11 +178,14 @@ function ChartCardBody({
   // yesterday's frozen chart off screen rather than an axis with nothing on it.
   if (!isRenderableChart(spec)) return null;
 
-  const colors = seriesColors(
-    spec.type === "pie"
-      ? (spec.categories ?? [])
-      : spec.series.map((series) => series.name),
-  );
+  const colors =
+    spec.type !== "pie" && spec.series.length === 1
+      ? ["var(--primary)"]
+      : seriesColors(
+          spec.type === "pie"
+            ? (spec.categories ?? [])
+            : spec.series.map((series) => series.name),
+        );
 
   const draw = animate || swept;
 

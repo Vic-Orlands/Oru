@@ -253,18 +253,20 @@ export function DeskHome({
             )}
             {widgets.has("campaign") && (
               <Widget title="Campaign" meta="7 days">
-                <div className="flex h-full min-h-[7.5rem] items-end gap-1.5">
+                <div className="flex h-20 items-end gap-1.5">
                   {desk.bars.map((value, index) => (
                     <div
                       key={`${DAYS[index]}-${index}`}
                       className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1"
                     >
-                      <div
-                        className="w-full rounded-[3px] bg-primary/85"
-                        style={{
-                          height: `${Math.max(12, Math.round((value / peak) * 100))}%`,
-                        }}
-                      />
+                      <div className="flex w-full flex-1 items-end">
+                        <div
+                          className="w-full rounded-[3px] bg-primary/85"
+                          style={{
+                            height: `${Math.max(18, Math.round((value / peak) * 100))}%`,
+                          }}
+                        />
+                      </div>
                       <span className="text-[10px] leading-none text-muted-foreground">
                         {DAYS[index]}
                       </span>
@@ -375,7 +377,7 @@ function Widget({
         <span>{title}</span>
         {meta && <span className="tabular-nums">{meta}</span>}
       </header>
-      <div className="flex min-h-0 flex-1 flex-col justify-center gap-2">{children}</div>
+      <div className="flex min-h-0 flex-1 flex-col justify-start gap-2">{children}</div>
     </section>
   );
 }
