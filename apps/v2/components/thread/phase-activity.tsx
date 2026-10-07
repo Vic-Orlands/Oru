@@ -253,7 +253,7 @@ export const PhaseActivity = memo(function PhaseActivity({
                 className={`max-w-[min(34rem,calc(100vw-5rem))] font-medium ${
                   final
                     ? "text-[13px]/5 text-muted-foreground"
-                    : "text-[15px]/6"
+                    : "text-[14px]/6"
                 }`}
               />
             )}

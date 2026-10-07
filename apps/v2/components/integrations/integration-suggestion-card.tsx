@@ -72,6 +72,7 @@ export function IntegrationSuggestionCard({
   const [selectedId, setSelectedId] = useState<Id<"integrations"> | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
   const [declining, setDeclining] = useState(false);
+  const [declineError, setDeclineError] = useState<string | null>(null);
   const declineGate = useMutation(api.messages.declineIntegrationGate);
   const shownEventSent = useRef(false);
 
@@ -110,6 +111,12 @@ export function IntegrationSuggestionCard({
         transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
         className="mb-2 flex w-full min-w-0 flex-col gap-2"
       >
+        {phase.connectionStatus && (
+          <ConnectionGateStatus
+            status={phase.connectionStatus}
+            name={entries[0]?.name ?? items[0]?.name ?? "this app"}
+          />
+        )}
         {entries.map((entry) => (
           <SuggestionTile
             key={entry.id}
@@ -118,17 +125,25 @@ export function IntegrationSuggestionCard({
             onOpen={() => openEntry(entry)}
             connectionStatus={phase.connectionStatus}
             declining={declining}
+            declineError={declineError}
             onDecline={
               phase.connectionStatus === "waiting" &&
               messageId !== undefined &&
               phaseIndex !== undefined
                 ? async () => {
                     setDeclining(true);
+                    setDeclineError(null);
                     try {
                       await declineGate({
                         messageId: messageId as Id<"messages">,
                         phaseIndex,
                       });
+                    } catch (cause) {
+                      setDeclineError(
+                        cause instanceof Error
+                          ? cause.message
+                          : "Couldn't record that choice. Try again.",
+                      );
                     } finally {
                       setDeclining(false);
                     }
@@ -156,6 +171,7 @@ function SuggestionTile({
   connectionStatus,
   onDecline,
   declining,
+  declineError,
 }: {
   entry: StoreIntegration;
   ready: boolean;
@@ -163,86 +179,128 @@ function SuggestionTile({
   connectionStatus?: "waiting" | "connected" | "declined";
   onDecline?: () => Promise<void>;
   declining: boolean;
+  declineError: string | null;
 }) {
   const installed = entry.installedConnected;
   const needsConnection = entry.installedServerId !== null && !installed;
 
   return (
-    <div className="flex min-w-0 flex-col gap-3 rounded-2xl bg-well px-3.5 py-3 shadow-[inset_0_0_0_1px_var(--well-outline),inset_0_1px_0_0_var(--well-highlight)] transition-colors duration-150 hover:bg-accent sm:flex-row sm:items-center">
-      <button
-        type="button"
-        disabled={!ready}
-        onClick={onOpen}
-        className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left disabled:cursor-default"
-      >
-        <IntegrationLogo
-          name={entry.name}
-          logoUrl={entry.logoUrl}
-          iconSvg={entry.iconSvg}
-          size={44}
-        />
-        <span className="flex min-w-0 flex-1 flex-col">
-          <span className="flex min-w-0 items-center gap-1.5">
-            <span className="truncate text-[15px]/6 font-semibold tracking-tight">
-              {entry.name}
+    <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex min-w-0 flex-col gap-3 rounded-2xl bg-well px-3.5 py-3 shadow-[inset_0_0_0_1px_var(--well-outline),inset_0_1px_0_0_var(--well-highlight)] transition-colors duration-150 hover:bg-accent sm:flex-row sm:items-center">
+        <button
+          type="button"
+          disabled={!ready}
+          onClick={onOpen}
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left disabled:cursor-default"
+        >
+          <IntegrationLogo
+            name={entry.name}
+            logoUrl={entry.logoUrl}
+            iconSvg={entry.iconSvg}
+            size={44}
+          />
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="flex min-w-0 items-center gap-1.5">
+              <span className="truncate text-[14px]/5 font-semibold tracking-tight">
+                {entry.name}
+              </span>
+              {entry.verified && <VerifiedBadge size={13} />}
             </span>
-            {entry.verified && <VerifiedBadge size={13} />}
+            {ready ? (
+              <span className="line-clamp-2 text-[13px]/5 text-muted-foreground">
+                {entry.description ?? "A new set of tools for the desk."}
+              </span>
+            ) : (
+              <span
+                aria-label="Loading integration details"
+                className="mt-1 h-2.5 w-28 animate-pulse rounded-full bg-foreground/10"
+              />
+            )}
           </span>
-          {ready ? (
-            <span className="line-clamp-2 text-[13px]/5 text-muted-foreground">
-              {entry.description ?? "A new set of tools for the desk."}
-            </span>
-          ) : (
-            <span
-              aria-label="Loading integration details"
-              className="mt-1 h-2.5 w-28 animate-pulse rounded-full bg-foreground/10"
-            />
-          )}
-        </span>
-      </button>
+        </button>
 
-      {connectionStatus === "declined" ? (
-        <span className="inline-flex shrink-0 self-end items-center gap-1 text-[13px]/5 font-medium text-muted-foreground sm:self-auto">
-          <IconX size={14} />
-          Skipped
-        </span>
-      ) : installed || connectionStatus === "connected" ? (
-        <span className="inline-flex shrink-0 self-end items-center gap-1 text-[13px]/5 font-medium text-emerald-600 sm:self-auto dark:text-emerald-400">
-          <IconCircleCheckFilled size={14} />
-          {connectionStatus === "connected"
-            ? "Connected · resumed"
-            : "Installed"}
-        </span>
-      ) : (
-        <span className="flex shrink-0 self-end items-center gap-1.5 sm:self-auto">
-          {connectionStatus === "waiting" && onDecline && (
+        {connectionStatus === "waiting" ? (
+          <span className="flex shrink-0 self-end items-center gap-1.5 sm:self-auto">
+            {onDecline && (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                disabled={declining}
+                onClick={() => void onDecline()}
+                className="rounded-full px-2.5"
+              >
+                Not now
+              </Button>
+            )}
             <Button
               type="button"
               size="sm"
-              variant="ghost"
-              disabled={declining}
-              onClick={() => void onDecline()}
-              className="rounded-full px-2.5"
+              disabled={!ready}
+              onClick={onOpen}
+              className="rounded-full px-3"
             >
-              Not now
+              <IconClockPause size={13} stroke={2.25} />
+              Connect
             </Button>
-          )}
+          </span>
+        ) : connectionStatus ? null : installed ? (
+          <span className="inline-flex shrink-0 self-end items-center gap-1 text-[13px]/5 font-medium text-emerald-600 sm:self-auto dark:text-emerald-400">
+            <IconCircleCheckFilled size={14} />
+            Installed
+          </span>
+        ) : (
           <Button
             type="button"
             size="sm"
             disabled={!ready}
             onClick={onOpen}
-            className="rounded-full px-3"
+            className="self-end rounded-full px-3 sm:self-auto"
           >
-            {connectionStatus === "waiting" ? (
-              <IconClockPause size={13} stroke={2.25} />
-            ) : (
-              <IconDownload size={13} stroke={2.25} />
-            )}
+            <IconDownload size={13} stroke={2.25} />
             {needsConnection ? "Connect" : "Install"}
           </Button>
-        </span>
+        )}
+      </div>
+      {declineError && (
+        <p role="alert" className="px-1 text-[12px]/4 text-destructive">
+          {declineError}
+        </p>
       )}
+    </div>
+  );
+}
+
+function ConnectionGateStatus({
+  status,
+  name,
+}: {
+  status: "waiting" | "connected" | "declined";
+  name: string;
+}) {
+  const connected = status === "connected";
+  const declined = status === "declined";
+  return (
+    <div
+      role="status"
+      className={`flex items-center gap-1.5 px-1 text-[13px]/5 font-medium ${
+        connected
+          ? "text-emerald-600 dark:text-emerald-400"
+          : "text-muted-foreground"
+      }`}
+    >
+      {connected ? (
+        <IconCircleCheckFilled size={14} />
+      ) : declined ? (
+        <IconX size={14} stroke={2.25} />
+      ) : (
+        <IconClockPause size={14} stroke={2.25} />
+      )}
+      {connected
+        ? `You connected ${name}.`
+        : declined
+          ? `You declined the ${name} connection.`
+          : `Waiting for you to connect ${name}`}
     </div>
   );
 }

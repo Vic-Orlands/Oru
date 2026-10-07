@@ -63,7 +63,7 @@ export function MessageAttachments({
               "shrink-0 text-muted-foreground",
             )}
             <div className="min-w-0 flex-1">
-              <div className="truncate text-[15px]/6 font-medium">
+              <div className="truncate text-[14px]/6 font-medium">
                 {attachment.name}
               </div>
               <div className="mt-0.5 truncate text-[13px]/5 text-muted-foreground tabular-nums">

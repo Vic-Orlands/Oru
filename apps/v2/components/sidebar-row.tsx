@@ -1,6 +1,11 @@
 import type { ComponentPropsWithRef } from "react";
 import type { Icon } from "@tabler/icons-react";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { RowPill } from "./row-pill";
 
@@ -19,29 +24,21 @@ export function SidebarRow({
   label,
   active = false,
   alert = false,
+  tooltip = true,
   className = "",
   ...props
 }: {
   icon: Icon;
   label: string;
   active?: boolean;
+  /** Dialog/menu triggers can opt out when another primitive owns the row. */
+  tooltip?: boolean;
   /** Something on the row's page needs attention: a dot on the icon, which
    *  survives the collapse to the rail where a trailing badge wouldn't. */
   alert?: boolean;
 } & ComponentPropsWithRef<"button">) {
-  return (
-    <button
-      type="button"
-      aria-current={active ? "true" : undefined}
-      className={cn(
-        // Left-anchored in both states — the 12px collapsed padding centers
-        // the icon on the rail with a 2px glide instead of a center-jump,
-        // and the label fades under the sliding edge rather than popping.
-        "group/row sidebar-glide relative flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 text-[13.5px]/4 font-medium text-foreground-soft transition-[padding] before:absolute before:-inset-x-3 before:top-0 before:bottom-0 sidebar-collapsed:pl-3",
-        className,
-      )}
-      {...props}
-    >
+  const content = (
+    <>
       <RowPill className={active ? "bg-accent" : undefined} />
       <span className="relative shrink-0">
         <RowIcon size={16} />
@@ -57,6 +54,38 @@ export function SidebarRow({
       <span className="relative truncate transition-[opacity,visibility] duration-150 sidebar-collapsed:invisible sidebar-collapsed:opacity-0">
         {label}
       </span>
+    </>
+  );
+  const row = (
+    <button
+      type="button"
+      aria-label={label}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        // Left-anchored in both states — the 12px collapsed padding centers
+        // the icon on the rail with a 2px glide instead of a center-jump,
+        // and the label fades under the sliding edge rather than popping.
+        "group/row sidebar-glide relative flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 text-[13.5px]/4 font-medium text-foreground-soft transition-[padding] before:absolute before:-inset-x-3 before:top-0 before:bottom-0 sidebar-collapsed:pl-3",
+        className,
+      )}
+      {...props}
+    >
+      {content}
     </button>
+  );
+
+  if (!tooltip) return row;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger render={row} />
+      <TooltipContent
+        side="right"
+        sideOffset={10}
+        className="hidden sidebar-collapsed:block"
+      >
+        {label}
+      </TooltipContent>
+    </Tooltip>
   );
 }

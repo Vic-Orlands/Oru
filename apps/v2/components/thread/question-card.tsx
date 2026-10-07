@@ -26,7 +26,7 @@ export function QuestionCard({ phase }: { phase: MessagePhase }) {
       <div className="mt-2.5 flex flex-col gap-3">
         {questions.map((question) => (
           <div key={question.id}>
-            <p className="text-[15px]/6 font-medium text-foreground">
+            <p className="text-[14px]/6 font-medium text-foreground">
               {question.prompt}
             </p>
             {phase.answered && (

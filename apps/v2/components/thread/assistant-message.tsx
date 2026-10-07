@@ -87,6 +87,11 @@ export function AssistantMessage({
   onRollback?: () => void;
 }) {
   const terminal = isTerminal(message.status);
+  const hasIntegrationGate = (message.phases ?? []).some(
+    (phase) =>
+      phase.kind === "integrationSuggestion" &&
+      phase.connectionStatus !== undefined,
+  );
 
   /* Whether this mount caught the message mid-flight — old messages paint
      instantly, live ones type. Captured once: a retry remounts (the
@@ -335,7 +340,7 @@ export function AssistantMessage({
       </ArtifactActivityScope>
       {imageTurn && <GeneratedImageSlot message={message} />}
       {error && <ErrorBanner error={error} onRetry={onRetry} />}
-      {message.status === "stopped" && (
+      {message.status === "stopped" && !hasIntegrationGate && (
         <div className="mt-2 flex items-center gap-1.5 text-[13px]/4 font-medium text-muted-foreground">
           <IconPlayerStopFilled size={12} />
           Stopped
@@ -347,7 +352,7 @@ export function AssistantMessage({
            change the message height or kick the scroll anchor. */
         <div aria-hidden className="mt-1.5 h-7" />
       )}
-      {terminal && !error && (
+      {terminal && !error && !hasIntegrationGate && (
         <MessageActions
           message={message}
           onRetry={onRetry}

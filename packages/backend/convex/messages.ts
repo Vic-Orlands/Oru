@@ -874,6 +874,77 @@ export const declineIntegrationGate = mutationGeneric({
         resolvedAt: Date.now(),
       });
     }
+    // A decline settles the pause just like a successful connection does.
+    // Continue off-transaction so a click that lands while the asking reply
+    // is still settling can wait safely instead of losing the continuation.
+    await ctx.scheduler.runAfter(
+      0,
+      internal.messages.continueDeclinedIntegrationGate,
+      { messageId, phaseIndex },
+    );
+    return null;
+  },
+});
+
+/** Resume after a declined gate, once the asking turn has fully settled. */
+export const continueDeclinedIntegrationGate = internalMutation({
+  args: {
+    messageId: v.id("messages"),
+    phaseIndex: v.number(),
+    attempt: v.optional(v.number()),
+  },
+  handler: async (ctx, { messageId, phaseIndex, attempt = 0 }) => {
+    const message = await ctx.db.get(messageId);
+    if (!message || message.role !== "assistant") return null;
+    const phase = message.phases?.[phaseIndex];
+    if (
+      !phase ||
+      phase.kind !== "integrationSuggestion" ||
+      phase.connectionStatus !== "declined"
+    ) {
+      return null;
+    }
+    if (await isThreadRunning(ctx, message.threadId)) {
+      if (attempt < 180) {
+        await ctx.scheduler.runAfter(
+          2_000,
+          internal.messages.continueDeclinedIntegrationGate,
+          { messageId, phaseIndex, attempt: attempt + 1 },
+        );
+      }
+      return null;
+    }
+
+    const thread = await ctx.db.get(message.threadId);
+    if (!thread || thread.lock) return null;
+    const now = Date.now();
+    const integrationName = phase.items?.[0]?.name ?? "the integration";
+    const instruction =
+      phase.resumeInstruction?.trim() ||
+      "Continue the user's interrupted request without the declined integration.";
+    await ctx.db.patch(thread._id, { updatedAt: now });
+    await appendUserTurn(ctx, {
+      threadId: thread._id,
+      userId: thread.userId,
+      content: [
+        "<whirl_system_log>",
+        `The user declined the ${integrationName} connection. ${instruction}`,
+        "Continue the pending work without that integration. If it cannot be completed, explain exactly what remains blocked and offer the closest useful alternative. Do not ask the user to repeat the request.",
+        "</whirl_system_log>",
+      ].join("\n"),
+      attachments: undefined,
+      mentions: undefined,
+      skillMentions: undefined,
+      options: {
+        thinking: message.thinking ?? false,
+        search: message.search ?? false,
+        model: message.model ?? "Auto",
+      },
+      model: message.model ?? "Auto",
+      userName: undefined,
+      now,
+      systemGenerated: true,
+    });
     return null;
   },
 });

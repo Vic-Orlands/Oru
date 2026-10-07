@@ -117,7 +117,7 @@ export const Markdown = memo(function Markdown({
         /* w-full matters: the message column aligns items-start, so without
            it this block sizes to its content and wide tables/code push past
            the pane instead of scrolling inside it. */
-        "t-markdown w-full min-w-0 space-y-4 text-[15px]/7 [&_pre]:text-[13px]/6",
+        "t-markdown w-full min-w-0 space-y-4 text-[14px]/6 [&_pre]:text-[13px]/6",
         className,
       )}
     >

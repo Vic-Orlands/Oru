@@ -110,7 +110,7 @@
  * sizes itself off a second copy of its own text. Mirror and field must
  * always agree, so they share a declaration. */
 .field-text {
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.5rem;
 }
 

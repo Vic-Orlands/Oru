@@ -80,11 +80,13 @@ function initials(name: string): string {
 
 function SignedInRow({
   name,
+  email,
   initialsName,
   imageUrl,
   plan,
 }: {
   name: string;
+  email: string | null;
   initialsName: string;
   imageUrl: string;
   plan: PlanSummary;
@@ -107,18 +109,18 @@ function SignedInRow({
             {initials(initialsName)}
           </AvatarFallback>
         </Avatar>
-        <span className={`flex min-w-0 flex-col items-start gap-0.5 ${FADE}`}>
-          <span className="max-w-full truncate text-sm leading-4 font-medium text-foreground-soft">
-            {name}
-          </span>
-          {/* No billing, no plans: the name stands alone. */}
-          {!billing ? null : plan.planId ? (
-            <PlanBadge plan={plan.planId} className="h-3 w-auto shrink-0" />
-          ) : (
-            <span className="text-xs leading-3 text-muted-foreground">
-              {plan.planName}
+        <span className={`flex min-w-0 flex-1 flex-col items-start gap-0.5 ${FADE}`}>
+          <span className="flex max-w-full min-w-0 items-center gap-1.5">
+            <span className="truncate text-sm leading-4 font-medium text-foreground-soft">
+              {name}
             </span>
-          )}
+            {billing && plan.planId ? (
+              <PlanBadge plan={plan.planId} className="h-3 w-auto shrink-0" />
+            ) : null}
+          </span>
+          <span className="max-w-full truncate text-xs leading-3 text-muted-foreground">
+            {email ?? (billing ? plan.planName : "Account")}
+          </span>
         </span>
         <IconChevronUp
           size={16}
@@ -167,6 +169,7 @@ export function UserButton() {
     user?.primaryEmailAddress?.emailAddress ??
     "You";
   const initialsName = user?.fullName ?? name;
+  const email = user?.primaryEmailAddress?.emailAddress ?? null;
   const shownPlan = demo ? DEMO_PLAN : plan;
 
   return (
@@ -180,6 +183,7 @@ export function UserButton() {
           shownPlan && (
             <SignedInRow
               name={name}
+              email={email}
               initialsName={initialsName}
               imageUrl={user.imageUrl}
               plan={shownPlan}

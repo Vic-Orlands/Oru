@@ -783,7 +783,7 @@ const LiveThread = memo(function LiveThread({
   );
   if (authReady && !isAuthenticated) {
     return (
-      <div className="flex h-full items-center justify-center px-6 text-[15px]/5 font-medium text-muted-foreground">
+      <div className="flex h-full items-center justify-center px-6 text-[14px]/5 font-medium text-muted-foreground">
         Sign in to see this thread.
       </div>
     );

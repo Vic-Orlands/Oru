@@ -25,6 +25,11 @@ import {
 import { useView } from "@/lib/view";
 import { DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { PageSlide } from "./page-slide";
 import { SearchModal } from "./search-modal";
 import { SettingsSidebar } from "./settings/settings-sidebar";
@@ -60,15 +65,29 @@ function SearchRow() {
       open={open && !incognito}
       onOpenChange={(next) => setOpen(next && !incognito)}
       trigger={
-        <DialogTrigger
-          render={
-            <SidebarRow
-              icon={IconSearch}
-              label="Search"
-              className="before:-top-px before:-bottom-px"
-            />
-          }
-        />
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <DialogTrigger
+                render={
+                  <SidebarRow
+                    icon={IconSearch}
+                    label="Search"
+                    tooltip={false}
+                    className="before:-top-px before:-bottom-px"
+                  />
+                }
+              />
+            }
+          />
+          <TooltipContent
+            side="right"
+            sideOffset={10}
+            className="hidden sidebar-collapsed:block"
+          >
+            Search
+          </TooltipContent>
+        </Tooltip>
       }
     />
   );
@@ -139,7 +158,7 @@ export function Sidebar() {
           type="button"
           onClick={toggleCollapsed}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="ml-auto -mr-1.5 hidden size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-foreground-soft transition-[opacity,background-color] duration-150 hover:bg-accent focus-visible:opacity-100 sidebar-collapsed:absolute sidebar-collapsed:inset-0 sidebar-collapsed:m-auto md:flex"
+          className="ml-auto -mr-1.5 hidden size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-foreground-soft opacity-0 transition-[opacity,background-color] duration-150 group-hover/sidebar:opacity-100 hover:bg-accent focus-visible:opacity-100 sidebar-collapsed:absolute sidebar-collapsed:inset-0 sidebar-collapsed:m-auto md:flex"
         >
           {collapsed ? (
             <IconLayoutSidebarLeftExpandFilled size={18} />
@@ -165,17 +184,31 @@ export function Sidebar() {
             {/* Stays left-anchored: px-3 already dead-centers the icon on the
                 40px rail, so the icon never moves — the label just fades as
                 the sliding edge clips it. */}
-            <SquishButton
-              onClick={openHome}
-              className="relative h-8 w-full py-0 before:absolute before:-inset-x-3 before:-top-1 before:-bottom-px"
-            >
-              <span className="flex min-w-0 items-center gap-2 overflow-hidden whitespace-nowrap">
-                <IconPlus size={16} stroke={2.5} className="shrink-0" />
-                <span className="transition-[opacity,visibility] duration-150 sidebar-collapsed:invisible sidebar-collapsed:opacity-0">
-                  New
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <SquishButton
+                    aria-label="New chat"
+                    onClick={openHome}
+                    className="relative h-8 w-full py-0 before:absolute before:-inset-x-3 before:-top-1 before:-bottom-px"
+                  />
+                }
+              >
+                <span className="flex min-w-0 items-center gap-2 overflow-hidden whitespace-nowrap">
+                  <IconPlus size={16} stroke={2.5} className="shrink-0" />
+                  <span className="transition-[opacity,visibility] duration-150 sidebar-collapsed:invisible sidebar-collapsed:opacity-0">
+                    New
+                  </span>
                 </span>
-              </span>
-            </SquishButton>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                sideOffset={10}
+                className="hidden sidebar-collapsed:block"
+              >
+                New chat
+              </TooltipContent>
+            </Tooltip>
             {/* -mt pulls the nav onto the same pitch as the New pill: 2px
                 seams all the way down, so a hovered row's pill stacks under
                 New exactly like the rows stack under each other. */}

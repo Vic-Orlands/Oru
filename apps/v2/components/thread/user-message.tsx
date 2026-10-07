@@ -52,7 +52,7 @@ export function UserMessage({
           {message.content.length > 0 && (
             <div
               data-quotable="user"
-              className="min-w-0 max-w-[85%] rounded-[20px] rounded-br-md bg-well px-3.5 py-2 text-[15px]/6 break-words whitespace-pre-wrap [overflow-wrap:anywhere] shadow-[inset_0_0_0_1px_var(--well-outline),inset_0_1px_0_0_var(--well-highlight)]"
+              className="min-w-0 max-w-[85%] rounded-[20px] rounded-br-md bg-well px-3.5 py-2 text-[14px]/6 break-words whitespace-pre-wrap [overflow-wrap:anywhere] shadow-[inset_0_0_0_1px_var(--well-outline),inset_0_1px_0_0_var(--well-highlight)]"
             >
               {message.content}
             </div>
