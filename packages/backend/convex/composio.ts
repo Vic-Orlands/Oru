@@ -282,7 +282,7 @@ const TOOLKIT_SHELVES: Record<string, string> = {
   calendly: "Calendar",
   clickup: "Project management",
   close: "CRM",
-  dropbox: "Storage",
+  dropbox: "Docs",
   excel: "Spreadsheets",
   fuseai: "LinkedIn & enrichment",
   gmail: "Email",

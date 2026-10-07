@@ -50,7 +50,7 @@ export function IntegrationLogo({
     return (
       <span
         title={name}
-        className={`relative grid shrink-0 place-items-center overflow-hidden bg-white ring-1 ring-black/[0.08] dark:ring-white/[0.14] ${className}`}
+        className={`relative grid shrink-0 place-items-center overflow-hidden bg-white ring-1 ring-black/[0.08] dark:bg-foreground/[0.08] dark:ring-foreground/[0.12] ${className}`}
         style={{ width: size, height: size, borderRadius: radius }}
       >
         {!loaded && (
@@ -70,7 +70,7 @@ export function IntegrationLogo({
           }}
           onLoad={(event) => settle(event.currentTarget)}
           onError={() => setFailed(true)}
-          className={`absolute inset-[14%] size-[72%] object-contain object-center transition-opacity duration-300 ${
+          className={`absolute inset-[14%] size-[72%] object-contain object-center transition-opacity duration-300 dark:drop-shadow-[0_0_1px_rgba(255,255,255,0.7)] ${
             loaded ? "opacity-100" : "opacity-0"
           }`}
         />
