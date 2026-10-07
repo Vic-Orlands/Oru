@@ -1,0 +1,20 @@
+{
+	"name": "oso-ahia",
+	"private": true,
+	"packageManager": "pnpm@10.33.3",
+	"scripts": {
+		"dev": "turbo dev",
+		"build": "turbo build",
+		"lint": "turbo lint",
+		"check": "turbo check",
+		"test": "turbo test",
+		"test:unit": "turbo test:unit",
+		"db:migrate": "pnpm --filter @oso-ahia/db db:migrate",
+		"db:seed": "pnpm --filter @oso-ahia/db db:seed",
+		"db:generate": "pnpm --filter @oso-ahia/db db:generate",
+		"format": "pnpm --filter @oso-ahia/web format"
+	},
+	"devDependencies": {
+		"turbo": "^2.6.1"
+	}
+}
