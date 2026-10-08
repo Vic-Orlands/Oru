@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
+import { InlineScript } from "@/components/inline-script";
 import { ViewportInsets } from "@/components/mobile/viewport-insets";
 import { ThemeSync } from "@/components/theme-sync";
 import { PerformanceInsights } from "@/components/performance-insights";
@@ -133,15 +133,9 @@ export default function RootLayout({
             flashes neutral, and the shell never jumps width. The scripts
             themselves are fixed strings in lib/boot-scripts.ts — see the
             note there on why that matters. */}
-        <Script id="oso-theme" strategy="beforeInteractive">
-          {THEME_BOOT_SCRIPT}
-        </Script>
-        <Script id="oso-tint" strategy="beforeInteractive">
-          {TINT_BOOT_SCRIPT}
-        </Script>
-        <Script id="oso-sidebar" strategy="beforeInteractive">
-          {SIDEBAR_BOOT_SCRIPT}
-        </Script>
+        <InlineScript html={THEME_BOOT_SCRIPT} />
+        <InlineScript html={TINT_BOOT_SCRIPT} />
+        <InlineScript html={SIDEBAR_BOOT_SCRIPT} />
       </head>
       <body className="h-full">
         <ThemeSync />

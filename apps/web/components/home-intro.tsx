@@ -5,42 +5,14 @@ import { useUser } from "@/lib/auth/session";
 import { IconGhost2Filled } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
 
-import { DEFAULT_GREETING, GREETINGS } from "@/lib/greetings";
+import { DEFAULT_GREETING } from "@/lib/greetings";
 import { useShowSuggestionsPref } from "@/lib/home-prefs";
 import { useHomeSuggestions } from "@/lib/home-suggestions";
 import { pickIncognitoTagline, useIncognitoState } from "@/lib/incognito";
 import { EASE_OUT, pinRasterPath, rise, SHED_BLUR } from "@/lib/motion";
 import { useCachedName } from "@/lib/name-cache";
-import { InlineScript } from "./inline-script";
 import { SuggestionCards } from "./suggestion-cards";
 import { WhirlLogo } from "./whirl-logo";
-
-declare global {
-  interface Window {
-    /** The boot script's greeting pick, adopted by React on hydration. */
-    __whirlGreeting?: string;
-  }
-}
-
-/* One masked ring of the logo's rest pose. Static string — no user data. */
-function bootRing(url: string) {
-  const mask =
-    `-webkit-mask-image:url(${url});mask-image:url(${url});` +
-    "-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;" +
-    "-webkit-mask-position:center;mask-position:center;" +
-    "-webkit-mask-size:contain;mask-size:contain";
-  return (
-    `<span style="position:absolute;inset:0;${mask}">` +
-    '<span class="bg-foreground-soft" style="position:absolute;inset:0"></span>' +
-    "</span>"
-  );
-}
-
-const BOOT_LOGO =
-  '<span style="position:relative;display:inline-block;width:32px;height:32px;flex-shrink:0">' +
-  bootRing("/whirl-ring-outer.svg") +
-  bootRing("/whirl-ring-inner.svg") +
-  "</span>";
 
 /* The greeting steps down below md because the longest lines in lib/greetings.ts
    ("Long time no see, {name}") plus a real first name do not fit across a
@@ -48,26 +20,6 @@ const BOOT_LOGO =
    no se…". The 40px slot above holds either size without moving. */
 const GREETING_CLASS =
   "min-w-0 truncate text-[22px]/8 font-medium tracking-tight md:text-[28px]/9";
-
-/* InlineScript executes this only from server HTML. On client navigation it
-   renders as text/plain, avoiding React's executable-script warning. */
-const GREETING_BOOT = `(function(){try{
-var s=document.currentScript,el=s&&s.parentElement;if(!el)return;
-var name=null;try{name=localStorage.getItem("greeting-name")}catch(e){}
-if(!name)return;
-var lines=${JSON.stringify(GREETINGS)};
-var line=lines[Math.floor(Math.random()*lines.length)];
-window.__whirlGreeting=line;
-var row=document.createElement("div");
-row.className="flex h-full min-w-0 items-center justify-center gap-3";
-var logo=document.createElement("span");
-logo.className="flex size-8 shrink-0 items-center justify-center";
-logo.innerHTML='${BOOT_LOGO}';
-var h=document.createElement("h1");
-h.className=${JSON.stringify(GREETING_CLASS)};
-h.textContent=line.split("{name}").join(name);
-row.appendChild(logo);row.appendChild(h);el.appendChild(row);
-}catch(e){}})();`;
 
 /* The home face's dressing around the composer: logo + a witty greeting
    above, a couple of random conversation starters below. Split out of the
@@ -82,17 +34,9 @@ row.appendChild(logo);row.appendChild(h);el.appendChild(row);
    answers. */
 export function HomeGreeting() {
   const { user, isLoaded } = useUser();
-  /* Randomized in the initializer (not an effect) so the first paint that
-     shows it is already the real line; the server branch keeps SSR
-     deterministic (nothing renders it before hydration anyway). */
-  /* The server always paints the first line. The boot pick is adopted during
-     hydration so the pre-paint DOM and React settle on the same greeting. */
-  const [greeting] = useState(() => {
-    if (typeof window === "undefined") return DEFAULT_GREETING;
-    const bootGreeting = window.__whirlGreeting ?? DEFAULT_GREETING;
-    delete window.__whirlGreeting;
-    return bootGreeting;
-  });
+  /* Keep the personalized greeting deterministic across server render and
+     hydration. Incognito still gets its visit-stable randomized tagline. */
+  const greeting = DEFAULT_GREETING;
 
   const liveName = isLoaded
     ? user?.firstName ||
@@ -122,11 +66,7 @@ export function HomeGreeting() {
 
   return (
     <div className="mb-7 h-10">
-      {heading === null && (
-        <div className="h-full" suppressHydrationWarning>
-          <InlineScript html={GREETING_BOOT} />
-        </div>
-      )}
+      {heading === null && <div className="h-full" aria-hidden="true" />}
       {heading !== null && (
         <motion.div
           {...entrance}

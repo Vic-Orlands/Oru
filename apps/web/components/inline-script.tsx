@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Runs inline boot code during server HTML parsing, but stays inert when the
  * same Client Component renders during navigation. This preserves pre-paint
