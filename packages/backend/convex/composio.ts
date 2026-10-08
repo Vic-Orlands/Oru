@@ -287,6 +287,8 @@ const TOOLKIT_SHELVES: Record<string, string> = {
   excel: "Spreadsheets",
   fusedesk: "Communication",
   fuseai: "LinkedIn & enrichment",
+  exa: "Research & enrichment",
+  parallel: "Research & enrichment",
   gmail: "Email",
   googlecalendar: "Calendar",
   googledocs: "Docs",
@@ -551,7 +553,7 @@ function rejectedToolSlugs(error: unknown, allowed: string[]): Set<string> {
 /** Composio MCP server names allow 4-30 chars: alphanumeric, space, hyphen. */
 function composioServerName(slug: string): string {
   if (slug === "fuseai") return "oso fuseai sales";
-  const cleaned = `Oso-Ahia ${slug}`
+  const cleaned = `whirl ${slug}`
     .replace(/[^a-zA-Z0-9 -]/g, "-")
     .slice(0, 30)
     .trim();
@@ -817,6 +819,8 @@ async function provisionToolkit(
 
 const CURATED_TOOLKITS = [
   "fuseai",
+  "exa",
+  "parallel",
   "gmail",
   "googlecalendar",
   "hubspot",

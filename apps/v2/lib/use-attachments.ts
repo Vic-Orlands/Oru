@@ -1,10 +1,9 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { useAction, useMutation } from "convex/react";
+import { useAction } from "convex/react";
 
 import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
 import {
   getAttachmentType,
   makeAttachmentId,
@@ -42,9 +41,6 @@ export function useAttachments({
      progress to report. See prepareDirectAttachment. */
   direct = false,
 }: { direct?: boolean } = {}) {
-  const generateUploadUrl = useMutation(
-    api.messages.generateAttachmentUploadUrl,
-  );
   const createMediaUpload = useAction(api.mediaStorage.createMediaUpload);
   const convertDocument = useAction(api.attachmentMarkdown.convert);
   const [drafts, setDrafts] = useState<AttachmentDraft[]>([]);
@@ -102,16 +98,15 @@ export function useAttachments({
               ? await prepareDirectAttachment(file)
               : await prepareAttachment({
                   file,
-                  getUploadUrl: () => generateUploadUrl(),
                   getMediaUpload: createMediaUpload,
                   /* The converter is also the stage boundary: it only ever
                      runs once the bytes have landed, so flipping the chip
                      here saves threading a second callback through
                      prepareAttachment. */
-                  convertDocument: ({ storageId, name }) => {
+                  convertDocument: ({ r2Key, name }) => {
                     patch(id, { status: "reading", progress: 1 });
                     return convertDocument({
-                      storageId: storageId as Id<"_storage">,
+                      r2Key,
                       name,
                     });
                   },
@@ -140,7 +135,7 @@ export function useAttachments({
         pendingRef.current.set(id, job);
       }
     },
-    [commit, patch, direct, generateUploadUrl, createMediaUpload, convertDocument],
+    [commit, patch, direct, createMediaUpload, convertDocument],
   );
 
   const remove = useCallback(

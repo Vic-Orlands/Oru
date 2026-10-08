@@ -12,7 +12,7 @@ export const get = query({
   args: {},
   handler: async () => ({
     billing: false,
-    search: Boolean(process.env.EXA_API_KEY),
+    search: Boolean(process.env.EXA_API_KEY || process.env.PARALLEL_API_KEY),
     memory: isSupermemoryConfigured(),
   }),
 });

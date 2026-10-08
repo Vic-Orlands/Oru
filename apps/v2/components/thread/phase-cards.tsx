@@ -12,6 +12,7 @@ import { GeneratingImageFrame, MorphingImage } from "./generated-image";
 import { QuestionCard } from "./question-card";
 import { LeadPhaseCard } from "@/components/desk/lead-card";
 import { WeatherWidget } from "./weather/weather-widget";
+import { usePrivateMediaUrl } from "@/lib/use-private-media-url";
 
 /* The rich phase blocks — weather widgets, charts, document cards, HTML
    artifacts, painted images — rendered between the activity chips and the prose.
@@ -24,7 +25,24 @@ import { WeatherWidget } from "./weather/weather-widget";
 export function isImageCardPhase(phase: MessagePhase): boolean {
   return (
     phase.kind === "image" &&
-    (phase.pending === true || (phase.images ?? []).length > 0)
+    (phase.pending === true ||
+      (phase.images ?? []).length > 0 ||
+      (phase.imageKeys ?? []).length > 0)
+  );
+}
+
+function PrivateGeneratedImage({
+  r2Key,
+  alt,
+}: {
+  r2Key: string;
+  alt: string;
+}) {
+  const { url } = usePrivateMediaUrl(r2Key);
+  return url ? (
+    <MorphingImage src={url} alt={alt} />
+  ) : (
+    <GeneratingImageFrame label="Opening image" />
   );
 }
 
@@ -118,18 +136,31 @@ export const PhaseCards = memo(
           case "image": {
             if (!isImageCardPhase(phase)) return null;
             const images = phase.images ?? [];
+            const imageKeys = phase.imageKeys ?? [];
             return (
               <div key={index} className="mb-2 flex min-w-0 flex-wrap gap-1.5">
-                {images.length === 0 ? (
+                {images.length === 0 && imageKeys.length === 0 ? (
                   <GeneratingImageFrame label="Painting an image" />
                 ) : (
-                  images.map((url, imageIndex) => (
-                    <MorphingImage
-                      key={url}
-                      src={url}
-                      alt={phase.prompt ?? `Painted image ${imageIndex + 1}`}
-                    />
-                  ))
+                  <>
+                    {imageKeys.map((r2Key, imageIndex) => (
+                      <PrivateGeneratedImage
+                        key={r2Key}
+                        r2Key={r2Key}
+                        alt={phase.prompt ?? `Painted image ${imageIndex + 1}`}
+                      />
+                    ))}
+                    {images.map((url, imageIndex) => (
+                      <MorphingImage
+                        key={url}
+                        src={url}
+                        alt={
+                          phase.prompt ??
+                          `Painted image ${imageKeys.length + imageIndex + 1}`
+                        }
+                      />
+                    ))}
+                  </>
                 )}
               </div>
             );

@@ -133,7 +133,7 @@ export function useQueueActions() {
                 ...(file.storageId
                   ? { storageId: file.storageId as Id<"_storage"> }
                   : {}),
-                ...(file.url ? { url: file.url } : {}),
+                ...(file.r2Key ? { r2Key: file.r2Key } : {}),
                 ...(file.text !== undefined ? { text: file.text } : {}),
                 ...(file.skippedReason !== undefined
                   ? { skippedReason: file.skippedReason }

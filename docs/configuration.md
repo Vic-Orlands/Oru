@@ -35,11 +35,11 @@ controls it can't honor instead of letting them fail.
 | Feature              | Where  | Variables                                  | Without it                                                          |
 | -------------------- | ------ | ------------------------------------------ | ------------------------------------------------------------------- |
 | Integrations (MCP)   | Convex | `MCP_ENCRYPTION_KEY`                       | Connecting an integration that stores credentials fails with a clear error |
-| Web search           | Convex | `EXA_API_KEY`                              | The search toggle hides, and replies run without the web            |
+| Web search           | Convex | `EXA_API_KEY` and/or `PARALLEL_API_KEY`    | The search toggle hides, and replies run without the web            |
 | Long-term memory     | Convex | `SUPERMEMORY_API_KEY`                      | Memory stays off                                                    |
 | Billing              | Convex | `AUTUMN_SECRET_KEY`                        | Everyone gets every feature, nothing is metered, and plan UI hides |
 | Composio integrations| Convex | `COMPOSIO_API_KEY`                         | Composio listings can't be installed                                |
-| Media CDN             | Convex | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_URL` | Media uploads fall back to Convex storage |
+| Private media        | Convex + Worker | `R2_GATEWAY_URL`, `R2_GATEWAY_SECRET`; matching Worker `SIGNING_SECRET` | Uploads fail clearly; files never fall back to Convex storage |
 | Support agent        | Both   | `MEDIAN_KEY`, `MEDIAN_SUPPORT_SECRET` (shared) | The Support menu item hides                                     |
 | Kirkify              | Both   | `KIRKIFY_SECRET` (shared)                  | `/kirkify` returns 404 and drops out of the nav and sitemap         |
 

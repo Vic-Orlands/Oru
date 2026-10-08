@@ -110,6 +110,7 @@ import {
 import { resolveMcpLifecycleMetadata } from "./mcpMetadata";
 import { resolveMcpServerConfigs } from "./mcpResolve";
 import { createExaAnswerTool } from "./search";
+import { createParallelSearchTool } from "./parallelSearch";
 import { createLoadSkillTool, LOAD_SKILL_NAME } from "./skills";
 import { createWebFetchTool } from "./webFetch";
 import { createWeatherTool, type WeatherPhasePayload } from "./weather";
@@ -144,6 +145,51 @@ async function sha256(value: string): Promise<string> {
   return [...new Uint8Array(digest)]
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
+}
+
+async function resolvePrivateMediaReferences<T>(ctx: ActionCtx, value: T) {
+  const keys = new Set<string>();
+  const collect = (entry: unknown) => {
+    if (typeof entry === "string" && entry.startsWith("r2://")) {
+      keys.add(decodeURIComponent(entry.slice(5)));
+      return;
+    }
+    if (Array.isArray(entry)) {
+      entry.forEach(collect);
+      return;
+    }
+    if (entry && typeof entry === "object") {
+      Object.values(entry).forEach(collect);
+    }
+  };
+  collect(value);
+  if (keys.size === 0) return value;
+
+  const urls = new Map(
+    await Promise.all(
+      [...keys].map(async (key) => {
+        const { url } = await ctx.runAction(
+          internal.mediaStorage.createMediaDownloadInternal,
+          { key },
+        );
+        return [key, url] as const;
+      }),
+    ),
+  );
+  const replace = (entry: unknown): unknown => {
+    if (typeof entry === "string" && entry.startsWith("r2://")) {
+      const key = decodeURIComponent(entry.slice(5));
+      return urls.get(key) ?? entry;
+    }
+    if (Array.isArray(entry)) return entry.map(replace);
+    if (entry && typeof entry === "object") {
+      return Object.fromEntries(
+        Object.entries(entry).map(([key, child]) => [key, replace(child)]),
+      );
+    }
+    return entry;
+  };
+  return replace(value) as T;
 }
 
 // Replayed live 2026-08-09: a warm /v4/profile answers in ~1.4s and a cold
@@ -345,6 +391,12 @@ export async function runAssistantTurn(
       userName,
     },
   );
+  const privateMedia = await resolvePrivateMediaReferences(ctx, {
+    messages: requestInfo.messages,
+    imageRequest: requestInfo.imageRequest,
+  });
+  const requestMessages = privateMedia.messages;
+  const imageRequest = privateMedia.imageRequest;
   timings.setMeta({
     assistantId: requestInfo.assistantId,
     model: requestInfo.model,
@@ -370,6 +422,7 @@ export async function runAssistantTurn(
   const requestedModelKey = resolveModelKey(requestInfo.model);
   const openRouterApiKey = process.env.OPENROUTER_API_KEY;
   const exaApiKey = process.env.EXA_API_KEY || undefined;
+  const parallelApiKey = process.env.PARALLEL_API_KEY || undefined;
   if (!openRouterApiKey) {
     return failPreflight("OPENROUTER_API_KEY");
   }
@@ -377,7 +430,8 @@ export async function runAssistantTurn(
   // the web instead of failing over a toggle this deployment can't honor.
   // The composer hides the toggle in that case (convex/features.ts), so
   // this only catches a stale tab.
-  const searchEnabled = requestInfo.search && exaApiKey !== undefined;
+  const searchEnabled =
+    requestInfo.search && (exaApiKey !== undefined || parallelApiKey !== undefined);
   // Billing is optional (see createBillingClient): without it every gate
   // below stays open and nothing is deducted.
   const autumn = createBillingClient();
@@ -1626,9 +1680,9 @@ export async function runAssistantTurn(
       if (isImageTurn) {
         scheduleStopPoll();
         const generationStartedAt = Date.now();
-        const { userImages, lastGeneratedImage } = requestInfo.imageRequest;
+        const { userImages, lastGeneratedImage } = imageRequest;
         const prompt = buildImagePrompt({
-          text: requestInfo.imageRequest.prompt,
+          text: imageRequest.prompt,
           userImages,
           hasPreviousImage: lastGeneratedImage !== null,
         });
@@ -1687,7 +1741,7 @@ export async function runAssistantTurn(
               result.images.length > 1
                 ? `generated-image-${index + 1}.${extension}`
                 : `generated-image.${extension}`;
-            let cdn = await ctx.runAction(
+            const upload = await ctx.runAction(
               internal.mediaStorage.createMediaUploadInternal,
               {
                 ownerId: customerId,
@@ -1696,17 +1750,16 @@ export async function runAssistantTurn(
                 size: image.blob.size,
               },
             );
-            if (cdn) {
-              const uploaded = await fetch(cdn.uploadUrl, {
-                method: "PUT",
-                headers: { "Content-Type": image.mediaType },
-                body: image.blob,
-              }).catch(() => null);
-              if (!uploaded?.ok) cdn = null;
+            const uploaded = await fetch(upload.uploadUrl, {
+              method: "PUT",
+              headers: { "Content-Type": image.mediaType },
+              body: image.blob,
+            });
+            if (!uploaded.ok) {
+              throw new Error(
+                `private image upload failed (${uploaded.status})`,
+              );
             }
-            const storageId = cdn
-              ? undefined
-              : await ctx.storage.store(image.blob);
             await runMutation(internal.inference.attachGeneratedImage, {
               assistantId: requestInfo.assistantId,
               attachment: {
@@ -1714,8 +1767,7 @@ export async function runAssistantTurn(
                 name,
                 size: image.blob.size,
                 type: image.mediaType,
-                ...(storageId ? { storageId } : {}),
-                ...(cdn ? { url: cdn.publicUrl } : {}),
+                r2Key: upload.key,
               },
             });
           }
@@ -2119,7 +2171,7 @@ export async function runAssistantTurn(
       // system prompt and tool schemas. Estimate the conversation content
       // actually sent so the usage tab can charge the user just for that.
       const promptContentTokens = estimatePromptContentTokens(
-        requestInfo.messages,
+        requestMessages,
       );
       timings.mark("providerStart");
       const generationStartedAt = Date.now();
@@ -2193,7 +2245,7 @@ export async function runAssistantTurn(
               latestUserText: capForFinalize(requestInfo.latestUserText),
               analyticsInput: buildAnalyticsInput(
                 systemPrompt,
-                requestInfo.messages,
+                requestMessages,
               ),
               performance: timings.snapshot(),
             },
@@ -2234,7 +2286,7 @@ export async function runAssistantTurn(
             spanName: "chat",
             input: [
               { role: "system", content: systemPrompt },
-              ...requestInfo.messages,
+              ...requestMessages,
             ],
             outputChoices: [{ role: "assistant", content: text }],
             inputTokens: opts.inputTokens,
@@ -2298,7 +2350,7 @@ export async function runAssistantTurn(
           model,
           abortSignal: abortController.signal,
           system: systemPrompt,
-          messages: requestInfo.messages as ModelMessage[],
+          messages: requestMessages as ModelMessage[],
           tools: {
             // The calculators are always available: models are unreliable at
             // arithmetic, so they can offload any maths to a deterministic
@@ -2618,6 +2670,33 @@ export async function runAssistantTurn(
                   }),
                 }
               : {}),
+            ...(searchEnabled && parallelApiKey
+              ? {
+                  researchWeb: createParallelSearchTool({
+                    apiKey: parallelApiKey,
+                    onSearch: async ({ sources, items, callIdx }) => {
+                      await runMutation(
+                        internal.inference.finalizeLastPendingSearch,
+                        {
+                          assistantId: requestInfo.assistantId,
+                          sources,
+                          items,
+                        },
+                      );
+                      await captureServerEvent({
+                        event: "web_search",
+                        distinctId: customerId,
+                        properties: {
+                          provider: "parallel",
+                          call_index: callIdx,
+                          pages: sources,
+                          thread_id: requestInfo.threadId,
+                        },
+                      });
+                    },
+                  }),
+                }
+              : {}),
             // The gateway to the user's own integrations (MCP servers):
             // mcp_list_tools + mcp_call_tool. Empty unless paid + the user has
             // enabled servers; the real tools are discovered on demand.
@@ -2804,7 +2883,9 @@ export async function runAssistantTurn(
                     pending: true,
                     title: "Working the desk",
                   }
-                : searchEnabled && part.toolName === "answerQuestion"
+                : searchEnabled &&
+                    (part.toolName === "answerQuestion" ||
+                      part.toolName === "researchWeb")
                   ? {
                       kind: "search" as const,
                       sources: 0,
@@ -3255,7 +3336,7 @@ export async function runAssistantTurn(
             model,
             systemPrompt,
             messages: [
-              ...(requestInfo.messages as ModelMessage[]),
+              ...(requestMessages as ModelMessage[]),
               ...toolMessages,
             ],
             toolNames: completedSteps.flatMap((step) =>

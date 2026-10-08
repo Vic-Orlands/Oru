@@ -32,6 +32,7 @@ export const paintImage = internalAction({
     const settle = async (result: {
       count?: number;
       images?: string[];
+      imageKeys?: string[];
       ok: boolean;
       error?: string;
       costDollars?: number;
@@ -42,6 +43,9 @@ export const paintImage = internalAction({
         prompt: args.prompt,
         ...(result.count !== undefined ? { count: result.count } : {}),
         ...(result.images !== undefined ? { images: result.images } : {}),
+        ...(result.imageKeys !== undefined
+          ? { imageKeys: result.imageKeys }
+          : {}),
         ok: result.ok,
         ...(result.error ? { error: result.error } : {}),
         expectedStreamId: args.streamId,
@@ -87,11 +91,11 @@ export const paintImage = internalAction({
         ...(tierOverride ? { model: tierOverride.slug } : {}),
       });
 
-      const images: string[] = [];
+      const imageKeys: string[] = [];
       for (const [index, image] of result.images.entries()) {
         const extension = image.mediaType.split("/")[1]?.split("+")[0] || "png";
         const name = `generated-image-${index + 1}.${extension}`;
-        let cdn = await ctx.runAction(
+        const upload = await ctx.runAction(
           internal.mediaStorage.createMediaUploadInternal,
           {
             ownerId: args.userId,
@@ -100,25 +104,20 @@ export const paintImage = internalAction({
             size: image.blob.size,
           },
         );
-        if (cdn) {
-          const uploaded = await fetch(cdn.uploadUrl, {
-            method: "PUT",
-            headers: { "Content-Type": image.mediaType },
-            body: image.blob,
-          }).catch(() => null);
-          if (!uploaded?.ok) cdn = null;
+        const uploaded = await fetch(upload.uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": image.mediaType },
+          body: image.blob,
+        });
+        if (!uploaded.ok) {
+          throw new Error(`private image upload failed (${uploaded.status})`);
         }
-        const storageId = cdn ? undefined : await ctx.storage.store(image.blob);
-        const url = cdn?.publicUrl ?? (storageId ? await ctx.storage.getUrl(storageId) : null);
-        if (!url) {
-          throw new Error("stored image has no URL");
-        }
-        images.push(url);
+        imageKeys.push(upload.key);
       }
 
       await settle({
-        count: images.length,
-        images,
+        count: imageKeys.length,
+        imageKeys,
         ok: true,
         model: result.model,
         ...(typeof result.cost === "number"

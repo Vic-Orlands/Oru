@@ -422,13 +422,17 @@ export const getRequestForStream = internalQuery({
       .filter(
         (attachment) =>
           attachment.type?.startsWith("image/") &&
-          (attachment.storageId || attachment.url || attachment.data),
+          (attachment.r2Key ||
+            attachment.storageId ||
+            attachment.url ||
+            attachment.data),
       )
       .map((attachment) => ({
         name: attachment.name,
         // The storage row is what the Images API path reads bytes from; the
         // URL is the fallback for attachments that predate it.
         storageId: attachment.storageId,
+        r2Key: attachment.r2Key,
         url: attachment.url ?? attachment.data,
         type: attachment.type,
       }));
@@ -437,6 +441,7 @@ export const getRequestForStream = internalQuery({
       url: string;
       type: string;
       storageId?: Id<"_storage">;
+      r2Key?: string;
     } | null = null;
     for (let i = hydratedHistory.length - 1; i >= 0; i -= 1) {
       const message = hydratedHistory[i];
@@ -453,6 +458,7 @@ export const getRequestForStream = internalQuery({
           url: image.url,
           type: image.type || "image/png",
           storageId: image.storageId,
+          r2Key: image.r2Key,
         };
         break;
       }
@@ -1360,6 +1366,7 @@ export const finalizeLastPendingImage = internalMutation({
     prompt: v.optional(v.string()),
     count: v.optional(v.number()),
     images: v.optional(v.array(v.string())),
+    imageKeys: v.optional(v.array(v.string())),
     ok: v.optional(v.boolean()),
     error: v.optional(v.string()),
     contentOffset: v.optional(v.number()),
@@ -1374,6 +1381,7 @@ export const finalizeLastPendingImage = internalMutation({
       prompt,
       count,
       images,
+      imageKeys,
       ok,
       error,
       contentOffset,
@@ -1397,6 +1405,7 @@ export const finalizeLastPendingImage = internalMutation({
       ...(prompt !== undefined ? { prompt } : {}),
       ...(count !== undefined ? { count } : {}),
       ...(images !== undefined ? { images } : {}),
+      ...(imageKeys !== undefined ? { imageKeys } : {}),
       ...(ok !== undefined ? { ok } : {}),
       ...(error !== undefined ? { error } : {}),
       ...(offset !== undefined ? { contentOffset: offset } : {}),

@@ -290,6 +290,7 @@ export async function repairFinalReply(params: {
 // (a per-integration name, a tool added later) is simply left out.
 const TOOL_WORK_LABELS: Record<string, string> = {
   answerQuestion: "searched the web",
+  researchWeb: "researched the web",
   calculate: "worked through the maths",
   calculateBatch: "worked through the maths",
   createChart: "put together a chart",

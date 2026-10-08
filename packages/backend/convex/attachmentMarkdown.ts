@@ -9,6 +9,7 @@ import {
   type Format,
 } from "@firecrawl/anydoc";
 
+import { internal } from "./_generated/api";
 import { action } from "./_generated/server";
 
 /* Attached documents, turned into Markdown.
@@ -105,22 +106,27 @@ function clamp(markdown: string): string {
  */
 export const convert = action({
   args: {
-    storageId: v.id("_storage"),
+    r2Key: v.string(),
     /** The original file name. Only the extension is used, and only as the
      *  fallback for a container the content signature doesn't identify. */
     name: v.string(),
   },
-  handler: async (ctx, { storageId, name }): Promise<DocumentMarkdown> => {
+  handler: async (ctx, { r2Key, name }): Promise<DocumentMarkdown> => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new ConvexError("Not authenticated");
 
-    const blob = await ctx.storage.get(storageId);
-    if (!blob) {
+    const { url } = await ctx.runAction(
+      internal.mediaStorage.createMediaDownloadInternal,
+      { key: r2Key },
+    );
+    const response = await fetch(url);
+    if (!response.ok) {
       return {
         kind: "skipped",
-        reason: "This document couldn't be found after upload.",
+        reason: "This document couldn't be read from private storage.",
       };
     }
+    const blob = await response.blob();
     if (blob.size === 0) {
       return { kind: "skipped", reason: "This document came through empty." };
     }

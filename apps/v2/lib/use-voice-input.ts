@@ -7,9 +7,8 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { useAction, useMutation } from "convex/react";
+import { useAction } from "convex/react";
 import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
 
 import { createLevelReader, SPEECH_PEAK_FLOOR } from "./audio-level";
 
@@ -207,7 +206,7 @@ export function useVoiceInput({
      state, so a composer that swapped faces mid-upload settles quietly. */
   const liveRef = useRef(true);
 
-  const uploadUrl = useMutation(api.messages.generateAttachmentUploadUrl);
+  const createMediaUpload = useAction(api.mediaStorage.createMediaUpload);
   const transcribe = useAction(api.transcription.transcribe);
 
   /* Let go of the mic and everything hanging off it. Safe to call twice —
@@ -244,26 +243,25 @@ export function useVoiceInput({
     };
   }, [releaseHardware]);
 
-  /* The clip is a keystroke that took a detour: up to storage, through
-     Whisper, back as text. The action deletes the blob on its way out, so
-     nothing is left behind whether or not the words arrive. */
+  /* The clip is a keystroke that took a detour through private R2 and
+     Whisper. The action deletes the object on its way out. */
   const sendForTranscription = useCallback(
     async (clip: Blob, mimeType: string) => {
       try {
-        const url = await uploadUrl();
-        const upload = await fetch(url, {
-          method: "POST",
+        const media = await createMediaUpload({
+          name: "dictation.webm",
+          type: mimeType || "audio/webm",
+          size: clip.size,
+        });
+        const upload = await fetch(media.uploadUrl, {
+          method: "PUT",
           headers: { "Content-Type": mimeType || "application/octet-stream" },
           body: clip,
         });
         if (!upload.ok) {
           throw new Error(`Upload failed with ${upload.status}`);
         }
-        const { storageId } = (await upload.json()) as {
-          storageId: Id<"_storage">;
-        };
-
-        const { text } = await transcribe({ clip: storageId, mimeType });
+        const { text } = await transcribe({ r2Key: media.key, mimeType });
         if (!liveRef.current) return;
         onTranscript(text);
         setStatus("idle");
@@ -276,7 +274,7 @@ export function useVoiceInput({
         setStatus("error");
       }
     },
-    [onTranscript, transcribe, uploadUrl],
+    [createMediaUpload, onTranscript, transcribe],
   );
 
   /* Mic in hand: wire up the analyser the waveform paints from, start the

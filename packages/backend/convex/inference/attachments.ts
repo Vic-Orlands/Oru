@@ -7,6 +7,7 @@ export type AttachmentForPrompt = {
   size: number;
   type: string;
   storageId?: Id<"_storage">;
+  r2Key?: string;
   url?: string;
   data?: string;
   text?: string;
@@ -157,6 +158,12 @@ export async function hydrateAttachmentUrls(
 
   return await Promise.all(
     attachments.map(async (attachment) => {
+      if (attachment.r2Key) {
+        return {
+          ...attachment,
+          url: `r2://${encodeURIComponent(attachment.r2Key)}`,
+        };
+      }
       if (!attachment.storageId) {
         return attachment;
       }

@@ -14,7 +14,7 @@ A tour of how Whirl fits together, for anyone about to change it.
 │       Clerk        │ ──── "convex") ───────▶ │  HTTP routes, crons      │
 └────────────────────┘                         └────────────┬─────────────┘
                                                             │
-                          OpenRouter (models) · Exa (search) · Supermemory
+                          OpenRouter (models) · Exa/Parallel (search) · Supermemory
                           (memory) · Autumn (billing) · MCP servers (tools)
 ```
 
@@ -101,7 +101,7 @@ On the backend, each integration degrades on its own terms:
 | Missing          | Behaviour                                                          |
 | ---------------- | ------------------------------------------------------------------ |
 | Autumn           | Everyone is treated as paid; no gates, no deductions (`createBillingClient` in `convex/inference/billing.ts`) |
-| Exa              | Search turns run without web tools                                 |
+| Exa and Parallel | Search turns run without web tools                                 |
 | Supermemory      | Memory stays off                                                   |
 | PostHog, Axiom, Braintrust | Instrumentation becomes a no-op                          |
 

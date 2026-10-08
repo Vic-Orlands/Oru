@@ -468,14 +468,6 @@ export const listForThread = queryGeneric({
   },
 });
 
-export const generateAttachmentUploadUrl = mutationGeneric({
-  args: {},
-  handler: async (ctx) => {
-    await getCurrentUserId(ctx);
-    return await ctx.storage.generateUploadUrl();
-  },
-});
-
 export const sendUserMessage = mutationGeneric({
   args: {
     threadId: v.optional(v.id("threads")),

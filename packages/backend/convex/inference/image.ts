@@ -27,6 +27,7 @@ export type ImageReferenceSource = {
   type?: string;
   url?: string;
   storageId?: Id<"_storage">;
+  r2Key?: string;
 };
 
 // A reference image as the Images API takes it: one URL, always a data URL by

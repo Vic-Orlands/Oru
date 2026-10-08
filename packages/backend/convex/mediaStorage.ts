@@ -1,31 +1,25 @@
 "use node";
 
-import { randomUUID } from "node:crypto";
+import { createHmac, createHash, randomUUID } from "node:crypto";
 
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 import { action, internalAction } from "./_generated/server";
 
-const MAX_MEDIA_BYTES = 20 * 1024 * 1024;
-const UPLOAD_TTL_SECONDS = 5 * 60;
+const MAX_ASSET_BYTES = 20 * 1024 * 1024;
+const URL_TTL_SECONDS = 5 * 60;
 
-function optionalEnvironment(name: string) {
+function requiredEnvironment(name: string) {
   const value = process.env[name]?.trim();
-  return value || undefined;
+  if (!value) throw new Error(`${name} is not configured.`);
+  return value;
 }
 
-function r2Configuration() {
-  const accountId = optionalEnvironment("R2_ACCOUNT_ID");
-  const accessKeyId = optionalEnvironment("R2_ACCESS_KEY_ID");
-  const secretAccessKey = optionalEnvironment("R2_SECRET_ACCESS_KEY");
-  const bucket = optionalEnvironment("R2_BUCKET");
-  const publicUrl = optionalEnvironment("R2_PUBLIC_URL")?.replace(/\/$/, "");
-  if (!accountId || !accessKeyId || !secretAccessKey || !bucket || !publicUrl) {
-    return null;
-  }
-  return { accountId, accessKeyId, secretAccessKey, bucket, publicUrl };
+function configuration() {
+  return {
+    gatewayUrl: requiredEnvironment("R2_GATEWAY_URL").replace(/\/$/, ""),
+    secret: requiredEnvironment("R2_GATEWAY_SECRET"),
+  };
 }
 
 function safeExtension(name: string) {
@@ -33,59 +27,60 @@ function safeExtension(name: string) {
   return match?.[1] ? `.${match[1]}` : "";
 }
 
-async function signedMediaUpload(args: {
+function encodedKey(key: string) {
+  return key.split("/").map(encodeURIComponent).join("/");
+}
+
+function signedUrl({
+  method,
+  key,
+  type = "",
+}: {
+  method: "GET" | "PUT" | "DELETE";
+  key: string;
+  type?: string;
+}) {
+  const config = configuration();
+  const expires = Math.floor(Date.now() / 1000) + URL_TTL_SECONDS;
+  const signature = createHmac("sha256", config.secret)
+    .update(`${method}\n${key}\n${expires}\n${method === "PUT" ? type : ""}`)
+    .digest("hex");
+  return `${config.gatewayUrl}/objects/${encodedKey(key)}?expires=${expires}&signature=${signature}`;
+}
+
+function createObjectKey(ownerId: string, name: string) {
+  const owner = ownerSegment(ownerId);
+  return `uploads/${owner}/${new Date().toISOString().slice(0, 10)}/${randomUUID()}${safeExtension(name)}`;
+}
+
+function ownerSegment(ownerId: string) {
+  return createHash("sha256").update(ownerId).digest("hex").slice(0, 20);
+}
+
+function validateUpload(size: number, type: string) {
+  if (!Number.isFinite(size) || size <= 0 || size > MAX_ASSET_BYTES) {
+    throw new ConvexError("That file is larger than the 20 MB upload limit.");
+  }
+  if (!type.trim()) {
+    throw new ConvexError("That file does not have a recognizable type.");
+  }
+}
+
+function createUpload(args: {
   ownerId: string;
   name: string;
   type: string;
   size: number;
 }) {
-  if (!/^(image|audio|video)\//.test(args.type)) {
-    throw new Error("Only media files can use the CDN upload path.");
-  }
-  if (!Number.isFinite(args.size) || args.size <= 0 || args.size > MAX_MEDIA_BYTES) {
-    throw new Error("That media file is larger than the 20 MB upload limit.");
-  }
-
-  const config = r2Configuration();
-  if (!config) return null;
-
-  const userSegment = await crypto.subtle
-    .digest("SHA-256", new TextEncoder().encode(args.ownerId))
-    .then((bytes) => Buffer.from(bytes).toString("hex").slice(0, 20));
-  const key = `uploads/${userSegment}/${new Date().toISOString().slice(0, 10)}/${randomUUID()}${safeExtension(args.name)}`;
-  const client = new S3Client({
-    region: "auto",
-    endpoint: `https://${config.accountId}.r2.cloudflarestorage.com`,
-    credentials: {
-      accessKeyId: config.accessKeyId,
-      secretAccessKey: config.secretAccessKey,
-    },
-  });
-  const uploadUrl = await getSignedUrl(
-    client,
-    new PutObjectCommand({
-      Bucket: config.bucket,
-      Key: key,
-      ContentType: args.type,
-    }),
-    { expiresIn: UPLOAD_TTL_SECONDS },
-  );
-
+  validateUpload(args.size, args.type);
+  const key = createObjectKey(args.ownerId, args.name);
   return {
-    uploadUrl,
-    publicUrl: `${config.publicUrl}/${key
-      .split("/")
-      .map(encodeURIComponent)
-      .join("/")}`,
+    key,
+    uploadUrl: signedUrl({ method: "PUT", key, type: args.type }),
   };
 }
 
-/**
- * Creates a short-lived, content-type-bound upload URL for Cloudflare R2.
- * The browser sends the bytes straight to R2, so Convex never proxies a
- * multi-megabyte media file. When R2 is not configured the caller falls back
- * to Convex storage, which keeps local development usable.
- */
+/** Creates a short-lived upload URL into the private R2 bucket. */
 export const createMediaUpload = action({
   args: {
     name: v.string(),
@@ -94,12 +89,28 @@ export const createMediaUpload = action({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Sign in before uploading media.");
-    return await signedMediaUpload({ ownerId: identity.subject, ...args });
+    if (!identity) throw new ConvexError("Sign in before uploading a file.");
+    return createUpload({ ownerId: identity.tokenIdentifier, ...args });
   },
 });
 
-/** Signed upload for trusted backend image-generation actions. */
+/** Creates a short-lived read URL. The bucket itself remains private. */
+export const createMediaDownload = action({
+  args: { key: v.string() },
+  handler: async (ctx, { key }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("Sign in to view this file.");
+    const ownedPrefixes = [identity.tokenIdentifier, identity.subject].map(
+      (ownerId) => `uploads/${ownerSegment(ownerId)}/`,
+    );
+    if (!ownedPrefixes.some((prefix) => key.startsWith(prefix))) {
+      throw new ConvexError("You do not have access to this file.");
+    }
+    return { url: signedUrl({ method: "GET", key }) };
+  },
+});
+
+/** Signed URLs for trusted backend image-generation and migration actions. */
 export const createMediaUploadInternal = internalAction({
   args: {
     ownerId: v.string(),
@@ -107,5 +118,24 @@ export const createMediaUploadInternal = internalAction({
     type: v.string(),
     size: v.number(),
   },
-  handler: async (_ctx, args) => await signedMediaUpload(args),
+  handler: async (_ctx, args) => createUpload(args),
+});
+
+export const createMediaDownloadInternal = internalAction({
+  args: { key: v.string() },
+  handler: async (_ctx, { key }) => ({
+    url: signedUrl({ method: "GET", key }),
+  }),
+});
+
+export const deleteMediaInternal = internalAction({
+  args: { key: v.string() },
+  handler: async (_ctx, { key }) => {
+    const response = await fetch(signedUrl({ method: "DELETE", key }), {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error(`Private media deletion failed (${response.status}).`);
+    }
+  },
 });

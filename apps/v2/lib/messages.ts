@@ -42,6 +42,7 @@ export type MessageAttachment = {
   size: number;
   type: string;
   url?: string;
+  r2Key?: string;
   text?: string;
   skippedReason?: string;
 };
@@ -128,6 +129,7 @@ export type MessagePhase = {
      once the worker finishes; `pending` covers the painting stretch. */
   prompt?: string;
   images?: string[];
+  imageKeys?: string[];
   count?: number;
   /* Documents and HTML artifacts — pointers into their Convex tables;
      the cards read the live rows by id. */
@@ -587,7 +589,7 @@ export function useMessageActions() {
                   ...(file.storageId
                     ? { storageId: file.storageId as Id<"_storage"> }
                     : {}),
-                  ...(file.url ? { url: file.url } : {}),
+                  ...(file.r2Key ? { r2Key: file.r2Key } : {}),
                   ...(file.text !== undefined ? { text: file.text } : {}),
                   ...(file.skippedReason !== undefined
                     ? { skippedReason: file.skippedReason }

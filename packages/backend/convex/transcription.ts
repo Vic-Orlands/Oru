@@ -5,8 +5,8 @@ import { action, type ActionCtx } from "./_generated/server";
 import { AI_COST_FEATURE_ID } from "./inference/billing";
 import { chargeUsage } from "./usageLedger";
 
-/* Dictation. The composer records a clip, drops it in storage, and hands the
-   id here; this turns it into text and throws the bytes away. One request to
+/* Dictation. The composer records a clip, drops it in private R2, and hands
+   the key here; this turns it into text and throws the bytes away. One request to
    OpenRouter's OpenAI-compatible transcription endpoint — no AI SDK, no
    streaming, no retries. A clip either comes back as words or it fails out
    loud, because the user is sitting there watching a spinner. */
@@ -63,11 +63,11 @@ function transcriptionFailureMessage(status: number) {
  * words it became. */
 export const transcribe = action({
   args: {
-    clip: v.id("_storage"),
+    r2Key: v.string(),
     /* MediaRecorder's chosen mime type, so the container survives the trip. */
     mimeType: v.string(),
   },
-  handler: async (ctx, { clip, mimeType }): Promise<{ text: string }> => {
+  handler: async (ctx, { r2Key, mimeType }): Promise<{ text: string }> => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new ConvexError("Not authenticated");
 
@@ -78,12 +78,17 @@ export const transcribe = action({
       );
     }
 
-    const audio = await ctx.storage.get(clip);
-    if (!audio) {
+    const { url } = await ctx.runAction(
+      internal.mediaStorage.createMediaDownloadInternal,
+      { key: r2Key },
+    );
+    const storedAudio = await fetch(url);
+    if (!storedAudio.ok) {
       throw new ConvexError(
         "That recording expired before it could be transcribed. Try again?",
       );
     }
+    const audio = await storedAudio.blob();
 
     try {
       if (audio.size === 0) {
@@ -144,7 +149,7 @@ export const transcribe = action({
         ctx,
         userId: identity.subject,
         cost: payload.usage?.cost,
-        clip,
+        clip: r2Key,
       });
 
       if (!text) {
@@ -154,12 +159,14 @@ export const transcribe = action({
     } finally {
       /* The clip has served its purpose whichever way this went. A failed
          delete is not worth failing a good transcription over. */
-      await ctx.storage.delete(clip).catch((error: unknown) => {
-        console.warn(
-          "Could not delete a dictation clip.",
-          error instanceof Error ? error.message : error,
-        );
-      });
+      await ctx
+        .runAction(internal.mediaStorage.deleteMediaInternal, { key: r2Key })
+        .catch((error: unknown) => {
+          console.warn(
+            "Could not delete a dictation clip.",
+            error instanceof Error ? error.message : error,
+          );
+        });
     }
   },
 });

@@ -260,37 +260,6 @@ async function compressImage(file: File): Promise<File> {
   return new File([blob], newName, { type: blob.type });
 }
 
-/* fetch() can't report upload progress, so the POST to Convex storage goes
-   through XHR — that's the only reason this isn't a one-liner. */
-function uploadToStorage(
-  url: string,
-  type: string,
-  body: Blob,
-  onProgress?: (fraction: number) => void,
-): Promise<{ storageId: string }> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", url);
-    xhr.setRequestHeader("Content-Type", type);
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) onProgress?.(event.loaded / event.total);
-    };
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          resolve(JSON.parse(xhr.responseText) as { storageId: string });
-        } catch {
-          reject(new Error("Malformed upload response"));
-        }
-      } else {
-        reject(new Error(`Upload failed (${xhr.status})`));
-      }
-    };
-    xhr.onerror = () => reject(new Error("Upload failed"));
-    xhr.send(body);
-  });
-}
-
 function uploadToCdn(
   url: string,
   type: string,
@@ -320,11 +289,10 @@ export type AttachmentUpload = {
   name: string;
   size: number;
   type: string;
-  /** Where the blob landed in Convex storage. Empty for a direct
-   *  attachment, which never went anywhere (see `dataUrl`). */
-  storageId: string;
-  /** Public CDN URL for media stored in Cloudflare R2. */
-  url?: string;
+  /** Legacy Convex storage pointer. New uploads always use `r2Key`. */
+  storageId?: string;
+  /** Private Cloudflare R2 object key. Never a public URL. */
+  r2Key?: string;
   /** A locked chat's images: base64 in the tab, handed straight to the
    *  model with the turn and stored by nobody. Set instead of `storageId`,
    *  never alongside it. */
@@ -341,7 +309,7 @@ export type AttachmentUpload = {
  *  `api.attachmentMarkdown.convert`, injected rather than imported so this
  *  module stays free of React and Convex bindings. */
 export type DocumentConverter = (args: {
-  storageId: string;
+  r2Key: string;
   name: string;
 }) => Promise<DocumentMarkdown>;
 
@@ -349,7 +317,7 @@ export type MediaUploadSigner = (args: {
   name: string;
   type: string;
   size: number;
-}) => Promise<{ uploadUrl: string; publicUrl: string } | null>;
+}) => Promise<{ uploadUrl: string; key: string }>;
 
 /** Why a file can't ride a locked chat, or null when it can. Locked chats
  *  have no server-side stage: an image can be inlined and a text file can be
@@ -385,7 +353,6 @@ export async function prepareDirectAttachment(
     name: file.name,
     size: file.size,
     type,
-    storageId: "",
     ...(type.startsWith("image/")
       ? { dataUrl: await readAsDataUrl(file) }
       : { text: await file.text() }),
@@ -404,19 +371,16 @@ function readAsDataUrl(file: File): Promise<string> {
 
 /**
  * Compresses images, reads text files, converts documents to Markdown, and
- * uploads one file to Convex storage, reporting upload progress along the
- * way.
+ * uploads one file to the private R2 bucket, reporting progress along the way.
  */
 export async function prepareAttachment({
   file: raw,
-  getUploadUrl,
   getMediaUpload,
   convertDocument,
   onProgress,
 }: {
   file: File;
-  getUploadUrl: () => Promise<string>;
-  getMediaUpload?: MediaUploadSigner;
+  getMediaUpload: MediaUploadSigner;
   convertDocument: DocumentConverter;
   onProgress?: (fraction: number) => void;
 }): Promise<AttachmentUpload> {
@@ -424,34 +388,16 @@ export async function prepareAttachment({
   const file = rawType.startsWith("image/") ? await compressImage(raw) : raw;
   const type = getAttachmentType(file);
 
-  const mediaUpload = /^(image|audio|video)\//.test(type)
-    ? await getMediaUpload?.({ name: file.name, type, size: file.size })
-    : null;
-  if (mediaUpload) {
-    try {
-      await uploadToCdn(mediaUpload.uploadUrl, type, file, onProgress);
-      return {
-        id: makeAttachmentId(),
-        name: file.name,
-        size: file.size,
-        type,
-        storageId: "",
-        url: mediaUpload.publicUrl,
-      };
-    } catch (error) {
-      console.warn("CDN upload failed; using primary storage instead.", error);
-      onProgress?.(0);
-    }
-  }
+  const mediaUpload = await getMediaUpload({
+    name: file.name,
+    type,
+    size: file.size,
+  });
+  await uploadToCdn(mediaUpload.uploadUrl, type, file, onProgress);
 
-  /* Reading a text file and uploading its bytes are independent — run them
-     together so neither waits on the other. */
+  /* Text rides with the message so models can read it without downloading. */
   const textPromise = isTextAttachment(file) ? file.text() : undefined;
-  const uploadUrl = await getUploadUrl();
-  const [{ storageId }, text] = await Promise.all([
-    uploadToStorage(uploadUrl, type, file, onProgress),
-    textPromise,
-  ]);
+  const text = await textPromise;
 
   /* Documents convert where their bytes already are — the backend reads them
      straight back out of storage, so a 20 MB deck is never uploaded twice.
@@ -459,7 +405,7 @@ export async function prepareAttachment({
      the race above. */
   const document =
     text === undefined && isExtractableDocument(type, file.name)
-      ? await convertDocument({ storageId, name: file.name }).catch(
+      ? await convertDocument({ r2Key: mediaUpload.key, name: file.name }).catch(
           (error: unknown): DocumentMarkdown => {
             console.error("Document conversion failed.", error);
             return {
@@ -475,7 +421,7 @@ export async function prepareAttachment({
     name: file.name,
     size: file.size,
     type,
-    storageId,
+    r2Key: mediaUpload.key,
     ...(text !== undefined
       ? { text }
       : document?.kind === "text"

@@ -4,6 +4,7 @@
 !.env.example
 !**/.env.example
 node_modules/
+.wrangler/
 
 # Local credentials and signing material
 *.key

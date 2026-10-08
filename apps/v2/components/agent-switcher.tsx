@@ -14,6 +14,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
@@ -75,27 +76,29 @@ export function AgentSwitcher({ compact = false }: { compact?: boolean }) {
         sideOffset={6}
         className="w-[min(21rem,calc(100vw-2rem))] p-1.5"
       >
-        <DropdownMenuLabel className="px-2 py-1.5">Lead agents</DropdownMenuLabel>
-        {LEAD_AGENTS.map((agent) => {
-          const AgentIcon = ICONS[agent.id];
-          const selected = agent.id === activeId;
-          return (
-            <DropdownMenuItem
-              key={agent.id}
-              onClick={() => select(agent.id)}
-              className="items-start gap-2.5 px-2 py-2"
-            >
-              <AgentIcon size={17} className="mt-0.5 text-muted-foreground" />
-              <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-medium">{agent.name}</span>
-                <span className="block text-[11.5px]/4 text-muted-foreground">
-                  {agent.description}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="px-2 py-1.5">Lead agents</DropdownMenuLabel>
+          {LEAD_AGENTS.map((agent) => {
+            const AgentIcon = ICONS[agent.id];
+            const selected = agent.id === activeId;
+            return (
+              <DropdownMenuItem
+                key={agent.id}
+                onClick={() => select(agent.id)}
+                className="items-start gap-2.5 px-2 py-2"
+              >
+                <AgentIcon size={17} className="mt-0.5 text-muted-foreground" />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[13px] font-medium">{agent.name}</span>
+                  <span className="block text-[11.5px]/4 text-muted-foreground">
+                    {agent.description}
+                  </span>
                 </span>
-              </span>
-              {selected && <IconCheck size={15} className="mt-0.5 text-primary" />}
-            </DropdownMenuItem>
-          );
-        })}
+                {selected && <IconCheck size={15} className="mt-0.5 text-primary" />}
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

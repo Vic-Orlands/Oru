@@ -5,6 +5,7 @@ import { useState } from "react";
 import { formatSize } from "@/lib/attachments";
 import type { MessageAttachment } from "@/lib/messages";
 import { ImageLightbox } from "@/components/ui/image-lightbox";
+import { usePrivateMediaUrl } from "@/lib/use-private-media-url";
 import { fileGlyph, fileLabel } from "../composer-attachments";
 
 /* Read-only chips for attachments already sent with a message — the
@@ -14,7 +15,9 @@ import { fileGlyph, fileLabel } from "../composer-attachments";
 
 function ImageThumb({ attachment }: { attachment: MessageAttachment }) {
   const [open, setOpen] = useState(false);
-  if (!attachment.url) return null;
+  const privateMedia = usePrivateMediaUrl(attachment.r2Key);
+  const url = privateMedia.url ?? attachment.url;
+  if (!url) return null;
   return (
     <>
       <button
@@ -26,13 +29,13 @@ function ImageThumb({ attachment }: { attachment: MessageAttachment }) {
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- Convex storage URL */}
         <img
-          src={attachment.url}
+          src={url}
           alt={attachment.name}
           className="h-24 w-auto min-w-16 max-w-56 rounded-[14px] object-cover ring-1 ring-black/[0.06] dark:ring-white/[0.08]"
         />
       </button>
       <ImageLightbox
-        src={attachment.url}
+        src={url}
         alt={attachment.name}
         open={open}
         onOpenChange={setOpen}
@@ -50,7 +53,8 @@ export function MessageAttachments({
   return (
     <div className="flex flex-wrap justify-end gap-2">
       {attachments.map((attachment) =>
-        attachment.type.startsWith("image/") && attachment.url ? (
+        attachment.type.startsWith("image/") &&
+        (attachment.url || attachment.r2Key) ? (
           <ImageThumb key={attachment.id} attachment={attachment} />
         ) : (
           <div

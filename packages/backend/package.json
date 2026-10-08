@@ -10,8 +10,6 @@
     "test:slots": "vitest run"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1147.0",
-    "@aws-sdk/s3-request-presigner": "^3.1147.0",
     "@convex-dev/better-auth": "^0.12.5",
     "@convex-dev/persistent-text-streaming": "^0.3.3",
     "@firecrawl/anydoc": "^0.1.7",
