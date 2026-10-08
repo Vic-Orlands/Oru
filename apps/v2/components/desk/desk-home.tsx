@@ -1,21 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   IconArrowUp,
   IconCheckbox,
   IconChevronDown,
   IconMail,
-  IconSparkles,
+  IconPaperclip,
 } from "@tabler/icons-react";
 import { useConvexAuth } from "convex/react";
 
 import { useDeskData } from "@/lib/desk-data";
-import { CHAT_MODELS } from "@/lib/models";
+import type { AttachmentUpload } from "@/lib/attachments";
+import { attachmentRejectionReason } from "@/lib/attachments";
+import { useAttachments } from "@/lib/use-attachments";
+import { useComposerModels } from "@/lib/model-catalog";
+import { useModelAccess } from "@/lib/model-access";
+import type { SetModelPref } from "@/lib/model-pref";
+import { useSearchPref, useThinkingPref, type ComposerGates } from "@/lib/composer-gates";
 import { useRunningThreadIds, useThreads } from "@/lib/threads";
 import { useView } from "@/lib/view";
 import { AgentSwitcher } from "@/components/agent-switcher";
 import { leadAgentById, useLeadAgent } from "@/lib/lead-agents";
+import { ComposerAttachments } from "@/components/composer-attachments";
+import { ModelSelect } from "@/components/model-select";
 
 const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
 
@@ -58,10 +66,12 @@ function loadWidgets(): Set<WidgetId> {
 
 export function DeskHome({
   model,
+  onModelChange,
   onSubmit,
 }: {
   model: string;
-  onSubmit: (text: string) => void;
+  onModelChange: SetModelPref;
+  onSubmit: (text: string, model: string, attachments: AttachmentUpload[], gates: ComposerGates) => Promise<void>;
 }) {
   const { isAuthenticated } = useConvexAuth();
   const leadAgentId = useLeadAgent();
@@ -77,7 +87,17 @@ export function DeskHome({
   const [text, setText] = useState("");
   const [widgets, setWidgets] = useState<Set<WidgetId>>(() => new Set(WIDGETS));
   const [menu, setMenu] = useState(false);
-  const modelName = CHAT_MODELS.find((item) => item.key === model)?.name ?? "Kimi";
+  const [sending, setSending] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const attachments = useAttachments();
+  const models = useComposerModels();
+  const { isPaid } = useModelAccess();
+  const [searchOn, setSearchOn] = useSearchPref();
+  const [thinking, setThinking] = useThinkingPref();
+  const currentModel = models.find((item) => item.key === model) ?? models[0];
+  const rejectionFor = (file: { name: string; size: number; type: string }) =>
+    currentModel ? attachmentRejectionReason(file, currentModel, isPaid === false) : "Models are still loading.";
+  const hasInvalidFiles = attachments.drafts.some((draft) => draft.status === "error" || rejectionFor(draft) !== null);
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setWidgets(loadWidgets()));
@@ -98,11 +118,18 @@ export function DeskHome({
     });
   };
 
-  const send = () => {
+  const send = async () => {
     const value = text.trim();
-    if (!value) return;
-    onSubmit(value);
-    setText("");
+    if ((!value && attachments.drafts.length === 0) || hasInvalidFiles || sending) return;
+    setSending(true);
+    try {
+      const files = await attachments.resolve();
+      await onSubmit(value, model, files, { search: searchOn, thinking });
+      setText("");
+      attachments.clear();
+    } finally {
+      setSending(false);
+    }
   };
 
   const peak = Math.max(...desk.bars, 1);
@@ -156,13 +183,16 @@ export function DeskHome({
           </div>
           {tab === "new" ? (
             <>
+              {attachments.drafts.length > 0 && (
+                <ComposerAttachments drafts={attachments.drafts} rejectionFor={rejectionFor} onRemove={attachments.remove} />
+              )}
               <textarea
                 value={text}
                 onChange={(event) => setText(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
-                    send();
+                    void send();
                   }
                 }}
                 rows={3}
@@ -171,18 +201,21 @@ export function DeskHome({
               />
               <div className="flex items-center gap-2 px-2.5 pb-2.5">
                 <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
-                  <Chip>Workspace · Oso</Chip>
-                  <Chip>
-                    <IconSparkles size={12} />
-                    {modelName}
-                  </Chip>
-                  <Chip>Real sources only</Chip>
+                  <div className="rounded-full bg-accent"><AgentSwitcher compact contextLabel="Agent" /></div>
+                  <div className="rounded-full bg-accent">
+                    <ModelSelect value={model} onValueChange={onModelChange} searchOn={searchOn} onSearchOnChange={setSearchOn} thinking={thinking} onThinkingChange={setThinking} />
+                  </div>
+                  <button type="button" onClick={() => fileInputRef.current?.click()} className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-2.5 text-[11.5px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Attach files">
+                    <IconPaperclip size={13} aria-hidden="true" />Attach
+                  </button>
+                  <input ref={fileInputRef} type="file" multiple hidden onChange={(event) => { if (event.target.files?.length) attachments.addFiles(event.target.files); event.target.value = ""; }} />
                 </div>
                 <button
                   type="button"
-                  onClick={send}
+                  onClick={() => void send()}
                   aria-label="Send"
-                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
+                  disabled={sending || hasInvalidFiles || (text.trim().length === 0 && attachments.drafts.length === 0)}
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-opacity disabled:opacity-40"
                 >
                   <IconArrowUp size={16} />
                 </button>
@@ -404,14 +437,6 @@ function TabButton({
     >
       {children}
     </button>
-  );
-}
-
-function Chip({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-1 text-[11.5px] text-muted-foreground">
-      {children}
-    </span>
   );
 }
 

@@ -552,15 +552,10 @@ export function ChatView({
           {!inThread && (
             <DeskHome
               model={model}
-              onSubmit={(value) => {
-                void submit(
-                  value,
-                  model,
-                  [],
-                  { search: false, thinking: "none" },
-                  { integrations: [], skills: [] },
-                );
-              }}
+              onModelChange={setModel}
+              onSubmit={(value, selectedModel, attachments, gates) =>
+                submit(value, selectedModel, attachments, gates, { integrations: [], skills: [] })
+              }
             />
           )}
           <AnimatePresence mode="popLayout" initial={false}>

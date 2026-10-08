@@ -7,6 +7,7 @@ import type { LeadAgentKind } from "../leadAgents";
 import { scoreLead, type LeadScoringSignals } from "./leadScoring";
 import { createOpportunityTools } from "./opportunityTools";
 import { OPPORTUNITY_PROFILES } from "../opportunityProfiles";
+import { zonedDateTimeToEpoch } from "../scheduledTasks";
 
 export const LEAD_TOOL_NAMES = new Set([
   "findProspects",
@@ -404,7 +405,7 @@ export function createLeadTools(opts: {
       inputSchema: jsonSchema<{
         title: string;
         instructions: string;
-        firstRunAt: string;
+        localDateTime: string;
         recurrence: "none" | "daily" | "weekly";
         kind: string;
       }>({
@@ -416,10 +417,10 @@ export function createLeadTools(opts: {
             description:
               "Complete, self-contained instructions for the future run, including desired output and filters.",
           },
-          firstRunAt: {
+          localDateTime: {
             type: "string",
             description:
-              "ISO-8601 date-time with an explicit UTC offset for the first run.",
+              "The date and time on the user's own clock, formatted YYYY-MM-DDTHH:mm with no UTC offset.",
           },
           recurrence: {
             type: "string",
@@ -430,34 +431,31 @@ export function createLeadTools(opts: {
         required: [
           "title",
           "instructions",
-          "firstRunAt",
+          "localDateTime",
           "recurrence",
           "kind",
         ],
         additionalProperties: false,
       }),
-      execute: async ({ firstRunAt, ...task }) => {
-        const runAt = Date.parse(firstRunAt);
-        if (!Number.isFinite(runAt)) {
-          throw new Error(
-            "The scheduled time must be a valid ISO-8601 date-time with a UTC offset.",
-          );
-        }
+      execute: async ({ localDateTime, ...task }) => {
+        if (!timeZone) throw new Error("The user's timezone is unavailable. Ask them to set a timezone before scheduling this task.");
+        const runAt = zonedDateTimeToEpoch(localDateTime, timeZone);
         if (runAt < Date.now() - 60_000) {
-          throw new Error("The scheduled time is already in the past.");
+          throw new Error(`That time is already in the past in ${timeZone}.`);
         }
         const taskId = await ctx.runMutation(internal.leads.recordTask, {
           userId,
           leadAgent,
           ...task,
-          when: firstRunAt,
+          when: `${localDateTime} (${timeZone})`,
           runAt,
           timeZone,
         });
         return {
           created: task.title,
           taskId,
-          firstRunAt,
+          localDateTime,
+          timeZone,
           recurrence: task.recurrence,
         };
       },
@@ -469,18 +467,18 @@ export function createLeadTools(opts: {
     }),
     updateDeskTask: tool({
       description: "Update one scheduled task. Identify it by its exact TASK reference or exact title from listDeskTasks.",
-      inputSchema: jsonSchema<{ identifier: string; title?: string; instructions?: string; firstRunAt?: string; recurrence?: "none" | "daily" | "weekly" }>({
+      inputSchema: jsonSchema<{ identifier: string; title?: string; instructions?: string; localDateTime?: string; recurrence?: "none" | "daily" | "weekly" }>({
         type: "object",
         properties: {
           identifier: { type: "string" }, title: { type: "string" }, instructions: { type: "string" },
-          firstRunAt: { type: "string", description: "Optional ISO-8601 date-time with UTC offset." },
+          localDateTime: { type: "string", description: "Optional new date and time on the user's clock, formatted YYYY-MM-DDTHH:mm without an offset." },
           recurrence: { type: "string", enum: ["none", "daily", "weekly"] },
         },
         required: ["identifier"], additionalProperties: false,
       }),
-      execute: async ({ firstRunAt, ...changes }) => {
-        const nextRunAt = firstRunAt === undefined ? undefined : Date.parse(firstRunAt);
-        if (firstRunAt !== undefined && !Number.isFinite(nextRunAt)) throw new Error("Use a valid ISO-8601 date-time with a UTC offset.");
+      execute: async ({ localDateTime, ...changes }) => {
+        if (localDateTime !== undefined && !timeZone) throw new Error("The user's timezone is unavailable. Ask them to set it before changing the schedule.");
+        const nextRunAt = localDateTime === undefined ? undefined : zonedDateTimeToEpoch(localDateTime, timeZone!);
         return ctx.runMutation(internal.scheduledTasks.updateByIdentifier, { userId, leadAgent, ...changes, ...(nextRunAt !== undefined ? { nextRunAt } : {}), timeZone });
       },
     }),

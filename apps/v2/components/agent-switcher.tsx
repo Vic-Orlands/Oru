@@ -36,7 +36,7 @@ const ICONS: Record<LeadAgentId, Icon> = {
   fundraising: IconCoin,
 };
 
-export function AgentSwitcher({ compact = false }: { compact?: boolean }) {
+export function AgentSwitcher({ compact = false, contextLabel }: { compact?: boolean; contextLabel?: string }) {
   const activeId = useLeadAgent();
   const active = leadAgentById(activeId);
   const ActiveIcon = ICONS[activeId];
@@ -53,7 +53,7 @@ export function AgentSwitcher({ compact = false }: { compact?: boolean }) {
         render={
           <button
             type="button"
-            aria-label={`Lead agent: ${active.shortName}`}
+            aria-label={`Agent: ${active.shortName}`}
             className={`flex items-center rounded-lg text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               compact
                 ? "h-8 max-w-full gap-1.5 px-2 text-[11.5px]"
@@ -64,7 +64,7 @@ export function AgentSwitcher({ compact = false }: { compact?: boolean }) {
       >
         <ActiveIcon size={compact ? 14 : 16} className="shrink-0 text-primary" />
         <span className={compact ? "truncate font-medium" : "min-w-0 flex-1 truncate font-medium sidebar-collapsed:hidden"}>
-          {active.shortName}
+          {contextLabel ? `${contextLabel} · ${active.shortName}` : active.shortName}
         </span>
         <IconChevronDown
           size={13}
@@ -77,7 +77,7 @@ export function AgentSwitcher({ compact = false }: { compact?: boolean }) {
         className="w-[min(21rem,calc(100vw-2rem))] p-1.5"
       >
         <DropdownMenuGroup>
-          <DropdownMenuLabel className="px-2 py-1.5">Lead agents</DropdownMenuLabel>
+          <DropdownMenuLabel className="px-2 py-1.5">Agents</DropdownMenuLabel>
           {LEAD_AGENTS.map((agent) => {
             const AgentIcon = ICONS[agent.id];
             const selected = agent.id === activeId;

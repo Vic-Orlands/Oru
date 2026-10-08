@@ -9,6 +9,40 @@ import { appendUserTurn } from "./turns";
 const DAY_MS = 24 * 60 * 60 * 1_000;
 const WEEK_MS = 7 * DAY_MS;
 
+function zonedParts(timestamp: number, timeZone: string) {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
+  });
+  return Object.fromEntries(formatter.formatToParts(timestamp).map((part) => [part.type, part.value]));
+}
+
+/** Convert a wall-clock value in the user's IANA timezone into the UTC
+ * instant Convex schedules. Rejects nonexistent DST wall times instead of
+ * quietly running an hour early or late. */
+export function zonedDateTimeToEpoch(localDateTime: string, timeZone: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(localDateTime.trim());
+  if (!match) throw new Error("Use local date and time as YYYY-MM-DDTHH:mm.");
+  const desired = Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]), Number(match[6] ?? 0));
+  let candidate = desired;
+  try {
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      const actualParts = zonedParts(candidate, timeZone);
+      const actual = Date.UTC(Number(actualParts.year), Number(actualParts.month) - 1, Number(actualParts.day), Number(actualParts.hour), Number(actualParts.minute), Number(actualParts.second));
+      candidate += desired - actual;
+    }
+  } catch {
+    throw new Error(`The timezone ${timeZone} is not valid.`);
+  }
+  const resolved = zonedParts(candidate, timeZone);
+  const resolvedValue = `${resolved.year}-${resolved.month}-${resolved.day}T${resolved.hour}:${resolved.minute}`;
+  if (resolvedValue !== localDateTime.slice(0, 16)) {
+    throw new Error(`${localDateTime} does not exist in ${timeZone}, usually because the clocks change then. Choose another time.`);
+  }
+  return candidate;
+}
+
 export function followingRun(
   scheduledFor: number,
   recurrence: "none" | "daily" | "weekly",
@@ -17,16 +51,11 @@ export function followingRun(
 ) {
   if (recurrence === "none") return undefined;
   const intervalDays = recurrence === "daily" ? 1 : 7;
-  const formatter = new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric", month: "2-digit", day: "2-digit",
-    hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
-  });
-  const parts = Object.fromEntries(formatter.formatToParts(scheduledFor).map((part) => [part.type, part.value]));
+  const parts = zonedParts(scheduledFor, timeZone);
   const desired = new Date(Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day) + intervalDays, Number(parts.hour), Number(parts.minute), Number(parts.second)));
   let next = desired.getTime();
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    const actualParts = Object.fromEntries(formatter.formatToParts(next).map((part) => [part.type, part.value]));
+    const actualParts = zonedParts(next, timeZone);
     const actual = Date.UTC(Number(actualParts.year), Number(actualParts.month) - 1, Number(actualParts.day), Number(actualParts.hour), Number(actualParts.minute), Number(actualParts.second));
     next += desired.getTime() - actual;
   }

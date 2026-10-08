@@ -175,6 +175,7 @@ function buildUserContextSection({
     lines.push(
       `- The user's device timezone is ${timeZone}${locale ? ` and locale is ${locale}` : ""}. Treat this only as an approximate location; never claim to know exactly where they are, and never ask the user for their location.`,
     );
+    lines.push("- For scheduled work, interpret dates and times in this timezone unless the user explicitly names another one. Pass the local wall-clock value to scheduling tools; they perform the UTC conversion and preserve local time across daylight-saving changes.");
   }
   return `User context (use only when relevant):\n${lines.join("\n")}`;
 }

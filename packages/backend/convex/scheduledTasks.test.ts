@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { followingRun } from "./scheduledTasks";
+import { followingRun, zonedDateTimeToEpoch } from "./scheduledTasks";
 
 describe("scheduled task recurrence", () => {
   it("keeps the local wall clock across daylight-saving changes", () => {
@@ -11,5 +11,10 @@ describe("scheduled task recurrence", () => {
 
   it("does not recur one-off work", () => {
     expect(followingRun(Date.now(), "none", Date.now(), "UTC")).toBeUndefined();
+  });
+
+  it("converts the user's wall clock into the correct UTC instant", () => {
+    expect(new Date(zonedDateTimeToEpoch("2026-10-08T09:30", "Africa/Lagos")).toISOString()).toBe("2026-10-08T08:30:00.000Z");
+    expect(new Date(zonedDateTimeToEpoch("2026-10-08T09:30", "Australia/Sydney")).toISOString()).toBe("2026-10-07T22:30:00.000Z");
   });
 });
