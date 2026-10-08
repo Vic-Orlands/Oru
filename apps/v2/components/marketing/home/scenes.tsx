@@ -78,31 +78,30 @@ function Frame({
   kicker,
   title,
   aside,
+  foot,
   children,
-  tall = false,
 }: {
   kicker: string;
   title: string;
   aside?: string;
+  foot?: string;
   children: ReactNode;
-  tall?: boolean;
 }) {
   return (
-    <div
-      className={`flex flex-col overflow-hidden rounded-2xl bg-card text-foreground shadow-[0_30px_80px_-40px_rgba(40,24,10,0.55)] ring-1 ring-border ${
-        tall ? "min-h-[560px] lg:min-h-[680px]" : "min-h-[440px]"
-      }`}
-    >
-      <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+    <div className="relative flex flex-col rounded-2xl bg-card text-foreground shadow-[0_28px_60px_-28px_rgba(62,32,12,0.55)] ring-1 ring-primary/25">
+      <div className="flex items-center justify-between gap-3 rounded-t-2xl border-b border-border bg-primary/5 px-4 py-3">
         <div className="min-w-0">
-          <div className="text-[10px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
+          <div className="text-[10px] font-medium tracking-[0.16em] text-primary uppercase">
             {kicker}
           </div>
           <div className="truncate text-[14px] font-medium">{title}</div>
         </div>
         {aside ? <div className="shrink-0 text-[12px] text-muted-foreground">{aside}</div> : null}
       </div>
-      <div className="flex min-h-0 flex-1 flex-col p-3 md:p-4">{children}</div>
+      <div className="p-3 md:p-4">{children}</div>
+      {foot ? (
+        <div className="rounded-b-2xl border-t border-border px-4 py-2.5 text-[12px] text-muted-foreground">{foot}</div>
+      ) : null}
     </div>
   );
 }
@@ -135,14 +134,23 @@ export function HeroDesk() {
   };
 
   return (
-    <div className="relative" onPointerMove={onMove} onPointerLeave={() => setShift({ x: 0, y: 0 })}>
+    <div
+      className="relative px-2 pt-6 pb-8"
+      onPointerMove={onMove}
+      onPointerLeave={() => setShift({ x: 0, y: 0 })}
+    >
       <div
         className="relative z-10"
         style={{
           transform: reduce ? undefined : `translate3d(${shift.x * 10}px, ${shift.y * 8}px, 0)`,
         }}
       >
-        <Frame kicker="Room" title={current.hint} aside="5 strong fits" tall>
+        <Frame
+          kicker="Room"
+          title={current.hint}
+          aside="5 on screen"
+          foot="Enrichment finished · nothing queued to send"
+        >
           <div className="mb-3 flex flex-wrap gap-1.5">
             {ROOMS.map((item, index) => (
               <button
@@ -191,9 +199,11 @@ export function HeroDesk() {
         </Frame>
       </div>
       <div
-        className="absolute -top-3 right-3 z-20 hidden w-44 rounded-2xl bg-card p-3 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.55)] ring-1 ring-border sm:block md:-right-6"
+        className="absolute top-1 right-2 z-20 hidden w-44 rounded-2xl bg-card p-3 shadow-[0_18px_40px_-16px_rgba(62,32,12,0.55)] ring-1 ring-primary/35 sm:block"
         style={{
-          transform: reduce ? undefined : `translate3d(${shift.x * -18}px, ${shift.y * -14}px, 0)`,
+          transform: reduce
+            ? "rotate(-2deg)"
+            : `translate3d(${shift.x * -18}px, ${shift.y * -14}px, 0) rotate(-2deg)`,
         }}
       >
         <div className="text-[10px] tracking-[0.14em] text-muted-foreground uppercase">Judge</div>
@@ -204,9 +214,11 @@ export function HeroDesk() {
         <p className="mt-1 text-[11px] leading-4 text-muted-foreground">{current.rows[0]?.[3]}</p>
       </div>
       <div
-        className="absolute -bottom-3 left-3 z-20 hidden items-center gap-2 rounded-2xl bg-card px-3 py-2.5 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.55)] ring-1 ring-border sm:flex md:-left-8"
+        className="absolute right-5 bottom-1 z-20 hidden items-center gap-2 rounded-2xl bg-card px-3 py-2.5 shadow-[0_18px_40px_-16px_rgba(62,32,12,0.55)] ring-1 ring-primary/35 sm:flex"
         style={{
-          transform: reduce ? undefined : `translate3d(${shift.x * -12}px, ${shift.y * 16}px, 0)`,
+          transform: reduce
+            ? "rotate(2deg)"
+            : `translate3d(${shift.x * -12}px, ${shift.y * 16}px, 0) rotate(2deg)`,
         }}
       >
         <IconCircleCheckFilled size={16} className="text-primary" />
@@ -230,7 +242,12 @@ export function DeskScene({ id }: { id: SceneId }) {
 function FindScene() {
   const rows = ROOMS[0].rows;
   return (
-    <Frame kicker="Find" title="Clinic groups, enriched" aside="48 named · 5 shown" tall>
+    <Frame
+      kicker="Find"
+      title="Clinic groups, enriched"
+      aside={`${rows.length} shown`}
+      foot="48 named in the room · 7 above the line"
+    >
       <div className="overflow-hidden rounded-xl ring-1 ring-border">
         <div className="grid grid-cols-[1.2fr_1fr_auto] gap-2 bg-background px-3 py-2 text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
           <span>Person</span>
@@ -262,7 +279,12 @@ function FindScene() {
 
 function JudgeScene() {
   return (
-    <Frame kicker="Judge" title="Yes, or it never becomes a draft" aside="3 yes · 2 no" tall>
+    <Frame
+      kicker="Judge"
+      title="Yes, or it never becomes a draft"
+      aside="3 yes · 2 no"
+      foot="A no stops here. It does not become a draft."
+    >
       <ul className="flex flex-1 flex-col gap-2">
         {VERDICTS.map(([name, co, verdict, reason, score]) => {
           const yes = verdict === "yes";
@@ -316,7 +338,12 @@ function WriteScene() {
   }, [reduce, last.length]);
 
   return (
-    <Frame kicker="Sequence" title="Three notes. One voice." aside="Fortnight" tall>
+    <Frame
+      kicker="Sequence"
+      title="Three notes. One voice."
+      aside="Fortnight"
+      foot="Day 0 is still open · days 3 and 7 are held"
+    >
       <ol className="flex flex-1 flex-col gap-2">
         {SEQUENCE.map(([day, subject, body], index) => (
           <li key={day} className="rounded-xl bg-background px-3 py-3 ring-1 ring-border">
@@ -345,55 +372,77 @@ function WriteScene() {
 }
 
 function ApproveScene() {
+  const reduce = useReducedMotion();
   const [done, setDone] = useState<string[]>([]);
   const left = QUEUE.filter((card) => !done.includes(card[0]));
   const front = left[0];
+  const behind = left.slice(1, 3);
   return (
-    <Frame kicker="Approvals" title="The queue waits on you" aside={`${left.length} held`} tall>
-      <div className="relative min-h-[300px] flex-1">
-        {left
-          .slice(0, 3)
-          .reverse()
-          .map((card) => {
-            const depth = left.indexOf(card);
-            const isFront = depth === 0;
-            return (
-              <motion.article
-                key={card[0]}
-                layout
-                className="absolute inset-x-0 top-0 rounded-xl bg-background p-4 ring-1 ring-border"
-                style={{
-                  transform: `translateY(${depth * 18}px) scale(${1 - depth * 0.035})`,
-                  zIndex: 10 - depth,
-                  opacity: 1 - depth * 0.08,
-                }}
-              >
-                <div className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase">{card[0]}</div>
-                <h3 className="mt-1 text-[18px] font-medium tracking-tight">{card[1]}</h3>
-                <p className="mt-2 text-[13px] leading-5 text-muted-foreground">{card[2]}</p>
-                {isFront && front ? (
-                  <div className="mt-4 flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setDone((value) => [...value, front[0]])}
-                      className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[12.5px] font-medium text-primary-foreground"
-                    >
-                      <IconCircleCheckFilled size={14} />
-                      Approve
-                    </button>
-                    <span className="rounded-full px-3 py-1.5 text-[12.5px] ring-1 ring-border">Hold</span>
-                  </div>
-                ) : null}
-              </motion.article>
-            );
-          })}
-        {left.length === 0 ? (
-          <div className="flex h-full min-h-[220px] flex-col items-start justify-center rounded-xl bg-background px-4 ring-1 ring-border">
-            <IconCircleCheckFilled className="text-primary" />
-            <p className="mt-2 text-[16px] font-medium">Queue clear.</p>
-            <p className="text-[13px] text-muted-foreground">Three notes held. None sent.</p>
-          </div>
-        ) : null}
+    <Frame
+      kicker="Approvals"
+      title="The queue waits on you"
+      aside={`${left.length} held`}
+      foot={left.length === 0 ? "Queue clear. None of the three were sent." : "Approve the front note. The rest stay put."}
+    >
+      <div className={`relative ${behind.length > 0 ? "pt-16" : ""}`}>
+        {behind.map((card, index) => {
+          const fromBack = behind.length - index;
+          return (
+            <div
+              key={card[0]}
+              className="absolute inset-x-3 rounded-xl border border-primary/25 bg-primary/15 px-4 py-2.5 shadow-sm ring-1 ring-primary/20"
+              style={{
+                top: fromBack === 2 ? 0 : 26,
+                transform: `scale(${fromBack === 2 ? 0.9 : 0.95})`,
+                transformOrigin: "top center",
+                zIndex: index + 1,
+              }}
+            >
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase">{card[0]}</span>
+                <span className="text-[12px] font-medium">{card[1]}</span>
+              </div>
+            </div>
+          );
+        })}
+        <AnimatePresence mode="popLayout">
+          {front ? (
+            <motion.article
+              key={front[0]}
+              initial={reduce ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduce ? undefined : { opacity: 0, x: 72, rotate: 1.5 }}
+              transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
+              className="relative z-10 rounded-xl bg-background p-4 shadow-[0_12px_30px_-18px_rgba(62,32,12,0.5)] ring-1 ring-border"
+            >
+              <div className="text-[11px] tracking-[0.14em] text-muted-foreground uppercase">{front[0]}</div>
+              <h3 className="mt-1 text-[18px] font-medium tracking-tight">{front[1]}</h3>
+              <p className="mt-2 text-[13px] leading-5 text-muted-foreground">{front[2]}</p>
+              <div className="mt-4 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDone((value) => [...value, front[0]])}
+                  className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[12.5px] font-medium text-primary-foreground"
+                >
+                  <IconCircleCheckFilled size={14} />
+                  Approve
+                </button>
+                <span className="rounded-full px-3 py-1.5 text-[12.5px] ring-1 ring-border">Hold</span>
+              </div>
+            </motion.article>
+          ) : (
+            <motion.div
+              key="clear"
+              initial={reduce ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative rounded-xl bg-background px-4 py-5 ring-1 ring-border"
+            >
+              <IconCircleCheckFilled className="text-primary" />
+              <p className="mt-2 text-[16px] font-medium">Queue clear.</p>
+              <p className="text-[13px] text-muted-foreground">Three notes held. None sent.</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </Frame>
   );
@@ -408,21 +457,26 @@ function TrackScene() {
     ["Meetings", 1],
   ] as const;
   return (
-    <Frame kicker="Pipeline" title="From a sentence to a meeting" aside="This week" tall>
-      <div className="grid flex-1 gap-3 md:grid-cols-[0.9fr_1.1fr]">
-        <div className="flex items-end gap-2 rounded-xl bg-background p-3 ring-1 ring-border">
+    <Frame
+      kicker="Pipeline"
+      title="From a sentence to a meeting"
+      aside="This week"
+      foot="48 found · 1 meeting · 0 sent without a yes"
+    >
+      <div className="grid gap-3 md:grid-cols-[0.85fr_1.15fr]">
+        <div className="flex items-end gap-2 rounded-xl bg-background px-3 pt-3 pb-2 ring-1 ring-border">
           {bars.map(([label, value]) => (
             <div key={label} className="flex flex-1 flex-col items-center gap-1">
-              <div className="flex h-40 w-full items-end rounded-md bg-accent/70">
+              <div className="flex h-24 w-full items-end">
                 <motion.div
-                  className="w-full rounded-md bg-primary"
+                  className="w-full rounded-sm bg-primary"
                   initial={false}
-                  animate={{ height: `${Math.max(8, value * 1.7)}%` }}
+                  animate={{ height: `${Math.max(10, (value / 48) * 100)}%` }}
                   transition={{ duration: 0.6, ease: [0.22, 0.61, 0.36, 1] }}
                 />
               </div>
               <span className="text-[12px] font-medium tabular-nums">{value}</span>
-              <span className="text-[10px] text-muted-foreground">{label}</span>
+              <span className="text-center text-[10px] leading-3 text-muted-foreground">{label}</span>
             </div>
           ))}
         </div>

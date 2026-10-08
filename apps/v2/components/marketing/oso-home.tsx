@@ -138,12 +138,20 @@ export function OsoHome() {
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-70"
+          className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage:
-              "linear-gradient(to right, color-mix(in oklab, var(--primary) 16%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--primary) 16%, transparent) 1px, transparent 1px)",
+              "linear-gradient(to right, color-mix(in oklab, var(--primary) 34%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--primary) 34%, transparent) 1px, transparent 1px)",
             backgroundSize: "56px 56px",
-            maskImage: "radial-gradient(ellipse at 50% 40%, black, transparent 75%)",
+            maskImage: "radial-gradient(ellipse at 62% 42%, black 20%, transparent 72%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(680px circle at 72% 38%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 70%)",
           }}
         />
         {!reduce ? (
@@ -151,11 +159,11 @@ export function OsoHome() {
             aria-hidden
             className="pointer-events-none absolute inset-0"
             style={{
-              background: `radial-gradient(520px circle at ${spot.x}px ${spot.y}px, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%)`,
+              background: `radial-gradient(520px circle at ${spot.x}px ${spot.y}px, color-mix(in oklab, var(--primary) 32%, transparent), transparent 60%)`,
             }}
           />
         ) : null}
-        <div className="relative mx-auto grid min-h-[100dvh] max-w-[1440px] items-center gap-8 px-6 pt-24 pb-16 lg:grid-cols-[0.72fr_1.28fr]">
+        <div className="relative mx-auto grid min-h-[100dvh] max-w-7xl items-center gap-8 px-5 pt-24 pb-16 lg:grid-cols-[0.78fr_1.22fr]">
           <div>
             <p className="text-[12px] font-medium tracking-[0.2em] text-primary uppercase">Outbound, held</p>
             <h1 className="mt-4 max-w-[10ch] text-[52px]/[0.92] font-medium tracking-[-0.04em] md:text-[84px]/[0.9]">
@@ -214,8 +222,8 @@ export function OsoHome() {
         </div>
       </section>
 
-      <section id="how" className="border-b border-border">
-        <div className="mx-auto grid max-w-[1440px] items-start gap-6 px-6 py-10 lg:grid-cols-[38fr_62fr] lg:gap-8 lg:py-4">
+      <section id="how" className="border-b border-border bg-[linear-gradient(180deg,color-mix(in_oklab,var(--primary)_8%,transparent),transparent_220px)]">
+        <div className="mx-auto grid max-w-7xl items-start gap-6 px-5 py-10 lg:grid-cols-[38fr_62fr] lg:gap-8 lg:py-6">
           <div>
             <Reveal>
               <p className="text-[12px] tracking-[0.16em] text-primary uppercase">How a yes happens</p>
@@ -238,13 +246,13 @@ export function OsoHome() {
               ))}
             </div>
           </div>
-          <div className="sticky top-16 hidden self-start lg:block">
+          <div className="sticky top-24 hidden self-start lg:block">
             <div className="mb-3 flex items-center gap-3 text-[12px] text-muted-foreground">
               <span className="tabular-nums text-foreground">{STEPS[step]?.n}</span>
               <span className="h-px flex-1 bg-border" />
               <span>{STEPS[step]?.title}</span>
             </div>
-            <div className="relative min-h-[680px]">
+            <div className="relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={STEPS[step]?.phase}
@@ -353,7 +361,7 @@ export function OsoHome() {
         </div>
       </section>
 
-      <section className="border-b border-border">
+      <section data-shot="send" className="border-b border-border">
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-20 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <p className="text-[12px] tracking-[0.16em] text-primary uppercase">The send</p>
