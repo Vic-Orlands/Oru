@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { IconArrowRight, IconMoon, IconSun } from "@tabler/icons-react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 
 import { OsoLogo } from "@/components/oso-logo";
-import { ProductStage, type StagePhase } from "@/components/marketing/home/product-stage";
+import { DeskScene, HeroDesk, type SceneId } from "@/components/marketing/home/scenes";
 import { useIsDark, useTheme } from "@/lib/theme";
 
 const LOGOS = [
@@ -27,79 +27,44 @@ const LOGOS = [
   ["googledocs", "Docs"],
 ] as const;
 
-const STEPS: { n: string; phase: StagePhase; title: string; body: string }[] = [
+const STEPS: { n: string; phase: SceneId; title: string; body: string }[] = [
   {
     n: "01",
     phase: "find",
     title: "Name the room",
-    body: "One sentence. City, size, the job that actually feels the wait.",
+    body: "One sentence. The table fills with people, places, and the signal that made them worth a look.",
   },
   {
     n: "02",
-    phase: "score",
-    title: "Keep the strong fits",
-    body: "A yes-or-no judge. Anyone weak never becomes a draft.",
+    phase: "judge",
+    title: "Judge the fit",
+    body: "A yes or a no, with the reason beside it. A no never becomes a draft.",
   },
   {
     n: "03",
-    phase: "draft",
-    title: "Write the note",
-    body: "Short, specific, and in your voice. No fake familiarity.",
+    phase: "write",
+    title: "Write the sequence",
+    body: "Three short notes across a fortnight. The first one is still being finished.",
   },
   {
     n: "04",
     phase: "approve",
-    title: "Hold the send",
-    body: "Approve it, hold it, or rewrite the line that sounds wrong.",
+    title: "Clear the queue",
+    body: "Stacked, held, and yours. Approve the front card or leave it where it is.",
   },
   {
     n: "05",
     phase: "track",
-    title: "Watch the reply",
-    body: "Meetings, silence, and the next note — in one place.",
+    title: "Read what came back",
+    body: "Replies, silence, and the meeting that actually landed.",
   },
-];
-
-const CAPABILITIES = [
-  {
-    id: "find",
-    title: "Find",
-    body: "A sentence becomes a list. No filter maze.",
-  },
-  {
-    id: "qualify",
-    title: "Qualify",
-    body: "Fit, timing, and a duplicate check. Then a score.",
-  },
-  {
-    id: "write",
-    title: "Write",
-    body: "A sequence across a fortnight, not a brochure.",
-  },
-  {
-    id: "approve",
-    title: "Approve",
-    body: "The email is a card. Yes and hold are both complete.",
-  },
-  {
-    id: "track",
-    title: "Track",
-    body: "From found, to fit, to a meeting on the calendar.",
-  },
-] as const;
-
-const METRICS = [
-  { value: 48, label: "Names from one sentence" },
-  { value: 11, label: "Kept after the judge" },
-  { value: 4, label: "Drafts waiting on you" },
-  { value: 0, label: "Sent without a yes" },
 ];
 
 const FAQ = [
-  ["Does it send on its own?", "No. Every draft waits. Hold is a finished answer."],
-  ["What do I connect?", "Gmail and a calendar are enough. The rest of the store is optional."],
-  ["Which model writes?", "Kimi, through OpenRouter. Fast yes-or-no calls go to a judge model."],
-  ["Can I look without keys?", "Yes. The sample desk opens with a chat already in motion."],
+  ["Who is allowed to send?", "A person. The desk can finish a note. It cannot release one."],
+  ["What does a no look like?", "A reason you can read. Weak fits and duplicates stop before a draft."],
+  ["What has to be connected?", "A mailbox. A calendar if you want the meeting on it. The CRM can wait."],
+  ["Where does the writing run?", "Kimi writes the note. A smaller judge model only answers yes or no."],
 ];
 
 export function OsoHome() {
@@ -109,10 +74,12 @@ export function OsoHome() {
   const [solid, setSolid] = useState(false);
   const [step, setStep] = useState(0);
   const [cap, setCap] = useState(0);
-  const [spot, setSpot] = useState({ x: 50, y: 30 });
+  const [spot, setSpot] = useState({ x: 40, y: 30 });
+  const { scrollYProgress } = useScroll();
+  const bar = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > 32);
+    const onScroll = () => setSolid(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -120,42 +87,39 @@ export function OsoHome() {
 
   return (
     <div className="min-h-dvh overflow-x-clip bg-background text-foreground">
+      <motion.div
+        aria-hidden
+        className="fixed inset-x-0 top-0 z-50 h-0.5 origin-left bg-primary"
+        style={{ width: reduce ? "0%" : bar }}
+      />
       <header
         className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ${
-          solid
-            ? "border-b border-border bg-background/85 text-foreground backdrop-blur-md"
-            : "border-b border-transparent bg-transparent text-white"
+          solid ? "border-b border-border bg-background/80 backdrop-blur-md" : "border-b border-transparent"
         }`}
       >
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-5">
+        <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-5">
           <Link href="/" className="flex items-center gap-2 text-[14px] font-medium">
-            <OsoLogo size={18} className={solid ? "" : "text-white"} />
+            <OsoLogo size={18} />
             Oso-Ahia
           </Link>
-          <nav className="ml-4 hidden items-center gap-5 text-[13px] opacity-75 md:flex">
-            <a href="#how">How it works</a>
-            <a href="#capabilities">Capabilities</a>
-            <a href="#proof">Proof</a>
-            <a href="#pricing">Pricing</a>
+          <nav className="ml-4 hidden items-center gap-5 text-[13px] text-muted-foreground md:flex">
+            <a href="#how" className="hover:text-foreground">How it works</a>
+            <a href="#capabilities" className="hover:text-foreground">Capabilities</a>
+            <a href="#proof" className="hover:text-foreground">Proof</a>
+            <a href="#pricing" className="hover:text-foreground">Pricing</a>
           </nav>
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"
               aria-label={dark ? "Switch to light" : "Switch to dark"}
               onClick={() => setTheme(dark ? "light" : "dark")}
-              className={`flex size-8 items-center justify-center rounded-full ${
-                solid ? "hover:bg-accent" : "hover:bg-white/10"
-              }`}
+              className="flex size-8 items-center justify-center rounded-full hover:bg-accent"
             >
               {dark ? <IconSun size={16} /> : <IconMoon size={16} />}
             </button>
             <Link
               href="/app"
-              className={`rounded-full px-3 py-1.5 text-[13px] font-medium ${
-                solid
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-white text-neutral-950"
-              }`}
+              className="rounded-full bg-primary px-3 py-1.5 text-[13px] font-medium text-primary-foreground"
             >
               Open the desk
             </Link>
@@ -163,11 +127,66 @@ export function OsoHome() {
         </div>
       </header>
 
-      <Hero />
+      <section
+        data-shot="hero"
+        className="relative overflow-hidden"
+        onPointerMove={(event) => {
+          if (reduce) return;
+          const rect = event.currentTarget.getBoundingClientRect();
+          setSpot({ x: event.clientX - rect.left, y: event.clientY - rect.top });
+        }}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, color-mix(in oklab, var(--primary) 16%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--primary) 16%, transparent) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+            maskImage: "radial-gradient(ellipse at 50% 40%, black, transparent 75%)",
+          }}
+        />
+        {!reduce ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: `radial-gradient(520px circle at ${spot.x}px ${spot.y}px, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%)`,
+            }}
+          />
+        ) : null}
+        <div className="relative mx-auto grid min-h-[100dvh] max-w-[1440px] items-center gap-8 px-6 pt-24 pb-16 lg:grid-cols-[0.72fr_1.28fr]">
+          <div>
+            <p className="text-[12px] font-medium tracking-[0.2em] text-primary uppercase">Outbound, held</p>
+            <h1 className="mt-4 max-w-[10ch] text-[52px]/[0.92] font-medium tracking-[-0.04em] md:text-[84px]/[0.9]">
+              Every send waits for a yes.
+            </h1>
+            <p className="mt-5 max-w-md text-[16px]/6 text-muted-foreground">
+              Pick a room. Names, scores, and a held note appear before anything can leave.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link
+                href="/app"
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-[14px] font-medium text-primary-foreground"
+              >
+                Open the desk
+                <IconArrowRight size={16} />
+              </Link>
+              <a
+                href="#how"
+                className="inline-flex items-center rounded-full px-4 py-2.5 text-[14px] ring-1 ring-border"
+              >
+                See the five beats
+              </a>
+            </div>
+          </div>
+          <HeroDesk />
+        </div>
+      </section>
 
-      <section className="overflow-hidden border-b border-border">
+      <section className="overflow-hidden border-y border-border">
         <p className="px-5 pt-8 text-center text-[12px] tracking-[0.14em] text-muted-foreground uppercase">
-          Connect what you already sell with
+          The stack you already run
         </p>
         <div className="relative mt-4 pb-8">
           {reduce ? (
@@ -196,15 +215,15 @@ export function OsoHome() {
       </section>
 
       <section id="how" className="border-b border-border">
-        <div className="mx-auto grid max-w-6xl items-start gap-8 px-5 py-16 md:grid-cols-[0.9fr_1.1fr] md:py-8">
+        <div className="mx-auto grid max-w-[1440px] items-start gap-6 px-6 py-10 lg:grid-cols-[38fr_62fr] lg:gap-8 lg:py-4">
           <div>
             <Reveal>
-              <h2 className="text-[32px] font-medium tracking-tight md:text-[40px]">How a yes happens</h2>
-              <p className="mt-2 max-w-sm text-[14px]/6 text-muted-foreground">
-                Five beats. The chat does the finding and the writing. You keep the send.
-              </p>
+              <p className="text-[12px] tracking-[0.16em] text-primary uppercase">How a yes happens</p>
+              <h2 className="mt-2 max-w-[14ch] text-[36px]/[1.05] font-medium tracking-tight md:text-[48px]">
+                Five screens. One send.
+              </h2>
             </Reveal>
-            <div className="mt-4">
+            <div className="mt-2">
               {STEPS.map((item, index) => (
                 <HowStep
                   key={item.n}
@@ -219,11 +238,25 @@ export function OsoHome() {
               ))}
             </div>
           </div>
-          <div className="sticky top-[calc(50vh-11rem)] hidden self-start md:block">
-            <p className="mb-3 text-[12px] tracking-[0.14em] text-muted-foreground uppercase">
-              {STEPS[step]?.n} · {STEPS[step]?.title}
-            </p>
-            <ProductStage phase={STEPS[step]?.phase ?? "find"} />
+          <div className="sticky top-16 hidden self-start lg:block">
+            <div className="mb-3 flex items-center gap-3 text-[12px] text-muted-foreground">
+              <span className="tabular-nums text-foreground">{STEPS[step]?.n}</span>
+              <span className="h-px flex-1 bg-border" />
+              <span>{STEPS[step]?.title}</span>
+            </div>
+            <div className="relative min-h-[680px]">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={STEPS[step]?.phase}
+                  initial={reduce ? false : { opacity: 0, y: 22 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduce ? undefined : { opacity: 0, y: -16 }}
+                  transition={{ duration: 0.38, ease: [0.22, 0.61, 0.36, 1] }}
+                >
+                  <DeskScene id={STEPS[step]?.phase ?? "find"} />
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </section>
@@ -234,10 +267,7 @@ export function OsoHome() {
         onPointerMove={(event) => {
           if (reduce) return;
           const rect = event.currentTarget.getBoundingClientRect();
-          setSpot({
-            x: event.clientX - rect.left,
-            y: event.clientY - rect.top,
-          });
+          setSpot({ x: event.clientX - rect.left, y: event.clientY - rect.top });
         }}
       >
         {!reduce ? (
@@ -245,22 +275,18 @@ export function OsoHome() {
             aria-hidden
             className="pointer-events-none absolute inset-0"
             style={{
-              background: `radial-gradient(380px circle at ${spot.x}px ${spot.y}px, color-mix(in oklab, var(--primary) 18%, transparent), transparent 62%)`,
+              background: `radial-gradient(420px circle at ${spot.x}px ${spot.y}px, color-mix(in oklab, var(--primary) 14%, transparent), transparent 62%)`,
             }}
           />
         ) : null}
-        <div className="relative mx-auto max-w-6xl px-5 py-20">
-          <Reveal>
-            <h2 className="text-[32px] font-medium tracking-tight md:text-[40px]">What the chat can do</h2>
-          </Reveal>
-          <div
-            role="tablist"
-            aria-label="Capabilities"
-            className="mt-6 flex gap-2 overflow-x-auto"
-          >
-            {CAPABILITIES.map((item, index) => (
+        <div className="relative mx-auto max-w-7xl px-5 py-20">
+          <h2 className="max-w-[16ch] text-[36px] font-medium tracking-tight md:text-[48px]">
+            The same desk, one job at a time.
+          </h2>
+          <div role="tablist" aria-label="Capabilities" className="mt-6 flex gap-2 overflow-x-auto">
+            {STEPS.map((item, index) => (
               <button
-                key={item.id}
+                key={item.phase}
                 type="button"
                 role="tab"
                 aria-selected={cap === index}
@@ -277,61 +303,31 @@ export function OsoHome() {
               </button>
             ))}
           </div>
-          <div className="mt-4 grid min-h-[240px] gap-6 rounded-2xl bg-card p-5 ring-1 ring-border md:grid-cols-[0.8fr_1.2fr] md:p-6">
-            <div>
-              <h3 className="text-[20px] font-medium tracking-tight">
-                {CAPABILITIES[cap]?.title}
-              </h3>
-              <p className="mt-2 text-[14px]/6 text-muted-foreground">{CAPABILITIES[cap]?.body}</p>
-              <Link
-                href="/app"
-                className="mt-5 inline-flex items-center gap-1 text-[13px] font-medium text-primary"
-              >
-                Try it on the desk
-                <IconArrowRight size={14} />
-              </Link>
-            </div>
-            <div className="overflow-hidden rounded-xl bg-background ring-1 ring-border">
-              <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
-                <span className="size-1.5 rounded-full bg-primary/70" />
-                <span className="text-[11px] text-muted-foreground">Desk · {CAPABILITIES[cap]?.title}</span>
-              </div>
-              <div className="p-3">
-                <CapabilityVisual id={CAPABILITIES[cap]?.id ?? "find"} />
-              </div>
-            </div>
+          <div className="mt-4">
+            <DeskScene id={STEPS[cap]?.phase ?? "find"} />
           </div>
         </div>
       </section>
 
       <section id="proof" className="border-b border-border">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <Reveal>
-            <p className="text-[12px] tracking-[0.14em] text-muted-foreground uppercase">
-              Sample workspace
-            </p>
-            <h2 className="mt-2 max-w-xl text-[32px] font-medium tracking-tight md:text-[40px]">
-              A week on the desk, not a customer claim.
-            </h2>
-          </Reveal>
+        <div className="mx-auto max-w-7xl px-5 py-20">
+          <p className="text-[12px] tracking-[0.16em] text-muted-foreground uppercase">Sample week</p>
+          <h2 className="mt-2 max-w-[18ch] text-[36px] font-medium tracking-tight md:text-[48px]">
+            Numbers from the desk, not from a customer.
+          </h2>
           <Metrics />
-          <div className="mt-8 grid gap-3 md:grid-cols-[1.2fr_0.8fr]">
+          <div className="mt-6 grid gap-3 lg:grid-cols-[1.15fr_0.85fr]">
             <WeekChart />
-            <div className="rounded-2xl bg-card p-5 ring-1 ring-border">
-              <p className="text-[12px] text-muted-foreground">Without the desk / with it</p>
-              <div className="mt-4 grid grid-cols-2 gap-3 text-[13px]">
-                <div>
-                  <p className="text-[12px] text-muted-foreground">Sheet</p>
-                  <p className="mt-2">48 names.</p>
-                  <p className="text-muted-foreground">No scores.</p>
-                  <p className="text-muted-foreground">A send button.</p>
-                </div>
-                <div>
-                  <p className="text-[12px] text-primary">Desk</p>
-                  <p className="mt-2">11 kept.</p>
-                  <p>One draft.</p>
-                  <p>Waiting on you.</p>
-                </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              <div className="rounded-2xl bg-card p-5 ring-1 ring-border">
+                <p className="text-[12px] tracking-[0.14em] text-muted-foreground uppercase">A sheet</p>
+                <p className="mt-3 text-[28px] font-medium tracking-tight">48 names.</p>
+                <p className="mt-1 text-[14px] text-muted-foreground">No verdicts. A send button at the end of the row.</p>
+              </div>
+              <div className="rounded-2xl bg-card p-5 ring-1 ring-primary">
+                <p className="text-[12px] tracking-[0.14em] text-primary uppercase">The desk</p>
+                <p className="mt-3 text-[28px] font-medium tracking-tight">11 kept.</p>
+                <p className="mt-1 text-[14px] text-muted-foreground">One draft in front. The rest still held.</p>
               </div>
             </div>
           </div>
@@ -339,13 +335,10 @@ export function OsoHome() {
       </section>
 
       <section id="integrations" className="border-b border-border">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <Reveal>
-            <h2 className="text-[32px] font-medium tracking-tight md:text-[40px]">The tools stay where they are</h2>
-            <p className="mt-2 max-w-md text-[14px]/6 text-muted-foreground">
-              Gmail, the calendar, the CRM. The desk borrows them. It does not replace the stack.
-            </p>
-          </Reveal>
+        <div className="mx-auto max-w-7xl px-5 py-20">
+          <h2 className="max-w-[16ch] text-[36px] font-medium tracking-tight md:text-[44px]">
+            Borrow the tools. Leave them in place.
+          </h2>
           <div className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
             {LOGOS.map(([id, name]) => (
               <div
@@ -361,95 +354,97 @@ export function OsoHome() {
       </section>
 
       <section className="border-b border-border">
-        <div className="mx-auto grid max-w-6xl items-center gap-8 px-5 py-20 md:grid-cols-2">
-          <Reveal>
-            <p className="text-[12px] tracking-[0.14em] text-muted-foreground uppercase">
-              Approval is the product
-            </p>
-            <h2 className="mt-2 text-[32px] font-medium tracking-tight md:text-[40px]">
-              The agent can queue mail. It cannot skip you.
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-20 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <p className="text-[12px] tracking-[0.16em] text-primary uppercase">The send</p>
+            <h2 className="mt-2 text-[36px] font-medium tracking-tight md:text-[48px]">
+              Three notes. Zero of them gone.
             </h2>
-            <p className="mt-3 max-w-md text-[14px]/6 text-muted-foreground">
-              A draft is a card. Approve it, hold it, or change the sentence that doesn’t sound
-              like you.
+            <p className="mt-3 max-w-md text-[15px]/6 text-muted-foreground">
+              Approve the one in front. The two behind it stay stacked until you get there.
             </p>
-          </Reveal>
-          <ProductStage phase="approve" />
+          </div>
+          <DeskScene id="approve" />
         </div>
       </section>
 
       <section id="pricing" className="border-b border-border">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <Reveal>
-            <h2 className="text-[32px] font-medium tracking-tight md:text-[40px]">Desks open one at a time</h2>
-            <p className="mt-2 max-w-lg text-[14px]/6 text-muted-foreground">
-              No public price list yet. Seats, not surprise overages, when a desk is live.
+        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+          <div>
+            <h2 className="max-w-[12ch] text-[40px] font-medium tracking-tight md:text-[56px]">
+              One desk to start.
+            </h2>
+            <p className="mt-4 max-w-md text-[15px]/6 text-muted-foreground">
+              Open it and work the sample. A number shows up with the next seat, not on this page.
             </p>
-          </Reveal>
-          <div className="mt-8 grid gap-3 md:grid-cols-3">
+            <Link
+              href="/app"
+              className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-[14px] font-medium text-primary-foreground"
+            >
+              Open the desk
+              <IconArrowRight size={16} />
+            </Link>
+          </div>
+          <div className="divide-y divide-border rounded-2xl bg-card ring-1 ring-border">
             {[
-              ["Desk", "One person. Their own outbound. The sample workspace is open now.", "Private"],
-              ["Team", "Shared lists, shared approvals, one voice across the seats.", "Private"],
-              ["House", "Your CRM, your domain, your rules for the send.", "Conversation"],
-            ].map(([name, body, price], index) => (
-              <div
-                key={name}
-                className={`flex flex-col rounded-2xl bg-card p-5 ring-1 ${
-                  index === 1 ? "ring-primary" : "ring-border"
-                }`}
-              >
-                <div className="text-[14px] font-medium">{name}</div>
-                <p className="mt-2 flex-1 text-[13px]/5 text-muted-foreground">{body}</p>
-                <div className="mt-6 text-[12px] font-medium tracking-[0.14em] uppercase">
-                  {price}
+              ["This desk", "Open", "You, a mailbox, and the queue."],
+              ["The next seat", "Later", "Shared lists when a second person arrives."],
+              ["A whole house", "Write to us", "Your domain and your rules for the send."],
+            ].map(([name, mark, body]) => (
+              <div key={name} className="flex items-baseline justify-between gap-4 px-5 py-4">
+                <div>
+                  <div className="text-[15px] font-medium">{name}</div>
+                  <p className="mt-1 text-[13px] text-muted-foreground">{body}</p>
+                </div>
+                <div className="shrink-0 text-[12px] font-medium tracking-[0.14em] text-primary uppercase">
+                  {mark}
                 </div>
               </div>
             ))}
           </div>
-          <Link
-            href="/app"
-            className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[13.5px] font-medium text-primary-foreground"
-          >
-            Open the sample desk
-            <IconArrowRight size={15} />
-          </Link>
         </div>
       </section>
 
       <section id="faq" className="border-b border-border">
-        <div className="mx-auto max-w-2xl px-5 py-20">
-          <h2 className="text-[32px] font-medium tracking-tight md:text-[40px]">Questions</h2>
-          <div className="mt-6 divide-y divide-border">
+        <div className="mx-auto max-w-7xl px-5 py-20">
+          <h2 className="text-[36px] font-medium tracking-tight md:text-[48px]">Before you open it</h2>
+          <div className="mt-8 grid gap-px overflow-hidden rounded-2xl bg-border ring-1 ring-border sm:grid-cols-2">
             {FAQ.map(([q, a]) => (
-              <Faq key={q} q={q} a={a} />
+              <div key={q} className="bg-card px-5 py-5">
+                <h3 className="text-[16px] font-medium">{q}</h3>
+                <p className="mt-2 text-[14px]/6 text-muted-foreground">{a}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="relative overflow-hidden">
-        <img
-          src="/brand/hero-loft.jpg"
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover object-[center_60%]"
+      <section className="relative overflow-hidden bg-foreground text-background">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-40"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, color-mix(in oklab, var(--primary) 45%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--primary) 45%, transparent) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
         />
-        <div className="absolute inset-0 bg-black/55" />
-        <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-5 px-5 py-24 text-white md:flex-row md:items-end md:justify-between">
-          <h2 className="max-w-lg text-[32px]/[1.1] font-medium tracking-tight md:text-[40px]">
-            The sample desk is already warm.
+        <div className="relative mx-auto flex max-w-7xl flex-col gap-8 px-5 py-24 md:flex-row md:items-end md:justify-between">
+          <h2 className="max-w-[12ch] text-[48px]/[0.95] font-medium tracking-[-0.04em] md:text-[72px]">
+            Hold the next send.
           </h2>
           <Link
             href="/app"
-            className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[13.5px] font-medium text-neutral-950"
+            className="inline-flex w-fit items-center gap-1.5 rounded-full bg-primary px-5 py-3 text-[15px] font-medium text-primary-foreground"
           >
-            Open Oso-Ahia
-            <IconArrowRight size={15} />
+            Open the desk
+            <IconArrowRight size={16} />
           </Link>
         </div>
       </section>
 
       <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-6 text-[12px] text-muted-foreground md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-6 text-[12px] text-muted-foreground md:flex-row md:items-center md:justify-between">
           <span className="text-foreground">Oso-Ahia</span>
           <nav className="flex gap-4">
             <a href="#how">How it works</a>
@@ -463,117 +458,6 @@ export function OsoHome() {
   );
 }
 
-function Hero() {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "14%"]);
-
-  return (
-    <section ref={ref} className="relative min-h-[100dvh] overflow-hidden">
-      <motion.img
-        src="/brand/hero-loft.jpg"
-        alt=""
-        style={reduce ? undefined : { y, scale: 1.12 }}
-        className="absolute inset-0 h-full w-full object-cover object-[center_30%]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/40 to-black/20" />
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
-      <div className="relative mx-auto grid min-h-[100dvh] max-w-6xl items-center gap-10 px-5 pt-24 pb-28 md:grid-cols-[0.9fr_1.1fr] md:pt-20">
-        <div className="text-white">
-          <p className="text-[12px] font-medium tracking-[0.18em] text-white/70 uppercase">
-            Sales desk
-          </p>
-          <h1 className="mt-3 max-w-[11ch] text-[42px]/[1.02] font-medium tracking-tight md:text-[68px]/[0.96]">
-            Every send waits for a yes.
-          </h1>
-          <p className="mt-4 max-w-md text-[15px]/6 text-white/78">
-            Describe who should hear from you. The desk finds them, writes the note, and holds it
-            until you approve.
-          </p>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Link
-              href="/app"
-              className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-[13.5px] font-medium text-neutral-950"
-            >
-              Open the desk
-              <IconArrowRight size={15} />
-            </Link>
-            <a
-              href="#how"
-              className="inline-flex items-center rounded-full px-4 py-2.5 text-[13.5px] text-white ring-1 ring-white/35"
-            >
-              See how a yes happens
-            </a>
-          </div>
-        </div>
-        <div>
-          <Tilt disabled={Boolean(reduce)}>
-            <ProductStage live paper />
-          </Tilt>
-          <p className="mt-3 text-[12px] text-white/60">Sample chat. Nothing leaves until you approve.</p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-const WEEK = [
-  ["Mon", 2],
-  ["Tue", 4],
-  ["Wed", 3],
-  ["Thu", 6],
-  ["Fri", 5],
-] as const;
-
-function WeekChart() {
-  const reduce = useReducedMotion();
-  const [hot, setHot] = useState<number | null>(null);
-  return (
-    <div className="rounded-2xl bg-card p-5 ring-1 ring-border">
-      <div className="flex items-baseline justify-between">
-        <p className="text-[12px] text-muted-foreground">Replies, sample week</p>
-        <p className="text-[12px] tabular-nums text-muted-foreground">
-          {hot === null ? "20" : WEEK[hot]?.[1]} replies
-        </p>
-      </div>
-      <div className="relative mt-4 h-32">
-        <div className="pointer-events-none absolute inset-x-0 top-0 bottom-5 flex flex-col justify-between">
-          {[0, 1, 2].map((line) => (
-            <span key={line} className="border-t border-border/80" />
-          ))}
-        </div>
-        <div className="relative flex h-full items-end gap-3">
-          {WEEK.map(([day, value], index) => (
-            <button
-              key={day}
-              type="button"
-              onMouseEnter={() => setHot(index)}
-              onMouseLeave={() => setHot(null)}
-              onFocus={() => setHot(index)}
-              onBlur={() => setHot(null)}
-              className="flex h-full flex-1 flex-col items-center justify-end gap-1"
-            >
-              <motion.span
-                className={`w-full rounded-sm ${hot === index ? "bg-primary" : "bg-primary/80"}`}
-                initial={reduce ? false : { scaleY: 0 }}
-                whileInView={{ scaleY: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: index * 0.05, ease: [0.22, 0.61, 0.36, 1] }}
-                style={{ height: `${value * 14}%`, transformOrigin: "bottom" }}
-              />
-              <span className="text-[11px] text-muted-foreground">{day}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function LogoPill({ id, name }: { id: string; name: string }) {
   return (
     <span className="inline-flex h-9 items-center gap-2 rounded-full bg-card px-3 text-[13px] ring-1 ring-border">
@@ -583,34 +467,14 @@ function LogoPill({ id, name }: { id: string; name: string }) {
   );
 }
 
-function Tilt({ children, disabled }: { children: ReactNode; disabled: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const onMove = (event: React.PointerEvent) => {
-    if (disabled || event.pointerType !== "mouse" || !ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const px = (event.clientX - rect.left) / rect.width - 0.5;
-    const py = (event.clientY - rect.top) / rect.height - 0.5;
-    ref.current.style.transform = `rotateX(${(-py * 5).toFixed(2)}deg) rotateY(${(px * 7).toFixed(2)}deg)`;
-  };
-  return (
-    <div className="[perspective:1200px]" onPointerMove={onMove} onPointerLeave={() => {
-      if (ref.current) ref.current.style.transform = "";
-    }}>
-      <div ref={ref} className="transition-transform duration-200 ease-out">
-        {children}
-      </div>
-    </div>
-  );
-}
-
 function Reveal({ children }: { children: ReactNode }) {
   const reduce = useReducedMotion();
   return (
     <motion.div
-      initial={reduce ? false : { opacity: 0, y: 14 }}
+      initial={reduce ? false : { opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.4 }}
     >
       {children}
     </motion.div>
@@ -632,7 +496,7 @@ function HowStep({
   n: string;
   title: string;
   body: string;
-  phase: StagePhase;
+  phase: SceneId;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -642,7 +506,7 @@ function HowStep({
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) onEnter(index);
       },
-      { rootMargin: "-42% 0px -42% 0px", threshold: 0.15 },
+      { rootMargin: "-40% 0px -40% 0px", threshold: 0.1 },
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -651,107 +515,27 @@ function HowStep({
   return (
     <div
       ref={ref}
-      className={`flex flex-col justify-center border-t border-border py-10 pl-4 transition-opacity md:min-h-[88vh] md:py-0 ${
-        active ? "border-l-2 border-l-primary opacity-100" : "border-l-2 border-l-transparent opacity-45"
+      data-shot={phase}
+      className={`flex flex-col justify-center border-t border-border py-8 pl-4 transition-opacity lg:min-h-[70vh] lg:py-4 ${
+        active ? "border-l-2 border-l-primary opacity-100" : "border-l-2 border-l-transparent opacity-40"
       }`}
     >
       <div className="text-[12px] text-muted-foreground tabular-nums">{n}</div>
-      <h3 className="mt-2 max-w-[12ch] text-[34px]/[1.05] font-medium tracking-tight md:text-[52px]/[1.02]">
-        {title}
-      </h3>
-      <p className="mt-1.5 max-w-sm text-[13.5px]/5 text-muted-foreground">{body}</p>
-      <div className="mt-4 md:hidden">
-        <ProductStage phase={phase} compact />
+      <h3 className="mt-1 max-w-[14ch] text-[28px] font-medium tracking-tight md:text-[36px]">{title}</h3>
+      <p className="mt-2 max-w-sm text-[14px]/6 text-muted-foreground">{body}</p>
+      <div className="mt-5 lg:hidden">
+        <DeskScene id={phase} />
       </div>
     </div>
   );
 }
 
-function CapabilityVisual({ id }: { id: string }) {
-  if (id === "qualify") {
-    return (
-      <div className="flex flex-col justify-center gap-3">
-        {[
-          ["ICP fit", 92],
-          ["Timing", 74],
-          ["Duplicate", 12],
-        ].map(([label, value]) => (
-          <div key={String(label)} className="grid grid-cols-[5.5rem_1fr_2rem] items-center gap-2 text-[12.5px]">
-            <span>{label}</span>
-            <span className="h-1.5 overflow-hidden rounded-full bg-accent">
-              <span className="block h-full rounded-full bg-primary" style={{ width: `${value}%` }} />
-            </span>
-            <span className="tabular-nums text-muted-foreground">{value}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-  if (id === "write") {
-    return (
-      <div className="space-y-2 text-[12.5px]">
-        {[
-          ["Day 0", "A quieter way to fill Thursday"],
-          ["Day 3", "The waitlist number, if it’s useful"],
-          ["Day 7", "A short note, not a pitch"],
-        ].map(([day, line]) => (
-          <div key={day} className="flex gap-3 rounded-lg bg-background px-3 py-2 ring-1 ring-border">
-            <span className="w-10 shrink-0 text-muted-foreground">{day}</span>
-            <span>{line}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-  if (id === "approve") {
-    return (
-      <div className="flex h-full flex-col justify-center">
-        <p className="text-[13px]">A quieter way to fill Thursday’s clinics</p>
-        <p className="mt-2 text-[12.5px]/5 text-muted-foreground">
-          Amaka — the Ikeja site still shows an 11-day wait.
-        </p>
-        <div className="mt-4 flex gap-2">
-          <span className="rounded-full bg-primary px-3 py-1.5 text-[12.5px] font-medium text-primary-foreground">
-            Approve
-          </span>
-          <span className="rounded-full px-3 py-1.5 text-[12.5px] ring-1 ring-border">Hold</span>
-        </div>
-      </div>
-    );
-  }
-  if (id === "track") {
-    return (
-      <div className="grid grid-cols-4 gap-2 text-center text-[12px]">
-        {[
-          ["48", "Found"],
-          ["11", "Fit"],
-          ["4", "Drafts"],
-          ["1", "Meeting"],
-        ].map(([n, label]) => (
-          <div key={label} className="rounded-xl bg-background px-2 py-4 ring-1 ring-border">
-            <div className="text-[20px] font-medium tabular-nums">{n}</div>
-            <div className="mt-1 text-muted-foreground">{label}</div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-  return (
-    <div className="space-y-2">
-      <div className="rounded-lg bg-background px-3 py-2 text-[12.5px] text-muted-foreground ring-1 ring-border">
-        Clinic groups in Lagos that still book by hand
-      </div>
-      {["Amaka Adeyemi · Halcyon", "Jonah Ellis · Fieldnote", "Priya Raman · Northspan"].map(
-        (row) => (
-          <div key={row} className="flex items-center justify-between rounded-lg bg-background px-3 py-2 text-[12.5px] ring-1 ring-border">
-            <span className="truncate">{row}</span>
-            <span className="text-[11px] text-muted-foreground">new</span>
-          </div>
-        ),
-      )}
-    </div>
-  );
-}
+const METRICS = [
+  { value: 48, label: "Names from one sentence" },
+  { value: 11, label: "Kept by the judge" },
+  { value: 4, label: "Drafts still held" },
+  { value: 0, label: "Sent without a yes" },
+];
 
 function Metrics() {
   const ref = useRef<HTMLDivElement>(null);
@@ -799,31 +583,66 @@ function Counter({ value, run }: { value: number; run: boolean }) {
     const start = performance.now();
     let frame = 0;
     const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / 800);
-      const eased = 1 - (1 - t) ** 3;
-      setN(Math.round(value * eased));
+      const t = Math.min(1, (now - start) / 700);
+      setN(Math.round(value * (1 - (1 - t) ** 3)));
       if (t < 1) frame = requestAnimationFrame(tick);
     };
+    setN(0);
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [reduce, run, value]);
   return <>{n}</>;
 }
 
-function Faq({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
+const WEEK = [
+  ["Mon", 2],
+  ["Tue", 4],
+  ["Wed", 3],
+  ["Thu", 6],
+  ["Fri", 5],
+] as const;
+
+function WeekChart() {
+  const reduce = useReducedMotion();
+  const [hot, setHot] = useState<number | null>(null);
   return (
-    <div className="py-3">
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-        className="flex w-full items-center justify-between gap-4 text-left text-[14px] font-medium"
-      >
-        {q}
-        <span className="text-muted-foreground">{open ? "–" : "+"}</span>
-      </button>
-      {open ? <p className="mt-1.5 text-[13px]/5 text-muted-foreground">{a}</p> : null}
+    <div className="rounded-2xl bg-card p-5 ring-1 ring-border">
+      <div className="flex items-baseline justify-between">
+        <p className="text-[12px] text-muted-foreground">Replies in the sample week</p>
+        <p className="text-[12px] tabular-nums text-muted-foreground">
+          {hot === null ? "20" : WEEK[hot]?.[1]} replies
+        </p>
+      </div>
+      <div className="relative mt-4 h-36">
+        <div className="pointer-events-none absolute inset-x-0 top-0 bottom-5 flex flex-col justify-between">
+          {[0, 1, 2].map((line) => (
+            <span key={line} className="border-t border-border" />
+          ))}
+        </div>
+        <div className="relative flex h-full items-end gap-3">
+          {WEEK.map(([day, value], index) => (
+            <button
+              key={day}
+              type="button"
+              onMouseEnter={() => setHot(index)}
+              onMouseLeave={() => setHot(null)}
+              onFocus={() => setHot(index)}
+              onBlur={() => setHot(null)}
+              className="flex h-full flex-1 flex-col items-center justify-end gap-1"
+            >
+              <motion.span
+                className={`w-full rounded-sm ${hot === index ? "bg-primary" : "bg-primary/80"}`}
+                initial={reduce ? false : { scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.04 }}
+                style={{ height: `${value * 14}%`, transformOrigin: "bottom" }}
+              />
+              <span className="text-[11px] text-muted-foreground">{day}</span>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
