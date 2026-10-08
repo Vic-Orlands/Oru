@@ -10,5 +10,14 @@ export async function POST(request: Request) {
     return Response.json({ status: "forbidden" }, { status: 403 });
   }
 
-  return ingest(request);
+  const body = await request.text();
+  if (!body.trim()) return new Response(null, { status: 204 });
+
+  return ingest(
+    new Request(request.url, {
+      method: "POST",
+      headers: request.headers,
+      body,
+    }),
+  );
 }
