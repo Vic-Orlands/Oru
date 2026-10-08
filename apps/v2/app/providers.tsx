@@ -8,6 +8,7 @@ import {
   useConvex,
   useConvexAuth,
 } from "convex/react";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Toaster } from "sonner";
 import { mutate } from "swr";
@@ -60,7 +61,34 @@ function AutumnBridge({ children }: { children: React.ReactNode }) {
   );
 }
 
+function QuietToaster({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Toaster
+        theme="system"
+        position="bottom-right"
+        toastOptions={{
+          className:
+            "!bg-popover !text-popover-foreground !border-border !text-[13px]",
+        }}
+      />
+      {children}
+    </>
+  );
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  // Demo Convex is a placeholder. Skip the auth client on the marketing
+  // homepage only, so /api/auth/get-session is not requested there.
+  // Every other route still mounts the connected providers.
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true" && pathname === "/") {
+    return <QuietToaster>{children}</QuietToaster>;
+  }
+  return <ConnectedProviders>{children}</ConnectedProviders>;
+}
+
+function ConnectedProviders({ children }: { children: React.ReactNode }) {
   const [convex] = useState(() => {
     const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
     if (!convexUrl) {
@@ -71,17 +99,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     return new ConvexReactClient(convexUrl, { unsavedChangesWarning: false });
   });
   const tree = (
-    <>
-      <Toaster
-        theme="system"
-        position="bottom-right"
-        toastOptions={{
-          className:
-            "!bg-popover !text-popover-foreground !border-border !text-[13px]",
-        }}
-      />
+    <QuietToaster>
       <AutumnBridge>{children}</AutumnBridge>
-    </>
+    </QuietToaster>
   );
 
   return (
