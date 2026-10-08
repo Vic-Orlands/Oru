@@ -1227,9 +1227,18 @@ export default defineSchema({
     lastThreadId: v.optional(v.id("threads")),
     createdAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
+    deletedAt: v.optional(v.number()),
   })
     .index("by_user", ["userId"])
     .index("by_status_next_run", ["status", "nextRunAt"]),
+
+  agentProfiles: defineTable({
+    userId: v.string(),
+    leadAgent: leadAgentValidator,
+    profileText: v.string(),
+    sourceLinks: v.array(v.string()),
+    updatedAt: v.number(),
+  }).index("by_user_agent", ["userId", "leadAgent"]),
 
   campaigns: defineTable({
     userId: v.string(),

@@ -120,6 +120,12 @@ export function createOpportunityTools(opts: {
         additionalProperties: false,
       }),
       execute: async ({ rows }) => {
+        if (leadAgent === "job_hunt") {
+          const profile = await ctx.runQuery(internal.agentProfiles.get, { userId, leadAgent });
+          if (!profile.configured) {
+            throw new Error("A Job Hunt profile is required before filing personalized fit scores. Ask the user for their CV or work history, target role and level, location or remote preferences, work authorization, compensation expectations, and relevant links, then save it with saveAgentProfile.");
+          }
+        }
         const receipt = latestProviderReceipt();
         if (!receipt) throw new Error(`Search a live source before filing ${profile.plural}.`);
         const receiptText = receipt.responseText.toLowerCase();

@@ -51,7 +51,7 @@ const AGENT_PROFILES: Record<LeadAgentKind, LeadAgentProfile> = {
     pipeline:
       "Use Discovered, Shortlisted, Applied, Recruiter screen, Interview, Offer, and Closed stages.",
     boundary:
-      "Never describe a job opportunity as a sales prospect or recommend sales outreach sequences.",
+      "Never describe a job opportunity as a sales prospect or recommend sales outreach sequences. Before personalized job-fit scoring, call getAgentProfile. If it is empty, ask for a CV/resume or skills and work history, target roles and seniority, location or remote preferences, work authorization, compensation expectations, and optional portfolio, LinkedIn, or GitHub links. Do not guess or issue a profile-fit score until enough information is supplied. Save a durable profile only from user-provided facts with saveAgentProfile.",
   },
   recruiting: {
     identity:

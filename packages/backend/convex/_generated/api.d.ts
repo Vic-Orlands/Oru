@@ -11,6 +11,7 @@
 import type * as actionApprovals from "../actionApprovals.js";
 import type * as admin from "../admin.js";
 import type * as adminAnalytics from "../adminAnalytics.js";
+import type * as agentProfiles from "../agentProfiles.js";
 import type * as artifactBackfill from "../artifactBackfill.js";
 import type * as artifactContent from "../artifactContent.js";
 import type * as artifactData from "../artifactData.js";
@@ -175,6 +176,7 @@ declare const fullApi: ApiFromModules<{
   actionApprovals: typeof actionApprovals;
   admin: typeof admin;
   adminAnalytics: typeof adminAnalytics;
+  agentProfiles: typeof agentProfiles;
   artifactBackfill: typeof artifactBackfill;
   artifactContent: typeof artifactContent;
   artifactData: typeof artifactData;

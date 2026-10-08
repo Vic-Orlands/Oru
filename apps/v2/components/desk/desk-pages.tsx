@@ -264,21 +264,26 @@ function Tasks() {
     );
   }
   return (
-    <Panel>
-      <ul className="divide-y divide-border">
+    <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-border">
+      <table className="w-full min-w-[920px] text-left text-[12.5px]">
+        <thead className="border-b border-border text-[11px] tracking-wide text-muted-foreground uppercase">
+          <tr>{["Reference", "Task", "Next run", "Repeats", "Last run", "Status", "Actions"].map((label) => <th key={label} className="px-3 py-2 font-medium">{label}</th>)}</tr>
+        </thead>
+        <tbody>
         {tasks.map((task) => (
-          <li key={task.id} className="flex items-center gap-3 px-3 py-2.5 text-[13px]">
-            <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] text-muted-foreground">
-              {task.kind}
-            </span>
-            <span className="min-w-0 flex-1 truncate">{task.title}</span>
-            <span className="text-[12px] text-muted-foreground">{task.recurrence && task.recurrence !== "none" ? task.recurrence : task.when}</span>
-            <span className="text-[11px] capitalize text-muted-foreground">{task.status}</span>
-            <TaskActions taskId={task.id} status={task.status} />
-          </li>
+          <tr key={task.id} className="border-b border-border align-top last:border-0">
+            <td className="px-3 py-3 font-mono text-[11px] text-muted-foreground">{task.reference}</td>
+            <td className="max-w-md px-3 py-3"><div className="font-medium">{task.title}</div><p className="mt-0.5 line-clamp-2 text-[11.5px]/4 text-muted-foreground">{task.instructions ?? task.kind}</p></td>
+            <td className="whitespace-nowrap px-3 py-3 text-muted-foreground">{task.nextRunAt ? new Date(task.nextRunAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "—"}</td>
+            <td className="px-3 py-3 capitalize text-muted-foreground">{task.recurrence === "none" ? "Once" : task.recurrence ?? "Once"}</td>
+            <td className="whitespace-nowrap px-3 py-3 text-muted-foreground">{task.lastRunAt ? new Date(task.lastRunAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "Never"}</td>
+            <td className="px-3 py-3"><span className="rounded-full bg-accent px-2 py-1 text-[11px] capitalize text-muted-foreground">{task.status ?? "active"}</span></td>
+            <td className="px-3 py-2"><TaskActions task={task} /></td>
+          </tr>
         ))}
-      </ul>
-    </Panel>
+        </tbody>
+      </table>
+    </div>
   );
 }
 

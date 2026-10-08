@@ -22,6 +22,9 @@ describe("leadAgentInstruction", () => {
     expect(prompt).toContain("live Exa or Parallel web research");
     expect(prompt).toContain("FuseAI and sales databases are not job boards");
     expect(prompt).toContain("Discovered, Shortlisted, Applied");
+    expect(prompt).toContain("call getAgentProfile");
+    expect(prompt).toContain("Do not guess or issue a profile-fit score");
+    expect(prompt).toContain("saveAgentProfile");
   });
 
   it("keeps sales enrichment scoped to sales work", () => {

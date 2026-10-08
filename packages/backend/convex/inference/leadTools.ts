@@ -15,8 +15,14 @@ export const LEAD_TOOL_NAMES = new Set([
   "writeSequence",
   "queueEmail",
   "createDeskTask",
+  "listDeskTasks",
+  "updateDeskTask",
+  "removeDeskTask",
   "recordCampaignActivity",
   "requestHumanApproval",
+  "getAgentProfile",
+  "saveAgentProfile",
+  "clearAgentProfile",
   ...Object.values(OPPORTUNITY_PROFILES).map((profile) => profile.toolName),
 ]);
 
@@ -62,6 +68,45 @@ export function createLeadTools(opts: {
             ? "investor leads"
             : "sales prospects";
   return {
+    getAgentProfile: tool({
+      description: "Read the active agent's durable profile before personalized discovery or scoring. If it is not configured, ask the user for the missing facts instead of guessing.",
+      inputSchema: jsonSchema<Record<string, never>>({ type: "object", properties: {}, additionalProperties: false }),
+      execute: async () => {
+        const profile = await ctx.runQuery(internal.agentProfiles.get, { userId, leadAgent });
+        return profile.configured
+          ? profile
+          : {
+              configured: false,
+              guidance: leadAgent === "job_hunt"
+                ? "Ask for a CV/resume or a concise skills-and-history summary, target roles and level, preferred locations/remote policy, work authorization, compensation range, and optional portfolio/LinkedIn/GitHub links. Do not calculate profile-fit scores until supplied."
+                : "Ask for the user's goals, constraints, ideal targets, exclusions, and relevant links. Do not personalize scores until supplied.",
+            };
+      },
+    }),
+    saveAgentProfile: tool({
+      description: "Create or replace the active agent's durable profile using only information the user supplied or explicitly asked to remember. Never infer missing biographical, compensation, authorization, or employment facts.",
+      inputSchema: jsonSchema<{ profileText: string; sourceLinks: string[] }>({
+        type: "object",
+        properties: {
+          profileText: { type: "string", description: "A structured plain-text profile including goals, experience, skills, constraints, preferences, and exclusions." },
+          sourceLinks: { type: "array", items: { type: "string", format: "uri" } },
+        },
+        required: ["profileText", "sourceLinks"],
+        additionalProperties: false,
+      }),
+      execute: async (profile) => {
+        const id = await ctx.runMutation(internal.agentProfiles.save, { userId, leadAgent, ...profile });
+        return { saved: true, profileId: id, leadAgent };
+      },
+    }),
+    clearAgentProfile: tool({
+      description: "Delete the active agent's durable profile after the user explicitly asks to forget or remove it.",
+      inputSchema: jsonSchema<Record<string, never>>({ type: "object", properties: {}, additionalProperties: false }),
+      execute: async () => {
+        await ctx.runMutation(internal.agentProfiles.clear, { userId, leadAgent });
+        return { cleared: true, leadAgent };
+      },
+    }),
     ...createOpportunityTools(opts),
     findProspects: tool({
       description:
@@ -416,6 +461,33 @@ export function createLeadTools(opts: {
           recurrence: task.recurrence,
         };
       },
+    }),
+    listDeskTasks: tool({
+      description: "List this agent workspace's scheduled tasks with stable TASK references. Call this before changing or removing a task unless the user supplied an exact TASK reference.",
+      inputSchema: jsonSchema<Record<string, never>>({ type: "object", properties: {}, additionalProperties: false }),
+      execute: async () => ctx.runQuery(internal.scheduledTasks.listForAgent, { userId, leadAgent }),
+    }),
+    updateDeskTask: tool({
+      description: "Update one scheduled task. Identify it by its exact TASK reference or exact title from listDeskTasks.",
+      inputSchema: jsonSchema<{ identifier: string; title?: string; instructions?: string; firstRunAt?: string; recurrence?: "none" | "daily" | "weekly" }>({
+        type: "object",
+        properties: {
+          identifier: { type: "string" }, title: { type: "string" }, instructions: { type: "string" },
+          firstRunAt: { type: "string", description: "Optional ISO-8601 date-time with UTC offset." },
+          recurrence: { type: "string", enum: ["none", "daily", "weekly"] },
+        },
+        required: ["identifier"], additionalProperties: false,
+      }),
+      execute: async ({ firstRunAt, ...changes }) => {
+        const nextRunAt = firstRunAt === undefined ? undefined : Date.parse(firstRunAt);
+        if (firstRunAt !== undefined && !Number.isFinite(nextRunAt)) throw new Error("Use a valid ISO-8601 date-time with a UTC offset.");
+        return ctx.runMutation(internal.scheduledTasks.updateByIdentifier, { userId, leadAgent, ...changes, ...(nextRunAt !== undefined ? { nextRunAt } : {}), timeZone });
+      },
+    }),
+    removeDeskTask: tool({
+      description: "Remove one scheduled task from this agent workspace. Identify it by its exact TASK reference or exact title from listDeskTasks. Confirm the user's intent before calling.",
+      inputSchema: jsonSchema<{ identifier: string }>({ type: "object", properties: { identifier: { type: "string" } }, required: ["identifier"], additionalProperties: false }),
+      execute: async ({ identifier }) => ctx.runMutation(internal.scheduledTasks.removeByIdentifier, { userId, leadAgent, identifier }),
     }),
     recordCampaignActivity: tool({
       description:

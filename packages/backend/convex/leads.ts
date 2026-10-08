@@ -128,6 +128,9 @@ export const snapshotValidator = v.object({
       nextRunAt: v.optional(v.number()),
       lastRunAt: v.optional(v.number()),
       lastThreadId: v.optional(v.id("threads")),
+      reference: v.string(),
+      instructions: v.optional(v.string()),
+      timeZone: v.optional(v.string()),
     }),
   ),
   campaigns: v.array(
@@ -287,7 +290,7 @@ export const snapshot = query({
         })),
       tasks: tasks
         .filter(belongsToAgent)
-        .filter((row) => !row.done)
+        .filter((row) => row.deletedAt === undefined)
         .map((row) => ({
           id: row._id,
           title: row.title,
@@ -298,6 +301,9 @@ export const snapshot = query({
           nextRunAt: row.nextRunAt,
           lastRunAt: row.lastRunAt,
           lastThreadId: row.lastThreadId,
+          reference: `TASK-${String(row._id).slice(-6).toUpperCase()}`,
+          instructions: row.instructions,
+          timeZone: row.timeZone,
         })),
       campaigns: campaigns.filter(belongsToAgent).map((row) => ({
         name: row.name,
