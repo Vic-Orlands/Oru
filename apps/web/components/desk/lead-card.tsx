@@ -1,8 +1,14 @@
 "use client";
 
-import { IconArrowUpRight } from "@tabler/icons-react";
+import {
+  IconArrowUpRight,
+  IconCircleCheckFilled,
+  IconMailFilled,
+  IconMapPinFilled,
+} from "@tabler/icons-react";
 
 import { openLeadPanel } from "@/lib/artifact-panel";
+import { OpportunityResultsCard } from "./opportunity-results-card";
 
 type ProspectRow = {
   name: string;
@@ -12,7 +18,11 @@ type ProspectRow = {
   fit: string;
   sourceUrl?: string;
   profileUrl?: string;
+  companyUrl?: string;
+  location?: string;
+  email?: string;
   emailVerification?: string;
+  scoreReason?: string;
 };
 
 type SequenceStep = { day: number; channel: string; subject: string };
@@ -46,6 +56,9 @@ export function LeadPhaseCard({
 }) {
   if (name === "sequence") return <SequenceCard text={text} />;
   if (name === "approval") return <ApprovalCard text={text} />;
+  if (name === "opportunities") {
+    return <OpportunityResultsCard title={title} text={text} />;
+  }
   return <ProspectCard title={title} text={text} />;
 }
 
@@ -94,9 +107,27 @@ function ProspectCard({ title, text }: { title?: string; text?: string }) {
       title={data?.title || title || "List"}
       onOpen={() => openLeadPanel("prospects")}
     >
-      <ul className="divide-y divide-border">
+      <ul
+        className={
+          rows.length <= 3
+            ? "grid gap-2 p-3 sm:grid-cols-2"
+            : "divide-y divide-border"
+        }
+      >
         {rows.map((row) => (
-          <li key={row.name} className="flex items-center gap-3 px-3 py-2">
+          <li
+            key={`${row.name}-${row.company}`}
+            className={
+              rows.length <= 3
+                ? "rounded-xl bg-muted/35 p-3 ring-1 ring-border/70"
+                : "flex items-center gap-3 px-3 py-2"
+            }
+          >
+            {rows.length <= 3 && (
+              <div className="mb-2 flex size-8 items-center justify-center rounded-full bg-primary/12 text-[12px] font-semibold text-primary ring-1 ring-primary/15">
+                {initials(row.name)}
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 items-center gap-1.5">
                 <span className="truncate text-[15px]/6 font-medium">
@@ -117,17 +148,68 @@ function ProspectCard({ title, text }: { title?: string; text?: string }) {
               <div className="truncate text-[13px]/5 text-muted-foreground">
                 {row.title} · {row.company}
               </div>
+              {rows.length <= 3 && (
+                <ProspectDetails row={row} />
+              )}
             </div>
-            <span className="text-[13px]/5 tabular-nums text-muted-foreground">
-              {row.score}
-            </span>
-            <span className="rounded-full bg-accent px-2 py-0.5 text-[13px]/5">
-              {row.fit}
-            </span>
+            <div className="flex shrink-0 items-center gap-1.5 self-start">
+              <span className="text-[13px]/5 font-medium tabular-nums text-muted-foreground">
+                {row.score}%
+              </span>
+              <span className="rounded-full bg-accent px-2 py-0.5 text-[12px]/5 font-medium">
+                {row.fit}
+              </span>
+            </div>
           </li>
         ))}
       </ul>
     </CardShell>
+  );
+}
+
+function initials(name: string) {
+  return name
+    .split(/\s+/u)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+function ProspectDetails({ row }: { row: ProspectRow }) {
+  return (
+    <div className="mt-2 space-y-1 text-[12px]/5 text-muted-foreground">
+      {row.location && (
+        <div className="flex items-center gap-1.5">
+          <IconMapPinFilled size={12} aria-hidden="true" />
+          <span className="truncate">{row.location}</span>
+        </div>
+      )}
+      {row.email && (
+        <div className="flex items-center gap-1.5">
+          {row.emailVerification === "verified" ? (
+            <IconCircleCheckFilled
+              size={12}
+              className="text-emerald-500"
+              aria-hidden="true"
+            />
+          ) : (
+            <IconMailFilled size={12} aria-hidden="true" />
+          )}
+          <a
+            href={`mailto:${row.email}`}
+            className="truncate underline-offset-4 hover:text-foreground hover:underline"
+          >
+            {row.email}
+          </a>
+        </div>
+      )}
+      {row.scoreReason && (
+        <p className="line-clamp-2 pt-1 text-foreground/80">
+          {row.scoreReason}
+        </p>
+      )}
+    </div>
   );
 }
 

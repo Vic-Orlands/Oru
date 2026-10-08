@@ -17,7 +17,7 @@ export const RUNAWAY_TOOL_CALL_LIMIT = 30;
 
 // The same exact call (tool + input) this many times means the warning was
 // ignored and more steps won't help: land the reply.
-const MAX_IDENTICAL_CALLS = 3;
+const MAX_IDENTICAL_CALLS = 2;
 
 // Duplicated calls tolerated across the whole reply (even spread over several
 // different signatures) before the loop is called off.

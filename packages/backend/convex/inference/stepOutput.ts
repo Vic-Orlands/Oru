@@ -3,12 +3,12 @@
  * narration emitted before a tool call. Used for thinking-enabled turns, where
  * provider scratch work must stay in the dedicated reasoning phase.
  *
- * The only signals here are structural — did this step call a tool, and what
- * did the provider say ended it. Content is never inspected: what a reply may
- * and may not say is the system prompt's job (see prompts.ts and
- * toolPolicy.ts). Pattern-matching the text was tried and it kept destroying
- * finished, honest replies over words they were entitled to use.
+ * Ordinary content is never classified by keywords: what a reply may and may
+ * not say is the system prompt's job. The one exception is a provider's exact
+ * reserved tool-protocol delimiter, which must never become chat content.
  */
+import { sanitizeProviderText } from "./providerProtocol";
+
 export class StepOutputBuffer {
   private value = "";
   private usedTool = false;
@@ -38,6 +38,6 @@ export class StepOutputBuffer {
     this.start();
 
     if (!value || usedTool || finishReason === "tool-calls") return "";
-    return value;
+    return sanitizeProviderText(value).text;
   }
 }

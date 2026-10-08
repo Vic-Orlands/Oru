@@ -38,6 +38,7 @@ import { useIsImageModelKey } from "@/lib/model-catalog";
 import { isCompactPhase } from "@/lib/phase-activity";
 import { useTypewriter } from "@/lib/use-typewriter";
 import { useView } from "@/lib/view";
+import { hidePrivateProviderProtocol } from "@/lib/provider-protocol";
 import { ArtifactActivityScope } from "./artifacts/artifact-activity";
 import { CheckpointMenu } from "./checkpoint-menu";
 import { GeneratedImageSlot } from "./generated-image";
@@ -109,9 +110,14 @@ export function AssistantMessage({
 
   /* Keep both snapshots in play during the terminal handoff — the finished
      row and the stream body can lead each other by a render or two. */
-  const sourceText = terminal
+  const rawSourceText = terminal
     ? message.content
     : furthestAssistantText(persisted?.text, message.content);
+  const safeSourceText = hidePrivateProviderProtocol(rawSourceText);
+  const sourceText =
+    safeSourceText.length > 0 || rawSourceText === safeSourceText
+      ? safeSourceText
+      : "I couldn't safely display that result because the model returned an invalid tool format. Retry this response to regenerate it.";
   const stopped = message.status === "stopped";
   const { text, caughtUp } = useTypewriter(sourceText, sawLive, stopped);
 
@@ -355,6 +361,7 @@ export function AssistantMessage({
       {terminal && !error && !hasIntegrationGate && (
         <MessageActions
           message={message}
+          copyText={sourceText}
           onRetry={onRetry}
           onBranch={onBranch}
           onRollback={onRollback}
@@ -428,17 +435,30 @@ function ErrorBanner({
 
 function MessageActions({
   message,
+  copyText,
   onRetry,
   onBranch,
   onRollback,
 }: {
   message: ChatMessage;
+  copyText: string;
   onRetry?: () => void;
   onBranch?: () => void;
   onRollback?: () => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const text = message.content;
+  const copiedResetRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  useEffect(
+    () => () => {
+      if (copiedResetRef.current !== undefined) {
+        clearTimeout(copiedResetRef.current);
+      }
+    },
+    [],
+  );
+  const text = copyText;
   const canCopy = text.length > 0;
   const hasStats =
     message.outputTokens !== undefined ||
@@ -459,7 +479,13 @@ function MessageActions({
               .writeText(text)
               .then(() => {
                 setCopied(true);
-                setTimeout(() => setCopied(false), 1500);
+                if (copiedResetRef.current !== undefined) {
+                  clearTimeout(copiedResetRef.current);
+                }
+                copiedResetRef.current = setTimeout(() => {
+                  setCopied(false);
+                  copiedResetRef.current = undefined;
+                }, 1500);
               })
               .catch(() => {});
           }}

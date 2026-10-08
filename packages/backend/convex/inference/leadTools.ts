@@ -8,6 +8,7 @@ import { scoreLead, type LeadScoringSignals } from "./leadScoring";
 import { createOpportunityTools } from "./opportunityTools";
 import { OPPORTUNITY_PROFILES } from "../opportunityProfiles";
 import { zonedDateTimeToEpoch } from "../scheduledTasks";
+import { verifyReceiptSourceUrl } from "./sourceEvidence";
 
 export const LEAD_TOOL_NAMES = new Set([
   "findProspects",
@@ -36,18 +37,6 @@ type ProviderReceipt = {
   responseHash: string;
   capturedAt: number;
 };
-
-function webUrl(value: string, field: string): string {
-  try {
-    const parsed = new URL(value);
-    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
-      return parsed.toString();
-    }
-  } catch {
-    // The provider returned something that is not a URL.
-  }
-  throw new Error(`${field} must be a public http(s) URL from the lead provider.`);
-}
 
 export function createLeadTools(opts: {
   ctx: ActionCtx;
@@ -185,32 +174,18 @@ export function createLeadTools(opts: {
         }
         const enrichedAt = Date.now();
         const persisted = rows.map((row) => {
-          const sourceUrl = webUrl(row.sourceUrl, "sourceUrl");
+          const sourceUrl = verifyReceiptSourceUrl(
+            row.sourceUrl,
+            receipt.responseText,
+          ).normalized;
           const profileUrl = row.profileUrl
-            ? webUrl(row.profileUrl, "profileUrl")
+            ? verifyReceiptSourceUrl(row.profileUrl, receipt.responseText)
+                .normalized
             : undefined;
           const companyUrl = row.companyUrl
-            ? webUrl(row.companyUrl, "companyUrl")
+            ? verifyReceiptSourceUrl(row.companyUrl, receipt.responseText)
+                .normalized
             : undefined;
-          const claimedUrls = [
-            { raw: row.sourceUrl, normalized: sourceUrl },
-            ...(row.profileUrl && profileUrl
-              ? [{ raw: row.profileUrl, normalized: profileUrl }]
-              : []),
-            ...(row.companyUrl && companyUrl
-              ? [{ raw: row.companyUrl, normalized: companyUrl }]
-              : []),
-          ];
-          for (const url of claimedUrls) {
-            if (
-              !receipt.responseText.includes(url.raw) &&
-              !receipt.responseText.includes(url.normalized)
-            ) {
-              throw new Error(
-                `The provider response did not contain the claimed source URL: ${url.raw}`,
-              );
-            }
-          }
           const identityClaims = [row.name, row.title, row.company, row.email]
             .filter((claim): claim is string => Boolean(claim?.trim()));
           const missingClaim = identityClaims.find(
@@ -257,7 +232,11 @@ export function createLeadTools(opts: {
             fit: row.fit,
             sourceUrl: row.sourceUrl,
             profileUrl: row.profileUrl,
+            companyUrl: row.companyUrl,
+            location: row.location,
+            email: row.email,
             emailVerification: row.emailVerification,
+            scoreReason: row.scoreReason,
           })),
         });
         await onCard({ title: "Prospects", text });

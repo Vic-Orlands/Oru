@@ -10,6 +10,7 @@ import {
   scoreOpportunity,
   type OpportunitySignal,
 } from "../opportunityProfiles";
+import { verifyReceiptSourceUrl } from "./sourceEvidence";
 
 type ProviderReceipt = {
   id: Id<"leadSourceReceipts">;
@@ -41,18 +42,7 @@ type OpportunityRow = {
 };
 
 function verifiedUrl(value: string, receipt: ProviderReceipt) {
-  let normalized: string;
-  try {
-    const parsed = new URL(value);
-    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error();
-    normalized = parsed.toString();
-  } catch {
-    throw new Error("Every opportunity needs a valid public source URL.");
-  }
-  if (!receipt.responseText.includes(value) && !receipt.responseText.includes(normalized)) {
-    throw new Error(`The live source response did not contain ${value}.`);
-  }
-  return normalized;
+  return verifyReceiptSourceUrl(value, receipt.responseText).normalized;
 }
 
 export function createOpportunityTools(opts: {
@@ -168,14 +158,40 @@ export function createOpportunityTools(opts: {
           title: profile.plural,
           text: JSON.stringify({
             title: profile.plural,
-            rows: persisted.map(({ title, organization, sourceUrl, score, scoreLabel, stage }) => ({
-              title,
-              organization,
-              sourceUrl,
-              score,
-              scoreLabel,
-              stage,
-            })),
+            agent: leadAgent,
+            source: {
+              provider: receipt.provider,
+              capturedAt: receipt.capturedAt,
+            },
+            rows: persisted.map(
+              ({
+                title,
+                organization,
+                subtitle,
+                location,
+                sourceUrl,
+                sourceStatus,
+                evidence,
+                details,
+                score,
+                scoreLabel,
+                scoreBreakdown,
+                stage,
+              }) => ({
+                title,
+                organization,
+                subtitle,
+                location,
+                sourceUrl,
+                sourceStatus,
+                evidence,
+                details,
+                score,
+                scoreLabel,
+                scoreBreakdown,
+                stage,
+              }),
+            ),
             changes: result,
           }),
         });
