@@ -14,8 +14,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { shortId } = await params;
   return publicPageMetadata({
-    title: "Made with Whirl",
-    description: "A document written with Whirl.",
+    title: "Made with Oso-Ahia",
+    description: "A document written with Oso-Ahia.",
     path: `/doc/${shortId}`,
   });
 }

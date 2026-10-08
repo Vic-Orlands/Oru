@@ -43,12 +43,16 @@ export type ChatModel = {
    *  can't think just carry ["none"]; Heavy always reasons, so "none"
    *  isn't on its wheel at all. */
   thinkingLevels: ThinkingLevel[];
-  /** Whirl's own white-labeled tier — cheaper for us, so users get more
+  /** Oso-Ahia's own white-labeled tier — cheaper for us, so users get more
    *  usage out of these than out of by-name models. */
   whiteLabel: boolean;
   /** The model runs the search/thinking gates itself (Auto decides,
    *  Image has neither) — the picker blanks them out. */
   autoGates: boolean;
+  /** Concrete route and broad cost class shown beneath friendly names. */
+  fullName?: string;
+  company?: string;
+  category?: "Budget" | "Balanced" | "Heavy" | "Image";
 };
 
 export const CHAT_MODELS: ChatModel[] = [
@@ -63,6 +67,9 @@ export const CHAT_MODELS: ChatModel[] = [
     thinkingLevels: ["none", "low", "medium", "high"],
     whiteLabel: true,
     autoGates: true,
+    fullName: "Kimi K2.6",
+    company: "Moonshot AI",
+    category: "Budget",
   },
   {
     key: "Fast",
@@ -76,6 +83,9 @@ export const CHAT_MODELS: ChatModel[] = [
     thinkingLevels: ["none"],
     whiteLabel: true,
     autoGates: false,
+    fullName: "GPT-5.4 Nano",
+    company: "OpenAI",
+    category: "Budget",
   },
   {
     key: "Basic",
@@ -89,6 +99,9 @@ export const CHAT_MODELS: ChatModel[] = [
     thinkingLevels: ["none", "high"],
     whiteLabel: true,
     autoGates: false,
+    fullName: "Kimi K2.6",
+    company: "Moonshot AI",
+    category: "Budget",
   },
   {
     key: "Max",
@@ -102,6 +115,9 @@ export const CHAT_MODELS: ChatModel[] = [
     thinkingLevels: ["low", "medium", "high"],
     whiteLabel: true,
     autoGates: false,
+    fullName: "Grok 4.5",
+    company: "xAI",
+    category: "Heavy",
   },
   {
     key: "Image",
@@ -114,6 +130,9 @@ export const CHAT_MODELS: ChatModel[] = [
     thinkingLevels: ["none"],
     whiteLabel: true,
     autoGates: true,
+    fullName: "GPT Image 2",
+    company: "OpenAI",
+    category: "Image",
   },
 ];
 
@@ -135,10 +154,6 @@ export type ComposerModel = Omit<ChatModel, "key" | "icon"> & {
   key: string;
   icon?: Icon;
   iconSvg?: string;
-  company?: string;
-  /** The maker's full model name ("Claude Fable 5") — what the search
-   *  list shows. Absent on white-labeled tiers, which go by `name`. */
-  fullName?: string;
   /** Admin-retired: hidden from the picker's lists until a typed search
    *  matches it. Still fully usable once picked. */
   legacy?: boolean;

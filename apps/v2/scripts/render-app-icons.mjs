@@ -1,5 +1,5 @@
 /**
- * Rasterize the Whirl mark into the home-screen icon set.
+ * Rasterize the Oso-Ahia mark into the home-screen icon set.
  *
  * Install prompts and app switchers want bitmaps at fixed sizes, so the
  * mark ships as PNGs: two plain icons for the manifest, one maskable (the

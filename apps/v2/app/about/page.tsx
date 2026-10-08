@@ -6,7 +6,7 @@ import { PageTitle } from "@/components/marketing/page-blocks";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = publicPageMetadata({
-  title: "Whirl · Meet the AI chat app that actually cares",
+  title: "Oso-Ahia · Meet the AI chat app that actually cares",
   description:
     "Chat across the best AI models, create living documents and visualizations, and pick up right where you left off.",
   path: "/about",

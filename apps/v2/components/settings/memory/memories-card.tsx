@@ -16,7 +16,7 @@ import {
 import { AddMemoryDialog } from "./add-memory-dialog";
 import { MemoryRow } from "./memory-row";
 
-/* Everything Whirl currently believes about the user, editable. The whole
+/* Everything Oso-Ahia currently believes about the user, editable. The whole
    list is fetched up front, so search and paging are both local — instant,
    and no per-row animation to flicker on every keystroke. */
 
@@ -102,8 +102,8 @@ export function MemoriesCard({
           capped
             ? `Showing the ${count} most recent of ${totalItems}.`
             : count > 0
-              ? `${count} ${count === 1 ? "memory" : "memories"} Whirl carries between chats.`
-              : "Facts Whirl carries between chats."
+              ? `${count} ${count === 1 ? "memory" : "memories"} Oso-Ahia carries between chats.`
+              : "Facts Oso-Ahia carries between chats."
         }
         control={
           <div className="flex items-center gap-1">
@@ -148,7 +148,7 @@ export function MemoriesCard({
           </div>
         ) : count === 0 ? (
           <p className="p-4 text-sm text-muted-foreground">
-            Nothing yet. Whirl picks memories up as you chat — or write the
+            Nothing yet. Oso-Ahia picks memories up as you chat — or write the
             first one yourself.
           </p>
         ) : visible?.length === 0 ? (

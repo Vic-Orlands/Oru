@@ -78,7 +78,7 @@ function describeFailure(code: ConvertErrorCode | undefined): string {
     case "resourceLimit":
       return "This document is too deeply nested to read safely.";
     case "unsupported":
-      return "This file isn't a document format whirl can read.";
+      return "This file isn't a document format Oso-Ahia can read.";
     default:
       return "This document couldn't be read.";
   }

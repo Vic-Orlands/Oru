@@ -6,7 +6,7 @@ import type { Metadata } from "next";
    rail nobody has room for — so it stays out of search results. */
 
 export const metadata: Metadata = {
-  title: { absolute: "Chats · Whirl" },
+  title: { absolute: "Chats · Oso-Ahia" },
   robots: { index: false, follow: false },
 };
 

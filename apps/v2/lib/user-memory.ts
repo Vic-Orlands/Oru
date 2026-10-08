@@ -133,7 +133,7 @@ export type MemorySourcesPage = {
   totalItems: number;
 };
 
-/** One page at a time of the chats Whirl has fed into memory. */
+/** One page at a time of the chats Oso-Ahia has fed into memory. */
 export function useMemorySources(enabled: boolean) {
   const listSources = useAction(api.userMemory.listSources);
   const deleteSource = useAction(api.userMemory.deleteSource);

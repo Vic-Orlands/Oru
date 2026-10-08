@@ -152,7 +152,7 @@ function toCatalogToolkit(
 
 // --- Tool status phrases -------------------------------------------------------
 
-// Whirl tool descriptions are the status lines chat shows while a tool runs
+// Oso-Ahia tool descriptions are the status lines chat shows while a tool runs
 // ("Searching your issues") and after it finishes ("Searched your issues").
 // Composio hands us imperative labels ("Search issues"), so we conjugate the
 // leading verb when we recognize it and leave the label alone when we don't —
@@ -551,7 +551,7 @@ function rejectedToolSlugs(error: unknown, allowed: string[]): Set<string> {
 /** Composio MCP server names allow 4-30 chars: alphanumeric, space, hyphen. */
 function composioServerName(slug: string): string {
   if (slug === "fuseai") return "oso fuseai sales";
-  const cleaned = `whirl ${slug}`
+  const cleaned = `Oso-Ahia ${slug}`
     .replace(/[^a-zA-Z0-9 -]/g, "-")
     .slice(0, 30)
     .trim();
@@ -614,7 +614,7 @@ async function provisionToolkit(
   const category = toolkitShelf(slug, toolkitCategories(toolkit));
 
   // The toolkit's tools become the listing's status phrases, and cap what
-  // the MCP server may expose (Whirl's runtime reads at most 40 anyway).
+  // the MCP server may expose (Oso-Ahia's runtime reads at most 40 anyway).
   const toolsJson = await composioFetch(
     `/api/v3/tools?toolkit_slug=${encodeURIComponent(slug)}&limit=${slug === "fuseai" ? 200 : MAX_TOOLS_PER_EXTENSION}`,
   );

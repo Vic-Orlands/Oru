@@ -152,7 +152,7 @@ export function describeProblem(message: Doc<"messages">): Problem | null {
     return {
       kind: "whirl_misconfigured",
       explanation:
-        "Something on Whirl's side was misconfigured, so the reply never started. Not their fault; hand this one to a teammate.",
+        "Something on Oso-Ahia's side was misconfigured, so the reply never started. Not their fault; hand this one to a teammate.",
     };
   }
   return {

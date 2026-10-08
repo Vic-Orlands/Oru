@@ -16,7 +16,7 @@ import { isPaidCustomer } from "./inference/billing";
 
 // The user-facing side of the store's Skills tab: browsing approved skills,
 // installing one, and managing the installs. Registration and review live in
-// convex/skills.ts (the console backend); this file is what the Whirl app's
+// convex/skills.ts (the console backend); this file is what the Oso-Ahia app's
 // /integrations page talks to.
 //
 // An install is a `skillInstalls` row pointing back at the listing. Unlike

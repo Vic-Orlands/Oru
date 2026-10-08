@@ -6,7 +6,7 @@ import { IconRosetteDiscountCheckFilled } from "@tabler/icons-react";
 export function VerifiedBadge({ size = 14 }: { size?: number }) {
   return (
     <span
-      title="Verified — made by Whirl"
+      title="Verified — made by Oso-Ahia"
       className="inline-flex shrink-0 text-[#0c82f2] dark:text-[#6db4f8]"
     >
       <IconRosetteDiscountCheckFilled size={size} aria-label="Verified" />

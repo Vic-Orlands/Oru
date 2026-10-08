@@ -239,7 +239,7 @@ export function AccountSection() {
           <SettingsCard>
             <SettingsRow
               title="Log out"
-              description="Sign out of whirl on this device."
+              description="Sign out of Oso-Ahia on this device."
               control={
                 <Button variant="destructive" onClick={() => void clerk.signOut()}>
                   <IconLogout size={16} />

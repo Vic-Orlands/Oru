@@ -14,8 +14,8 @@ export function MarketingGithubButton({
       href={SITE_LINKS.repo}
       target="_blank"
       rel="noreferrer"
-      aria-label="Whirl on GitHub"
-      title="Whirl on GitHub"
+      aria-label="Oso-Ahia on GitHub"
+      title="Oso-Ahia on GitHub"
       className={`${ROUND_ICON_BUTTON} ${className}`}
     >
       <IconBrandGithubFilled size={15} />

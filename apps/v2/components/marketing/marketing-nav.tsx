@@ -104,10 +104,10 @@ export function MarketingSidebarNav({ kirkify }: { kirkify: boolean }) {
 
   return (
     <nav
-      aria-label="About Whirl"
+      aria-label="About Oso-Ahia"
       className="sticky top-10 hidden h-[calc(100dvh-5rem)] w-40 shrink-0 flex-col self-start md:flex"
     >
-      <Link href="/about" aria-label="Whirl home" className="w-fit">
+      <Link href="/about" aria-label="Oso-Ahia home" className="w-fit">
         <MarketingLogo />
       </Link>
       <div className="-ml-2.5 mt-7 flex flex-col gap-1">
@@ -144,9 +144,9 @@ export function MarketingSidebarNav({ kirkify }: { kirkify: boolean }) {
 export function MarketingMobileNav({ kirkify }: { kirkify: boolean }) {
   const extras = extrasFor(kirkify);
   return (
-    <nav aria-label="About Whirl" className="flex flex-col gap-4 md:hidden">
+    <nav aria-label="About Oso-Ahia" className="flex flex-col gap-4 md:hidden">
       <div className="flex items-center justify-between">
-        <Link href="/about" aria-label="Whirl home">
+        <Link href="/about" aria-label="Oso-Ahia home">
           <MarketingLogo size={32} />
         </Link>
         <ChatLink />

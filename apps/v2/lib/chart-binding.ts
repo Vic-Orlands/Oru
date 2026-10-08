@@ -84,7 +84,7 @@ export function useChartBinding({
         }
       } catch {
         if (aliveRef.current) {
-          setError("Couldn't reach Whirl to refresh this.");
+          setError("Couldn't reach Oso-Ahia to refresh this.");
         }
       } finally {
         if (aliveRef.current) setRefreshing(false);

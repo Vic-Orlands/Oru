@@ -217,7 +217,7 @@ function DocumentPanelBody({
       setHighlightEdits(false);
       setDisplayValue(content);
     } else if (!isLocalEcho) {
-      /* Whirl revised the doc out from under us — show it and flash the
+      /* Oso-Ahia revised the doc out from under us — show it and flash the
          changed region, unless this swap is just the stream settling. */
       setHighlightEdits(!justFinishedStreaming);
       setDisplayValue(content);

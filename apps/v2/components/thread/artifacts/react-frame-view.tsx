@@ -138,7 +138,7 @@ export function ReactFrameView({
       } catch {
         return {
           ok: false as const,
-          error: "Couldn't reach Whirl to load this data.",
+          error: "Couldn't reach Oso-Ahia to load this data.",
         };
       }
     },
@@ -254,7 +254,7 @@ export function ReactFrameView({
   const frame = mounted ? (
     <iframe
       ref={frameRef}
-      title={title || "Whirl artifact"}
+      title={title || "Oso-Ahia artifact"}
       sandbox="allow-scripts allow-pointer-lock"
       src="/artifact-frame"
       onPointerEnter={grabFocus}

@@ -14,7 +14,7 @@ export async function readSlotCustomer(autumn: Autumn, customerId: string) {
   const { data, error } = await autumn.customers.get(customerId);
   if (error || !data)
     throw new ConvexError(
-      "We couldn’t check your plan. Open Whirl chat once to set up your account, then try again.",
+      "We couldn’t check your plan. Open Oso-Ahia chat once to set up your account, then try again.",
     );
   return data;
 }

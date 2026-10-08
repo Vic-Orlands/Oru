@@ -1,6 +1,6 @@
 // Billing that survives a bad round trip.
 //
-// Every dollar Whirl charges is a call to Autumn's API, and that call fails the
+// Every dollar Oso-Ahia charges is a call to Autumn's API, and that call fails the
 // way network calls fail: slowly, occasionally, and silently. It used to run
 // best-effort behind a 4s cap — so a turn whose deduction was still in flight
 // when the cap expired was simply never billed, and nothing anywhere said so.

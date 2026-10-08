@@ -1,5 +1,5 @@
 // Server-overload throttle state. We read how much free-tier traffic has cost
-// Whirl so far today from a PostHog endpoint, cache it in a singleton row, and
+// Oso-Ahia so far today from a PostHog endpoint, cache it in a singleton row, and
 // expose a vague severity + tightened message cap to clients. The inference
 // path reads the cached row and schedules a background refresh when stale; a
 // cron keeps it warm for the client notice. Paid users are never affected — the

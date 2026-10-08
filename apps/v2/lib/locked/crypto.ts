@@ -51,7 +51,7 @@ export type LockEnvelope = {
 function subtle(): SubtleCrypto {
   if (typeof crypto === "undefined" || !crypto.subtle) {
     throw new Error(
-      "Locked chats need a secure connection. Open Whirl over HTTPS, or on localhost.",
+      "Locked chats need a secure connection. Open Oso-Ahia over HTTPS, or on localhost.",
     );
   }
   return crypto.subtle;

@@ -115,7 +115,7 @@ export function SkillInstallModal({
             chips={
               <ListingChip>
                 <IconBulbFilled size={12} />
-                Skill — instructions Whirl picks up mid-chat
+                Skill — instructions Oso-Ahia picks up mid-chat
               </ListingChip>
             }
           />
@@ -146,17 +146,17 @@ export function SkillInstallModal({
               <StepHint>Skills are part of the paid plan.</StepHint>
             ) : listing.installed ? (
               <StepHint>
-                Whirl studies up whenever a chat calls for it.
+                Oso-Ahia studies up whenever a chat calls for it.
               </StepHint>
             ) : (
-              <StepHint>No setup — one click and Whirl knows it.</StepHint>
+              <StepHint>No setup — one click and Oso-Ahia knows it.</StepHint>
             )}
           </div>
         </div>
       ) : (
         <SuccessStep
           title={`${listing.name} is in!`}
-          body="Whirl will study up whenever a chat calls for it. Manage it anytime from the Installed tab."
+          body="Oso-Ahia will study up whenever a chat calls for it. Manage it anytime from the Installed tab."
           onDone={onClose}
         />
       )}

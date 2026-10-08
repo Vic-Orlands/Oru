@@ -57,7 +57,7 @@ function firstFiniteNumber(value: unknown, depth = 0): number | null {
 }
 
 /**
- * How much free-tier traffic has cost Whirl so far today, in USD, per the
+ * How much free-tier traffic has cost Oso-Ahia so far today, in USD, per the
  * PostHog `free-user-daily-cost` endpoint. Returns `null` when the lookup is
  * disabled (no personal API key) or fails for any reason — callers treat `null`
  * as "no signal", so the overload throttle stays off rather than guessing.

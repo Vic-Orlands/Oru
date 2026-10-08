@@ -73,7 +73,7 @@ export function ChangePasswordModal({
       setError(
         cause instanceof Error
           ? cause.message
-          : "Whirl cannot change the password. Try again.",
+          : "Oso-Ahia cannot change the password. Try again.",
       );
     } finally {
       setBusy(false);
@@ -141,7 +141,7 @@ export function ChangePasswordModal({
           </Button>
           <StepHint tone={weak ? "warn" : "muted"}>
             {weak
-              ? "This password is weak. Whirl cannot reset it."
+              ? "This password is weak. Oso-Ahia cannot reset it."
               : "The old password stops immediately."}
           </StepHint>
         </div>

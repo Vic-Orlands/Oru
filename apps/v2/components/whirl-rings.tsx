@@ -100,7 +100,7 @@ export function useTwirl() {
 const ANIMATED_MARK_WIDTH_PCT = (240 / 182) * 100;
 const ANIMATED_MARK_HEIGHT_PCT = (242 / 182) * 100;
 
-/** The supplied animated Whirl mark, shared by every interactive logo. */
+/** The supplied animated Oso-Ahia mark, shared by every interactive logo. */
 export function WhirlAnimatedMark({
   className = "",
 }: {
@@ -152,7 +152,7 @@ export function WhirlHoverMark({
 }
 
 /**
- * The Whirl mark as two counter-rotating rings, colored by masked `layers`
+ * The Oso-Ahia mark as two counter-rotating rings, colored by masked `layers`
  * (stack several to crossfade fills). While `spin` is true the rings breathe:
  * an eased full turn, a brief rest, repeat. When it flips off they ease
  * forward to the next full turn so they always land exactly on the static

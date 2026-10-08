@@ -36,7 +36,7 @@ import { titleFromPrompt } from "./thread-lock";
        stream buffer (lib/locked/stream.ts), and gets merged onto its
        message row on the way past. */
 
-const UNREADABLE = "_Whirl cannot decrypt this message._";
+const UNREADABLE = "_Oso-Ahia cannot decrypt this message._";
 
 /**
  * The thread's messages, opened. `undefined` until the first pass finishes,
@@ -256,7 +256,7 @@ export function useLockedMessageActions() {
         failure =
           cause instanceof Error
             ? cause.message
-            : "Whirl cannot generate this reply. Try again.";
+            : "Oso-Ahia cannot generate this reply. Try again.";
       }
 
       const hasText = text.trim().length > 0;

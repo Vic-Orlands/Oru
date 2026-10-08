@@ -33,7 +33,7 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
     name: "Free",
     price: 0,
     tagline: "Kick the tires, no card required.",
-    description: "A gentle way to see if Whirl fits.",
+    description: "A gentle way to see if Oso-Ahia fits.",
     features: [
       { icon: IconSparkles, label: "15 free messages per day" },
       { icon: IconFeather, label: "The Free model" },
@@ -59,7 +59,7 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
     name: "Turbo",
     price: 12,
     tagline: "More room. Smarter answers.",
-    description: "The sweet spot for people who use Whirl every day.",
+    description: "The sweet spot for people who use Oso-Ahia every day.",
     features: [
       { icon: IconCpu, label: "About 2.5× Mini's weekly usage" },
       { icon: IconBarbell, label: "Every model, with room to lean on Heavy" },

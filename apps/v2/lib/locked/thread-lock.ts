@@ -65,7 +65,7 @@ async function openBody(key: CryptoKey, message: ChatMessage): Promise<string> {
   try {
     return await openEnvelope(key, message.content);
   } catch {
-    return "_Whirl cannot decrypt this message._";
+    return "_Oso-Ahia cannot decrypt this message._";
   }
 }
 

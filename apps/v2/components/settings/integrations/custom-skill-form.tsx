@@ -80,11 +80,11 @@ export function CustomSkillForm({
         <Input
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          placeholder="Optional — when should Whirl reach for this?"
+          placeholder="Optional — when should Oso-Ahia reach for this?"
           maxLength={MAX_DESCRIPTION_LENGTH}
         />
         <p className="text-[11.5px] text-muted-foreground/70">
-          Whirl sees the name and description every chat and pulls in the full
+          Oso-Ahia sees the name and description every chat and pulls in the full
           instructions when they seem relevant.
         </p>
       </label>

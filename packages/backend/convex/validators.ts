@@ -556,7 +556,7 @@ export const homeSuggestionValidator = v.object({
 });
 
 // --- Usage ledger ------------------------------------------------------------
-// Every charge Whirl reports to Autumn is written down before it's sent (see
+// Every charge Oso-Ahia reports to Autumn is written down before it's sent (see
 // convex/usageLedger.ts), so a slow or failing Autumn round trip postpones a
 // charge instead of losing it.
 

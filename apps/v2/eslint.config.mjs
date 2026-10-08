@@ -7,7 +7,7 @@ const eslintConfig = defineConfig([
   ...nextTs,
   {
     rules: {
-      // The inherited Whirl tree predates the React Compiler hook rules that
+      // The inherited Oso-Ahia tree predates the React Compiler hook rules that
       // eslint-config-next now flags as errors. Keep them visible without
       // failing the build on code we did not rewrite.
       "react-hooks/refs": "warn",

@@ -496,7 +496,7 @@ export function OsoHome() {
           <span>
             Built on{" "}
             <a className="underline" href="https://github.com/whirlchat/whirl">
-              Whirl
+              Oso-Ahia
             </a>{" "}
             by Anterra, MIT licensed.
           </span>

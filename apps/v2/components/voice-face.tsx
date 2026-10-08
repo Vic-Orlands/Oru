@@ -218,7 +218,7 @@ export function VoiceFace({ voice }: { voice: VoiceInput }) {
               <p className="text-sm text-muted-foreground">
                 {status === "requesting"
                   ? "Allow microphone access to keep going."
-                  : "Whirl needs your microphone to hear you."}
+                  : "Oso-Ahia needs your microphone to hear you."}
               </p>
             </div>
             {status !== "requesting" && (

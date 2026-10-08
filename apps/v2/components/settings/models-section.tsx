@@ -28,8 +28,10 @@ function capabilityBlurb(model: ComposerModel): string {
       : null,
   ].filter((bit): bit is string => bit !== null);
 
-  const blurb = bits.join(" · ");
-  return blurb.charAt(0).toUpperCase() + blurb.slice(1);
+  const capabilities = bits.join(" · ");
+  return [model.company, model.category, capabilities]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 export function ModelsSection() {
@@ -80,7 +82,7 @@ export function ModelsSection() {
     <>
       <SettingsHeader
         title="Models"
-        description="Chat defaults to Kimi (OPENROUTER_CHAT_MODEL). Fast yes/no checks use Jev (OPENROUTER_JUDGE_MODEL), with OPENROUTER_JUDGE_FALLBACK_MODEL behind it. Favourites below are the quick picker."
+        description="Choose budget models for everyday work or heavier models for complex research and reasoning. Image uses OpenAI GPT Image 2. Favourites appear in the quick picker."
       />
       <SettingsCard>
         <SettingsSearchRow

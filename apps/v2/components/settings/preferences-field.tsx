@@ -50,7 +50,7 @@ export function PreferencesField() {
   return (
     <SettingsRow
       title="Your preferences"
-      description="Anything Whirl should know about you — tone, interests, how you like answers. Applied to every conversation."
+      description="Anything Oso-Ahia should know about you — tone, interests, how you like answers. Applied to every conversation."
     >
       <textarea
         value={text ?? ""}

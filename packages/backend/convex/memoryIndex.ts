@@ -346,7 +346,7 @@ export const processRun = internalAction({
             await addSupermemoryDocument({
               containerTag,
               customId: `whirl-thread-${threadId}`,
-              content: `Whirl chat transcript\n\n${buildTranscript(transcript)}`,
+              content: `Oso-Ahia chat transcript\n\n${buildTranscript(transcript)}`,
               metadata: {
                 type: "thread_transcript",
                 source: "whirl",

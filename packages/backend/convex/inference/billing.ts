@@ -260,7 +260,7 @@ export const MESSAGES_GATE: Gate = {
   sentinel: "messages",
 };
 
-// Server-overload throttle: when free-tier traffic has cost Whirl too much in a
+// Server-overload throttle: when free-tier traffic has cost Oso-Ahia too much in a
 // single day, free users' per-day message cap is tightened below their normal
 // allowance. Tiers are checked most-expensive first; the first threshold the
 // daily cost clears wins. Paid users are NEVER throttled by this. The dollar

@@ -16,7 +16,7 @@ import { ConnectedIntegrationsCard } from "./connected-integrations-card";
 import { ServersCard } from "./servers-card";
 import { SkillsCard } from "./skills-card";
 
-/* The Integrations tab: everything the user has plugged into Whirl, in one
+/* The Integrations tab: everything the user has plugged into Oso-Ahia, in one
    place — store installs, skills (installed or hand-written), and custom
    MCP servers. The store itself stays at /integrations; this is the manage
    side. */
@@ -66,7 +66,7 @@ export function IntegrationsSection() {
             <SettingsRow
               icon={IconPuzzle}
               title="Integrations are a paid perk"
-              description="Plug in the tools you already use and Whirl can call them mid-chat: search your notes, file a ticket, hit your API."
+              description="Plug in the tools you already use and Oso-Ahia can call them mid-chat: search your notes, file a ticket, hit your API."
               control={
                 <Button onClick={openPricing}>
                   <IconSparkles size={15} stroke={2} />

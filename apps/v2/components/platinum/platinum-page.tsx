@@ -90,7 +90,7 @@ export function PlatinumPage() {
         >
           <PlatinumWordmark height={40} />
           <h1 className="mt-8 max-w-2xl text-3xl font-semibold tracking-tight text-balance sm:text-[40px]/[1.1]">
-            The highest tier of Whirl.
+            The highest tier of Oso-Ahia.
           </h1>
           <p className="mt-5 max-w-lg text-[14.5px]/7 text-balance text-muted-foreground">
             A far larger allowance, the Fast model unmetered, and preferential

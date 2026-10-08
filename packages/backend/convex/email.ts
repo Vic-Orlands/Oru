@@ -50,7 +50,7 @@ export async function sendEmail({
     return { ok: false, error: "Email isn't configured (RESEND_API_KEY)." };
   }
   // A sender on a domain verified in your Resend account, e.g.
-  // `npx convex env set RESEND_FROM_EMAIL "Whirl <hello@your-domain>"`.
+  // `npx convex env set RESEND_FROM_EMAIL "Oso-Ahia <hello@your-domain>"`.
   const from = process.env.RESEND_FROM_EMAIL?.trim();
   if (!from) {
     return {

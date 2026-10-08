@@ -1,6 +1,6 @@
 import { SITE_LINKS } from "@/lib/site";
 
-/* Whirl's public source, and whether this browser has already been told
+/* Oso-Ahia's public source, and whether this browser has already been told
    about it. The announcement is a once-per-browser moment, so a plain
    localStorage flag is enough — nothing about it is worth a server row. */
 

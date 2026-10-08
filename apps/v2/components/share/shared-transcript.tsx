@@ -41,7 +41,7 @@ export function SharedTranscript({ shareId }: { shareId: string }) {
   );
 
   useEffect(() => {
-    if (thread) document.title = `${thread.title} · Transcript · Whirl`;
+    if (thread) document.title = `${thread.title} · Transcript · Oso-Ahia`;
   }, [thread]);
 
   const copyTranscript = () => {
@@ -66,12 +66,12 @@ export function SharedTranscript({ shareId }: { shareId: string }) {
             <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-4">
               <a
                 href="/"
-                aria-label="Whirl home"
+                aria-label="Oso-Ahia home"
                 className="flex shrink-0 items-center gap-2"
               >
                 <WhirlLogo size={18} />
                 <span className="text-[14px]/4 font-semibold max-sm:hidden">
-                  Whirl
+                  Oso-Ahia
                 </span>
               </a>
               <span className="h-4 w-px shrink-0 bg-border" />

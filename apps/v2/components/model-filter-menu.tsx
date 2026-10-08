@@ -26,11 +26,11 @@ import { WhirlRings } from "./whirl-rings";
    engaged. */
 
 /** The first-party shelf in the provider filter: every white-labeled tier
- *  files under Whirl, wearing the rings instead of a maker's mark. */
-export const WHIRL_PROVIDER = "Whirl";
+ *  files under Oso-Ahia, wearing the rings instead of a maker's mark. */
+export const WHIRL_PROVIDER = "Oso-Ahia";
 
 /** Which provider a model files under: the white-labeled tiers are ours —
- *  they group as "Whirl" — and catalog models go by their maker. */
+ *  they group as "Oso-Ahia" — and catalog models go by their maker. */
 export function providerOf(model: ComposerModel): string | undefined {
   return model.whiteLabel ? WHIRL_PROVIDER : model.company;
 }
@@ -83,7 +83,7 @@ export function ModelFilterMenu({
   onCapabilitiesChange: (capabilities: ReadonlySet<string>) => void;
 }) {
   /* The maker list, each remembering the first model glyph seen wearing it
-     so the menu can show the maker's mark. Whirl renders its own rings and
+     so the menu can show the maker's mark. Oso-Ahia renders its own rings and
      always leads. */
   const providerLogos = new Map<string, string | undefined>();
   for (const model of models) {

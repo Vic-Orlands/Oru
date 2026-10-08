@@ -11,6 +11,10 @@ import {
   type DatabaseReader,
 } from "./_generated/server";
 import { isAdminIdentity, requireAdmin } from "./admin";
+import {
+  BUILT_IN_CATALOG_MODELS,
+  builtInCatalogModel,
+} from "./modelCatalog";
 import { modelCapabilitiesValidator } from "./validators";
 
 // Admin-curated AI models for the console's Models tab. Custom rows join
@@ -256,7 +260,16 @@ export const listEnabled = query({
         .take(MAX_MODELS),
       readProviderIcons(ctx.db),
     ]);
-    return rows.map((row) => publicModel(row, providerIcons));
+    const saved = rows.map((row) => publicModel(row, providerIcons));
+    const savedSlugs = new Set(saved.map((model) => model.slug));
+    const builtIn = BUILT_IN_CATALOG_MODELS.filter(
+      (model) => !savedSlugs.has(model.slug),
+    ).map((model, index) => ({
+      ...model,
+      // Code-owned rows have no database id or uploaded provider icon.
+      createdAt: -index,
+    }));
+    return [...saved, ...builtIn];
   },
 });
 
@@ -726,7 +739,11 @@ export async function readCustomModel(
     .withIndex("by_slug", (q) => q.eq("slug", model))
     .take(OVERRIDABLE_TIERS.length + 1);
   const row = rows.find((entry) => entry.tier === undefined && entry.enabled);
-  return row ? { slug: row.slug, capabilities: row.capabilities } : null;
+  if (row) return { slug: row.slug, capabilities: row.capabilities };
+  const builtIn = builtInCatalogModel(model);
+  return builtIn
+    ? { slug: builtIn.slug, capabilities: builtIn.capabilities }
+    : null;
 }
 
 // The tier keys a send may carry besides a catalog slug — the retired Pro

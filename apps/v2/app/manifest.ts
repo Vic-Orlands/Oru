@@ -44,7 +44,7 @@ export default function manifest(): MetadataRoute.Manifest {
       { name: "Integrations", short_name: "Integrations", url: "/integrations" },
       { name: "Settings", short_name: "Settings", url: "/settings" },
     ],
-    /* Whirl in the OS share sheet. The text lands in the home composer
+    /* Oso-Ahia in the OS share sheet. The text lands in the home composer
        rather than sending on arrival — sharing something is the start of a
        question, not the whole of one (lib/share-target.ts). */
     share_target: {

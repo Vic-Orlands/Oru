@@ -195,8 +195,8 @@ export function McpServerForm({
       {isOAuth ? (
         <p className="rounded-lg bg-black/[0.025] px-3 py-2 text-xs leading-relaxed text-muted-foreground dark:bg-white/[0.04]">
           {isEdit
-            ? "Whirl registers itself with the server and you approve access in a popup. No tokens to copy."
-            : "Save the server, then click Connect to sign in through your browser. Whirl registers itself automatically, no tokens to copy."}
+            ? "Oso-Ahia registers itself with the server and you approve access in a popup. No tokens to copy."
+            : "Save the server, then click Connect to sign in through your browser. Oso-Ahia registers itself automatically, no tokens to copy."}
         </p>
       ) : (
         <div className="flex flex-col gap-1.5">

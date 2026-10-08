@@ -87,7 +87,7 @@ function DataLocked() {
         <div className="mt-1 flex items-center gap-2">
           <WhirlLogo size={16} />
           <Button nativeButton={false} render={<a href="/" />}>
-            Make your own with Whirl
+            Make your own with Oso-Ahia
           </Button>
         </div>
       </main>

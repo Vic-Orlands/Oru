@@ -59,7 +59,7 @@ export function ReauthNotice({ className = "" }: { className?: string }) {
                   : `${expired.length} integrations need signing in again`}
               </h2>
               <p className="mt-0.5 text-[12.5px]/5 text-muted-foreground">
-                Whirl can&apos;t use{" "}
+                Oso-Ahia can&apos;t use{" "}
                 {expired.length === 1 ? "it" : "them"} until you do — chats and
                 anything built on {expired.length === 1 ? "it" : "them"} will
                 come back empty.

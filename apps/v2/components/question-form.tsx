@@ -255,7 +255,7 @@ export function QuestionForm({
                     <input
                       autoFocus
                       value={draft.otherText}
-                      placeholder="Tell whirl what you have in mind"
+                      placeholder="Tell Oso-Ahia what you have in mind"
                       onClick={(event) => event.stopPropagation()}
                       onChange={(event) =>
                         patchDraft(current.id, {

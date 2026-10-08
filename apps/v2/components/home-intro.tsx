@@ -34,7 +34,7 @@ declare global {
    already the shape they settle into.
 
    Cached/user text goes through textContent only; the only innerHTML is
-   the static rest-pose Whirl mark below. */
+   the static rest-pose Oso-Ahia mark below. */
 
 /* One masked ring of the logo's rest pose (mirrors WhirlRings' markup,
    minus the interactivity). Static string — no user data. */

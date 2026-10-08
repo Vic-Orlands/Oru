@@ -1,4 +1,4 @@
-/* What the Median support agent may do on Whirl's behalf.
+/* What the Median support agent may do on Oso-Ahia's behalf.
  *
  * Every lookup is keyed on the visitor the widget already proved, never on
  * something typed into the chat. The one thing a customer does type is a

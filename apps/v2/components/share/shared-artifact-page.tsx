@@ -35,7 +35,7 @@ export function SharedArtifactPage({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    if (title) document.title = `${title} · Whirl`;
+    if (title) document.title = `${title} · Oso-Ahia`;
   }, [title]);
 
   return (
@@ -84,18 +84,18 @@ function SharedArtifactHeader({
     <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-4">
       <a
         href="/"
-        aria-label="Whirl home"
+        aria-label="Oso-Ahia home"
         className="flex shrink-0 items-center gap-2"
       >
         <WhirlLogo size={18} />
-        <span className="text-[14px]/4 font-semibold max-sm:hidden">Whirl</span>
+        <span className="text-[14px]/4 font-semibold max-sm:hidden">Oso-Ahia</span>
       </a>
       <span className="h-4 w-px shrink-0 bg-border" />
       <span className="min-w-0 flex-1 truncate text-[13.5px]/4 font-medium">
         {title}
       </span>
       <span className="shrink-0 text-[12px]/4 font-medium text-muted-foreground max-md:hidden">
-        Made with Whirl
+        Made with Oso-Ahia
       </span>
       {actions}
       <Button variant="ghost" size="sm" onClick={copyLink}>
@@ -124,7 +124,7 @@ function NotAvailable({ headline }: { headline: string }) {
         </div>
       </div>
       <Button nativeButton={false} render={<a href="/" />}>
-        Make your own with Whirl
+        Make your own with Oso-Ahia
       </Button>
     </div>
   );

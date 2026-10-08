@@ -182,7 +182,7 @@ function registrationFailure(status: number, text: string): Error {
   }
   if (code === "invalid_redirect_uri") {
     return new Error(
-      "This server only allows a fixed set of apps to sign in and rejected Whirl's callback URL, so OAuth won't work here. Connect it with an API key or auth header instead.",
+      "This server only allows a fixed set of apps to sign in and rejected Oso-Ahia's callback URL, so OAuth won't work here. Connect it with an API key or auth header instead.",
     );
   }
   const detail = description ?? text.slice(0, 200);
@@ -211,7 +211,7 @@ export async function registerClient({
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         signal: controller.signal,
         body: JSON.stringify({
-          client_name: "Whirl",
+          client_name: "Oso-Ahia",
           redirect_uris: [redirectUri],
           grant_types: ["authorization_code", "refresh_token"],
           response_types: ["code"],
@@ -253,7 +253,7 @@ export async function registerClient({
 /**
  * The front half of every "Connect" flow: discover the authorization server
  * for an MCP endpoint and register a client for `redirectUri`. Failures here
- * are user-actionable (bad URL, no DCR, Whirl not on the server's client
+ * are user-actionable (bad URL, no DCR, Oso-Ahia not on the server's client
  * allowlist), and Convex redacts plain `Error` messages to "Server Error" in
  * production — so anything thrown is wrapped in a ConvexError, whose payload
  * survives to the browser.

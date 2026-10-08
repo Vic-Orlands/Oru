@@ -151,7 +151,7 @@ export function buildThreadTranscript(
   const parts: string[] = [`# ${thread.title}`];
 
   for (const message of thread.messages) {
-    parts.push(message.role === "user" ? "## User" : "## Whirl");
+    parts.push(message.role === "user" ? "## User" : "## Oso-Ahia");
 
     const blocks = message.artifacts
       .map((ref) => ({

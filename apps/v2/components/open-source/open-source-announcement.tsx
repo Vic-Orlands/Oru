@@ -23,7 +23,7 @@ import { OpenSourceHero } from "./open-source-hero";
    instead of racing the first frame. */
 const OPEN_DELAY_MS = 1200;
 
-/** Tells each browser, once, that Whirl's source is public. */
+/** Tells each browser, once, that Oso-Ahia's source is public. */
 export function OpenSourceAnnouncement() {
   const [open, setOpen] = useState(false);
 
@@ -62,7 +62,7 @@ export function OpenSourceDialog({
     <StepModal
       open={open}
       onOpenChange={onOpenChange}
-      ariaLabel="Whirl is now open source"
+      ariaLabel="Oso-Ahia is now open source"
       step="announcement"
       buttons={<StepModalCloseButton onClose={close} />}
       initialFocus={bodyRef}
@@ -77,13 +77,13 @@ export function OpenSourceDialog({
           {...rise(0.12)}
           className="text-[16px] font-semibold tracking-tight"
         >
-          Whirl is now open source
+          Oso-Ahia is now open source
         </motion.h2>
         <motion.p
           {...rise(0.17)}
           className="mt-1.5 max-w-[19rem] text-[13px]/[1.5] text-muted-foreground"
         >
-          Every line of Whirl is public, from the composer to the streaming
+          Every line of Oso-Ahia is public, from the composer to the streaming
           pipeline. Read the code, run your own, or help make it better.
         </motion.p>
         <motion.div {...rise(0.22)} className="mt-5 w-full">

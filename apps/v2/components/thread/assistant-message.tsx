@@ -376,7 +376,7 @@ function ErrorBanner({
   const headline = gate
     ? (GATE_COPY[error.feature] ?? "That needs a paid plan.")
     : error.kind === "overload"
-      ? "Whirl is a little overloaded right now."
+      ? "Oso-Ahia is a little overloaded right now."
       : "Something went wrong.";
   const subline = gate
     ? "Upgrade to keep going, or switch things up."

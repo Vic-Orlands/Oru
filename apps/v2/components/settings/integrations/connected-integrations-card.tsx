@@ -153,7 +153,7 @@ export function ConnectedIntegrationsCard() {
           if (!open) setConfirming(null);
         }}
         title={`Uninstall ${confirming?.name ?? "this integration"}?`}
-        message="Whirl loses its tools, and any sign-in or keys go with it. You can always reinstall it from the store."
+        message="Oso-Ahia loses its tools, and any sign-in or keys go with it. You can always reinstall it from the store."
         confirmLabel="Uninstall"
         destructive
         onConfirm={() => {

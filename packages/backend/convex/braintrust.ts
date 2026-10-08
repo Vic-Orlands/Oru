@@ -48,7 +48,7 @@ import {
    by name in that org. */
 const BRAINTRUST_PROJECT = process.env.BRAINTRUST_PROJECT_ID?.trim()
   ? { projectId: process.env.BRAINTRUST_PROJECT_ID.trim() }
-  : { projectName: process.env.BRAINTRUST_PROJECT_NAME?.trim() || "Whirl" };
+  : { projectName: process.env.BRAINTRUST_PROJECT_NAME?.trim() || "Oso-Ahia" };
 
 const BRAINTRUST_API_KEY = process.env.BRAINTRUST_API_KEY;
 

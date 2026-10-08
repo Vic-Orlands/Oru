@@ -32,7 +32,7 @@ const MIN_WIDTH = 420;
    markup it can only refuse to decode. */
 const FONT = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
 
-export const WATERMARK = "Made by Whirl";
+export const WATERMARK = "Made by Oso-Ahia";
 
 /* A serialized SVG carries no stylesheet, so anything wearing a class or a
    var() has to be baked on as an inline style first. */

@@ -13,7 +13,7 @@ import { motion } from "motion/react";
 import { WhirlRings } from "@/components/whirl-rings";
 import { EASE_OUT, pinRasterPath } from "@/lib/motion";
 
-/* The open-source announcement's hero: the Whirl mark as a small sun, with
+/* The open-source announcement's hero: the Oso-Ahia mark as a small sun, with
    the things a public repo brings drifting around it on two dotted orbits.
    The orbits counter-rotate, the same way the mark's own two rings do.
 

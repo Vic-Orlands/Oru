@@ -26,6 +26,7 @@ export type AdminModel = {
   displayName: string;
   company: string;
   modelName: string;
+  category?: "Budget" | "Heavy";
   iconSvg?: string;
   capabilities: {
     vision: boolean;
@@ -74,6 +75,7 @@ function toAdminModel(row: {
   displayName: string;
   company: string;
   modelName: string;
+  category?: "Budget" | "Heavy";
   iconSvg?: string;
   capabilities: AdminModel["capabilities"];
   legacy?: boolean;
@@ -85,6 +87,7 @@ function toAdminModel(row: {
     displayName: row.displayName,
     company: row.company,
     modelName: row.modelName,
+    category: row.category,
     iconSvg: row.iconSvg,
     capabilities: row.capabilities,
     legacy: row.legacy,
@@ -139,6 +142,7 @@ function toComposerModel(model: AdminModel): ComposerModel {
     fullName: model.modelName,
     iconSvg: model.iconSvg,
     company: model.company,
+    category: model.category,
     aliases: [
       model.slug,
       model.company.toLowerCase(),

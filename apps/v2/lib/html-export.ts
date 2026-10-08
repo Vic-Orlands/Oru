@@ -44,7 +44,7 @@ export function downloadHtmlArtifact(title: string, html: string) {
 /**
  * Download a React artifact as its source module.
  *
- * Deliberately not a standalone .html: making one run outside Whirl means
+ * Deliberately not a standalone .html: making one run outside Oso-Ahia means
  * inlining a megabyte of runtime, and an artifact with data bindings would
  * still be inert because the bindings only resolve against the owner's
  * session. The source is the honest artifact — it's what whirl wrote.

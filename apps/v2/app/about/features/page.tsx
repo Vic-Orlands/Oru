@@ -23,7 +23,7 @@ import {
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = publicPageMetadata({
-  title: "Features · Whirl",
+  title: "Features · Oso-Ahia",
   description:
     "Integrations, skills, real memory, every top model, and living artifacts.",
   path: "/about/features",
@@ -34,18 +34,18 @@ export default function FeaturesPage() {
     <article>
       <PageTitle>Features</PageTitle>
       <Lede>
-        Everything Whirl can do, and everything it plugs into. The short
+        Everything Oso-Ahia can do, and everything it plugs into. The short
         version: it remembers, reaches into your tools, and learns new tricks.
       </Lede>
       <SplitSection
         title="Plugs into your world"
-        body="Connect Gmail, Google Calendar, Notion, and hundreds more through a community-built catalog. Whirl reads what you point it at and acts on your behalf."
+        body="Connect Gmail, Google Calendar, Notion, and hundreds more through a community-built catalog. Oso-Ahia reads what you point it at and acts on your behalf."
         visual={<IntegrationsVisual />}
       />
       <SplitSection
         reverse
         title="Skills give it new abilities"
-        body="Skills are add-on playbooks that teach Whirl entirely new moves, from deep research runs to a morning briefing built just for you."
+        body="Skills are add-on playbooks that teach Oso-Ahia entirely new moves, from deep research runs to a morning briefing built just for you."
         visual={<SkillsVisual />}
       />
       <BentoGrid>

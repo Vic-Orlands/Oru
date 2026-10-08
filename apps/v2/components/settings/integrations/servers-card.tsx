@@ -121,7 +121,7 @@ export function ServersCard() {
     <section>
       <SettingsGroupHeader
         title="Custom MCP servers"
-        description="Point Whirl at any remote (HTTP) MCP server — its tools join every chat."
+        description="Point Oso-Ahia at any remote (HTTP) MCP server — its tools join every chat."
         control={
           editing === "new" ? undefined : (
             <Button
@@ -152,7 +152,7 @@ export function ServersCard() {
         ) : ownServers.length === 0 ? (
           editing !== "new" && (
             <p className="p-4 text-sm text-muted-foreground">
-              No servers yet — add one to give Whirl your own tools.
+              No servers yet — add one to give Oso-Ahia your own tools.
             </p>
           )
         ) : (

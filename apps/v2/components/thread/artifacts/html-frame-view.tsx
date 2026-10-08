@@ -140,7 +140,7 @@ export function HtmlFrameView({
     return (
       <iframe
         ref={frameRef}
-        title={title || "Whirl visualization"}
+        title={title || "Oso-Ahia visualization"}
         sandbox="allow-scripts allow-pointer-lock"
         srcDoc={srcDoc}
         onPointerEnter={grabFocus}
@@ -160,7 +160,7 @@ export function HtmlFrameView({
       {mounted && (
         <iframe
           ref={frameRef}
-          title={title || "Whirl visualization"}
+          title={title || "Oso-Ahia visualization"}
           sandbox="allow-scripts allow-pointer-lock"
           srcDoc={srcDoc}
           onPointerEnter={grabFocus}

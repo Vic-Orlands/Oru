@@ -3,7 +3,7 @@
    attribution all build on these, so a fork changes them in one place:
    `npx convex env set SITE_URL https://your-domain`. */
 
-export const APP_NAME = "Whirl";
+export const APP_NAME = "Oso-Ahia";
 
 /* Older deployments set the origin under one of these names, one per
    feature that needed it. They still work, in this order, so nothing has

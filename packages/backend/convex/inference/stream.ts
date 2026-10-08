@@ -1559,7 +1559,7 @@ export async function runAssistantTurn(
         if (openStream.runtime === "react") {
           await runMutation(internal.html.failStreamingHtml, {
             htmlId: openStream.htmlId,
-            error: "Whirl stopped before this app was finished.",
+            error: "Oso-Ahia stopped before this app was finished.",
           });
           await runMutation(internal.inference.dropPendingHtmlPhase, {
             assistantId: requestInfo.assistantId,

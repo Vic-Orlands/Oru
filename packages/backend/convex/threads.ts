@@ -1258,7 +1258,7 @@ export const getSharedThread = queryGeneric({
       };
     }
 
-    /* Whirl-generated pictures ride two ways: the paint tool's image
+    /* Oso-Ahia-generated pictures ride two ways: the paint tool's image
        phase (already absolute public storage URLs) and the Image tier's
        assistant attachments (hydrated here). User attachments stay
        private — only assistant rows are read. */

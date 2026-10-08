@@ -4,9 +4,9 @@ import { CtaLink, Lede, PageTitle } from "@/components/marketing/page-blocks";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = publicPageMetadata({
-  title: "About · Whirl",
+  title: "About · Oso-Ahia",
   description:
-    "Whirl is built by salt, an indie developer, under Anterra. One goal: the best possible AI chat experience.",
+    "Oso-Ahia is built by salt, an indie developer, under Anterra. One goal: the best possible AI chat experience.",
   path: "/about/about",
 });
 
@@ -18,7 +18,7 @@ export default function AboutPage() {
     <article className="max-w-xl">
       <PageTitle>About</PageTitle>
       <Lede>
-        Whirl is a small product with one big ambition: the best possible AI
+        Oso-Ahia is a small product with one big ambition: the best possible AI
         chat experience.
       </Lede>
       <div className="mt-8 flex flex-col gap-5">
@@ -28,7 +28,7 @@ export default function AboutPage() {
           should feel and sweats the details accordingly.
         </p>
         <p className={prose}>
-          Whirl is made by{" "}
+          Oso-Ahia is made by{" "}
           <a
             href="https://anterra.sh"
             target="_blank"
@@ -47,7 +47,7 @@ export default function AboutPage() {
       </div>
       <div className="mt-10">
         <CtaLink href="/" primary>
-          Try Whirl
+          Try Oso-Ahia
         </CtaLink>
       </div>
     </article>

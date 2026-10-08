@@ -9,7 +9,7 @@ export function HeroArt() {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/whirl-animate.svg"
-        alt="Whirl"
+        alt="Oso-Ahia"
         width={240}
         height={242}
         className="pointer-events-none absolute top-1/2 left-1/2 h-auto w-16 -translate-x-1/2 -translate-y-1/2 scale-[1.3333] invert sm:w-24"

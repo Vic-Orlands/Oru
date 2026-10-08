@@ -153,7 +153,7 @@ export function BillingSection() {
               title={isPaid ? "Change plan" : "Upgrade your plan"}
               description={
                 isPaid
-                  ? "Compare plans and switch without leaving Whirl."
+                  ? "Compare plans and switch without leaving Oso-Ahia."
                   : "Unlock more models, larger uploads, and more room to think."
               }
               control={

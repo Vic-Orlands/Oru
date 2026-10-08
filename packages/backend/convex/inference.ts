@@ -470,7 +470,7 @@ export const getRequestForStream = internalQuery({
         const parts = toContentParts(modelMessages[i].content);
         parts.push({
           type: "text",
-          text: `(The image whirl generated earlier in this conversation, for reference — ${lastGeneratedImage.name}:)`,
+          text: `(The image Oso-Ahia generated earlier in this conversation, for reference — ${lastGeneratedImage.name}:)`,
         });
         parts.push({
           type: "image",

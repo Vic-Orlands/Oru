@@ -668,7 +668,7 @@ export default defineSchema({
     .index("by_state", ["state"])
     .index("by_server", ["serverId"]),
 
-  // Singleton row caching how much free-tier traffic has cost Whirl so far
+  // Singleton row caching how much free-tier traffic has cost Oso-Ahia so far
   // today (USD), read from a PostHog endpoint. Refreshed by a cron and by a
   // background job scheduled from stale inference reads. The inference path
   // uses it to tighten free message caps when we're under load, and clients
@@ -771,8 +771,8 @@ export default defineSchema({
     updatedAt: v.number(),
   }),
 
-  // Whirl Console (apps/console): developer-registered integrations. Each row
-  // is one MCP server destined for the integration store, where regular Whirl
+  // Oso-Ahia Console (apps/console): developer-registered integrations. Each row
+  // is one MCP server destined for the integration store, where regular Oso-Ahia
   // users will be able to add it. Registered from the console's New
   // Integration form, reviewed in the admin Approvals tab.
   integrations: defineTable({
@@ -784,14 +784,14 @@ export default defineSchema({
     // (storeCategorize.ts); absent until then — clients bucket missing as
     // "Everything else".
     category: v.optional(v.string()),
-    // Display author for the store listing. "Whirl" submitted by an admin
+    // Display author for the store listing. "Oso-Ahia" submitted by an admin
     // account => `verified` (the blue checkmark). Optional only for rows that
     // predate the store model.
     author: v.optional(v.string()),
     verified: v.optional(v.boolean()),
     // Store branding. Logo (required on new rows) and banner live in Convex
     // storage; the small monochrome icon is raw SVG markup so clients can
-    // recolor it via CSS mask (shown gray wherever Whirl uses the
+    // recolor it via CSS mask (shown gray wherever Oso-Ahia uses the
     // integration, in place of the generic plug icon).
     logoId: v.optional(v.id("_storage")),
     // External logo URL, used instead of `logoId` for listings whose branding
@@ -882,7 +882,7 @@ export default defineSchema({
     // Lets the admin approvals queue list pending requests across all users.
     .index("by_status", ["status"]),
 
-  // Whirl Console (apps/console): developer-registered skills. A skill is a
+  // Oso-Ahia Console (apps/console): developer-registered skills. A skill is a
   // pasted block of instructions the model pulls in on demand (via the
   // load_skill tool) — no server, no auth, just text plus store branding.
   // Registered from the console's New Skill form, reviewed in the same admin
@@ -894,7 +894,7 @@ export default defineSchema({
     // Store shelf, same story as integrations.category: model-assigned after
     // approval, absent until then.
     category: v.optional(v.string()),
-    // Display author for the store listing. "Whirl" submitted by an admin
+    // Display author for the store listing. "Oso-Ahia" submitted by an admin
     // account => `verified` (the blue checkmark).
     author: v.optional(v.string()),
     verified: v.optional(v.boolean()),
@@ -984,7 +984,7 @@ export default defineSchema({
     .index("by_state", ["state"])
     .index("by_user", ["userId"]),
 
-  // Every charge Whirl owes Autumn, written down before it's sent and kept
+  // Every charge Oso-Ahia owes Autumn, written down before it's sent and kept
   // until Autumn confirms it. Reporting usage is a network call to somebody
   // else's API — it can be slow, it can 500, and the isolate that started it
   // can be torn down before it lands. Firing it best-effort meant a turn that

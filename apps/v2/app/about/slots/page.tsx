@@ -3,9 +3,9 @@ import { TokenArcade } from "@/components/slots/token-arcade";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = publicPageMetadata({
-  title: "Token Arcade · Whirl",
+  title: "Token Arcade · Oso-Ahia",
   description:
-    "100 tokens. Three reels. A little luck. Spin for tokens and limited-edition Whirl perks in the Token Arcade.",
+    "100 tokens. Three reels. A little luck. Spin for tokens and limited-edition Oso-Ahia perks in the Token Arcade.",
   path: "/about/slots",
 });
 

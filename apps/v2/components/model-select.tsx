@@ -183,6 +183,16 @@ function ModelTags({ model }: { model: ComposerModel }) {
   );
 }
 
+function ModelDetails({ model }: { model: ComposerModel }) {
+  const details = [model.company, model.category].filter(Boolean).join(" · ");
+  if (!details) return null;
+  return (
+    <span className="truncate text-[11.5px]/4 text-muted-foreground">
+      {details}
+    </span>
+  );
+}
+
 /* The composer's model chip. Opens the compact picker — favorited models
    plus the search/thinking gates — which morphs into the full catalog
    (search, capability tags, favorite stars) and back, one surface
@@ -733,6 +743,7 @@ function CatalogRow({
           )}
         </span>
         <ModelTags model={model} />
+        <ModelDetails model={model} />
       </button>
       {isLocked ? (
         <button

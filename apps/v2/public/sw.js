@@ -1,9 +1,9 @@
-/* Whirl's service worker.
+/* Oso-Ahia's service worker.
  *
  * It does two things and refuses to do a third:
  *
  *   1. Answers a navigation that the network couldn't with an offline page,
- *      so a tunnel or a dead connection gets Whirl's own face instead of the
+ *      so a tunnel or a dead connection gets Oso-Ahia's own face instead of the
  *      browser's dinosaur.
  *   2. Serves the fonts and icons from cache, because they never change
  *      within a build and they are what the first frame waits on.

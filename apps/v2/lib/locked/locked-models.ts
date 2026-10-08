@@ -49,7 +49,7 @@ export function lockedSendRejection(
   if (isClearedForLockedThread(model, policy)) return null;
   return policy.known
     ? "This model keeps a copy of what you send it, so a locked chat cannot use it. Pick another model."
-    : "Whirl is still checking which models keep no data. One moment.";
+    : "Oso-Ahia is still checking which models keep no data. One moment.";
 }
 
 /** Convenience for callers that only hold the thread's locked flag. */

@@ -397,7 +397,7 @@ function readAsDataUrl(file: File): Promise<string> {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result));
     reader.onerror = () =>
-      reject(new Error(`Whirl cannot read ${file.name}. Attach it again.`));
+      reject(new Error(`Oso-Ahia cannot read ${file.name}. Attach it again.`));
     reader.readAsDataURL(file);
   });
 }
@@ -464,7 +464,7 @@ export async function prepareAttachment({
             console.error("Document conversion failed.", error);
             return {
               kind: "skipped",
-              reason: "whirl couldn't read this document just now.",
+              reason: "Oso-Ahia couldn't read this document just now.",
             };
           },
         )

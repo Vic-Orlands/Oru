@@ -53,7 +53,10 @@ export function GeneralSection() {
 
   return (
     <>
-      <SettingsHeader title="General" description="Make whirl feel like home." />
+      <SettingsHeader
+        title="General"
+        description="Make Oso-Ahia feel like home."
+      />
       <div className="flex flex-col gap-4">
         <SettingsCard>
           <SettingsRow
@@ -117,7 +120,7 @@ export function GeneralSection() {
         </SettingsCard>
 
         {/* Memory itself now has its own tab; this is the hand-written half
-            of "what Whirl knows about me", so it stays here. */}
+            of "what Oso-Ahia knows about me", so it stays here. */}
         <SettingsCard>
           <PreferencesField />
         </SettingsCard>

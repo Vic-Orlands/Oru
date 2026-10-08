@@ -46,7 +46,7 @@ export function platinumInviteHtml({
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:20px;">
       <tr>
         <td style="padding:32px;">
-          <img src="${escapeHtml(logoUrl)}" width="30" height="30" alt="Whirl" style="display:block;border:0;outline:none;text-decoration:none;" />
+          <img src="${escapeHtml(logoUrl)}" width="30" height="30" alt="Oso-Ahia" style="display:block;border:0;outline:none;text-decoration:none;" />
           <h1 style="margin:22px 0 12px;font-size:22px;font-weight:600;letter-spacing:-0.02em;">A place is available.</h1>
           <p style="margin:0 0 28px;font-size:15px;line-height:1.6;color:#3f3f3f;">
             ${escapeHtml(greetingName(name))} request for ${plan} has been
@@ -85,6 +85,6 @@ export function platinumInviteText({
     "",
     "Nothing is charged until you complete checkout.",
     "",
-    "— Whirl",
+    "— Oso-Ahia",
   ].join("\n");
 }

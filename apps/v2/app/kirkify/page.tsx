@@ -7,7 +7,7 @@ import { Lede, PageTitle } from "@/components/marketing/page-blocks";
 import { kirkifyEnabled } from "@/lib/kirkify/enabled";
 import { publicPageMetadata, SITE_NAME, SITE_URL } from "@/lib/seo";
 
-const TITLE = "Kirkify · Whirl";
+const TITLE = "Kirkify · Oso-Ahia";
 const DESCRIPTION =
   "Happy Kirkiversary. Drop in a photo and get it back with a very familiar face. Three a day, free.";
 
@@ -23,7 +23,7 @@ export const metadata: Metadata = publicPageMetadata({
   },
 });
 
-/* What a crawler that reads structured data gets: a free web app, by Whirl. */
+/* What a crawler that reads structured data gets: a free web app, by Oso-Ahia. */
 const STRUCTURED_DATA = {
   "@context": "https://schema.org",
   "@type": "WebApplication",

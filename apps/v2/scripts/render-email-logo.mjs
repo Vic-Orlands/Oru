@@ -1,5 +1,5 @@
 /**
- * Rasterize the Whirl mark to a PNG for use in transactional email.
+ * Rasterize the Oso-Ahia mark to a PNG for use in transactional email.
  *
  * Gmail and Outlook both refuse to render SVG in email bodies, so the mark
  * has to ship as a bitmap. Rendered at 3x and displayed at a third of that,

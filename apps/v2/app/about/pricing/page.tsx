@@ -11,9 +11,9 @@ import { PlatinumStrip } from "@/components/pricing/platinum-strip";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = publicPageMetadata({
-  title: "Pricing · Whirl",
+  title: "Pricing · Oso-Ahia",
   description:
-    "Whirl starts free. Mini, Turbo, and Mega add more usage across the best AI models.",
+    "Oso-Ahia starts free. Mini, Turbo, and Mega add more usage across the best AI models.",
   path: "/about/pricing",
 });
 
@@ -61,7 +61,7 @@ export default function PricingPage() {
       <PageTitle>Pricing</PageTitle>
       <Lede>
         Start free, upgrade when you want more room. Every paid plan runs on the
-        same Whirl, just with a bigger engine behind it.
+        same Oso-Ahia, just with a bigger engine behind it.
       </Lede>
       <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-3xl bg-black/7 ring-1 ring-black/7 sm:grid-cols-2 dark:bg-white/8 dark:ring-white/8">
         {PLAN_DEFINITIONS.map((plan) => (

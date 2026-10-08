@@ -302,7 +302,7 @@ export function callbackHtml(payload: {
   );
   const detail = escapeHtml(
     payload.ok
-      ? "You can close this window and head back to Whirl."
+      ? "You can close this window and head back to Oso-Ahia."
       : (payload.error ?? "Something went wrong."),
   );
   // When opened in a popup, post the result to the opener and close. When the

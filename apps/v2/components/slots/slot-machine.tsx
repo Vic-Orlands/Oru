@@ -95,7 +95,7 @@ export function SlotMachine({
           ))}
         </div>
         <div className="slot-marquee-title">
-          <span aria-hidden="true">✦</span> Lucky Whirl{" "}
+          <span aria-hidden="true">✦</span> Lucky Oso-Ahia{" "}
           <span aria-hidden="true">✦</span>
         </div>
       </div>

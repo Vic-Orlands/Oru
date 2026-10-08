@@ -251,7 +251,7 @@ export function assistantHistoryEvents(
       )
       .join(", ");
     events.push(
-      `whirl generated ${
+      `Oso-Ahia generated ${
         generatedImages.length === 1
           ? "an image"
           : `${generatedImages.length} images`
@@ -266,14 +266,14 @@ export function assistantHistoryEvents(
     if (phase.kind === "document" && phase.documentId) {
       const link = options?.shareLinks?.documents[phase.documentId];
       events.push(
-        `whirl ${phase.op === "edit" ? "revised" : "wrote"} a document: "${
+        `Oso-Ahia ${phase.op === "edit" ? "revised" : "wrote"} a document: "${
           phase.title || "Untitled"
         }" (id: ${phase.documentId}${link ? `, public link: ${link}` : ""})`,
       );
     } else if (phase.kind === "html" && phase.htmlId) {
       const link = options?.shareLinks?.html[phase.htmlId];
       events.push(
-        `whirl ${phase.op === "edit" ? "revised" : "built"} an HTML artifact: "${
+        `Oso-Ahia ${phase.op === "edit" ? "revised" : "built"} an HTML artifact: "${
           phase.title || "Untitled"
         }" (id: ${phase.htmlId}${link ? `, public link: ${link}` : ""})`,
       );
@@ -285,7 +285,7 @@ export function assistantHistoryEvents(
   for (const phase of message.phases ?? []) {
     if (phase.kind !== "image" || !phase.images?.length) continue;
     events.push(
-      `whirl painted an image${
+      `Oso-Ahia painted an image${
         phase.prompt ? ` (prompt: ${phase.prompt})` : ""
       }; it is already on screen. Stored at: ${phase.images.join(", ")}`,
     );
@@ -301,8 +301,8 @@ export function assistantHistoryEvents(
       .join(" · ");
     events.push(
       phase.answered
-        ? `whirl asked the user with an interactive form: ${asked} — they answered via the form in their next message.`
-        : `whirl asked the user with an interactive form: ${asked} — they replied in their own words instead of the form.`,
+        ? `Oso-Ahia asked the user with an interactive form: ${asked} — they answered via the form in their next message.`
+        : `Oso-Ahia asked the user with an interactive form: ${asked} — they replied in their own words instead of the form.`,
     );
   }
   // Tool results are not replayed as provider tool messages on later turns,
@@ -325,7 +325,7 @@ export function assistantHistoryEvents(
 // storage URL is the failure that actually reached users — that a link only
 // exists if it is written out here.
 const HISTORY_EVENTS_PREAMBLE =
-  "System-generated record of what whirl's tools did in the conversation above. It is not a message, not part of any reply, and not something to respond to. Read it as context only: never quote, restate, reformat, or imitate these lines, and never write a link, id, or file URL that does not appear verbatim inside one of them.";
+  "System-generated record of what Oso-Ahia's tools did in the conversation above. It is not a message, not part of any reply, and not something to respond to. Read it as context only: never quote, restate, reformat, or imitate these lines, and never write a link, id, or file URL that does not appear verbatim inside one of them.";
 
 export function historyEventsBlock(events: string[]) {
   return [

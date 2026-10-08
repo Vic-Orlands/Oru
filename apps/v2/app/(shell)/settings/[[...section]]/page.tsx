@@ -26,7 +26,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const section = sectionFrom((await params).section);
-  return { title: `${SECTION_TITLES[section ?? "general"]} · Whirl` };
+  return { title: `${SECTION_TITLES[section ?? "general"]} · Oso-Ahia` };
 }
 
 export default async function SettingsPage({ params }: { params: Params }) {

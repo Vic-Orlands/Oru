@@ -130,7 +130,7 @@ export function LockSetupModal({
       setError(
         cause instanceof Error
           ? cause.message
-          : "Whirl cannot lock this chat. Try again.",
+          : "Oso-Ahia cannot lock this chat. Try again.",
       );
     } finally {
       setBusy(false);
@@ -180,7 +180,7 @@ export function LockSetupModal({
               icon={IconShieldCheckFilled}
               tone="safe"
               index={0}
-              title="Whirl cannot read it"
+              title="Oso-Ahia cannot read it"
             >
               Your device encrypts each message first.
             </LockPoint>
@@ -188,7 +188,7 @@ export function LockSetupModal({
               icon={IconServerOff}
               tone="info"
               index={1}
-              title="Whirl does not store files"
+              title="Oso-Ahia does not store files"
             >
               Your files go to the model only.
             </LockPoint>
@@ -198,7 +198,7 @@ export function LockSetupModal({
               index={2}
               title="You cannot reset the password"
             >
-              Whirl gives you a recovery key.
+              Oso-Ahia gives you a recovery key.
             </LockPoint>
           </ul>
 
@@ -211,7 +211,7 @@ export function LockSetupModal({
 
           {converting && (
             <StepHint tone="warn">
-              Whirl deletes the files and documents in this chat.
+              Oso-Ahia deletes the files and documents in this chat.
             </StepHint>
           )}
 
@@ -224,7 +224,7 @@ export function LockSetupModal({
       {step === "password" && (
         <div className="px-6 pt-9 pb-6">
           <StepHeading icon={IconKey} tone="info" title="Set a password">
-            This password opens the chat. Whirl does not store it.
+            This password opens the chat. Oso-Ahia does not store it.
           </StepHeading>
 
           <div className="mt-5 flex flex-col gap-2">
@@ -273,7 +273,7 @@ export function LockSetupModal({
               its height instead of swapping elements. */}
           <StepHint tone={weak ? "warn" : "muted"}>
             {weak
-              ? "This password is weak. Whirl cannot reset it."
+              ? "This password is weak. Oso-Ahia cannot reset it."
               : "Use a long password. A short sentence is better than a complex word."}
           </StepHint>
         </div>
@@ -282,7 +282,7 @@ export function LockSetupModal({
       {step === "key" && recoveryCode && (
         <div className="px-6 pt-9 pb-6">
           <StepHeading icon={IconKey} tone="care" title="Save your recovery key">
-            Use this key if you forget the password. Whirl shows it one time.
+            Use this key if you forget the password. Oso-Ahia shows it one time.
           </StepHeading>
 
           <div className="mt-5">
@@ -323,7 +323,7 @@ export function LockSetupModal({
       {step === "done" && (
         <SuccessStep
           title="This chat is locked"
-          body="The chat stays open in this tab. Whirl asks for the password again after you reload the page."
+          body="The chat stays open in this tab. Oso-Ahia asks for the password again after you reload the page."
           doneLabel="Continue"
           onDone={finish}
         />
@@ -357,7 +357,7 @@ function CopyKeyButton({
           setCopied(true);
           onCopied();
         } catch {
-          showToast("Whirl cannot copy the key. Select it and copy it.");
+          showToast("Oso-Ahia cannot copy the key. Select it and copy it.");
         }
       }}
     >

@@ -1,4 +1,4 @@
-# Whirl web app
+# Oso-Ahia web app
 
 The production Oso-Ahia Next.js app. It talks to the Convex backend in
 [`packages/backend`](../../packages/backend) and signs people in with Better Auth.

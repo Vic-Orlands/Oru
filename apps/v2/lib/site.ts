@@ -1,4 +1,4 @@
-/* Everything that ties this build to one particular Whirl: its address and
+/* Everything that ties this build to one particular Oso-Ahia: its address and
    the places it sends people. A fork edits this file and sets
    NEXT_PUBLIC_SITE_URL; nothing else in the app hardcodes a domain.
 

@@ -67,7 +67,7 @@ export function MemoryRow({
           onChange={setDraft}
           onSubmit={() => void save()}
           onCancel={() => setEditing(false)}
-          placeholder="What should Whirl remember?"
+          placeholder="What should Oso-Ahia remember?"
           disabled={saving}
         />
         <div className="flex items-center justify-end gap-2">
