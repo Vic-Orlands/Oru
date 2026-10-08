@@ -10,8 +10,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), tailwindcss()],
-    // Fixed port so Clerk's dev instance and muscle memory both know where the
-    // console lives (the main app takes 3000).
+    // Fixed port so Better Auth can trust one stable console origin while the
+    // main app keeps port 3000.
     server: {
       port: 3001,
       strictPort: true,

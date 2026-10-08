@@ -56,11 +56,9 @@ type AnyCtx = QueryCtx | MutationCtx | ActionCtx;
 
 // --- Admin auth -------------------------------------------------------------
 
-// The admin role is delivered via a Clerk custom-metadata claim surfaced into
-// the Convex JWT. Configure the Clerk "convex" JWT template to add a claim
-// `"role": "{{user.public_metadata.role}}"`, then set publicMetadata.role to
-// "admin" on the admin user. We read it defensively from a few shapes in case
-// the claim is delivered nested.
+// Better Auth identities include the user's verified email. Admins are
+// bootstrapped through a Convex deployment allowlist; role claims remain
+// supported for deployments that add them to the Better Auth token later.
 function extractRole(identity: Record<string, unknown>): string | undefined {
   const direct = identity.role;
   if (typeof direct === "string") return direct;
@@ -75,7 +73,18 @@ function extractRole(identity: Record<string, unknown>): string | undefined {
 export async function isAdminIdentity(ctx: AnyCtx): Promise<boolean> {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) return false;
-  return extractRole(identity as unknown as Record<string, unknown>) === "admin";
+  if (extractRole(identity as unknown as Record<string, unknown>) === "admin") {
+    return true;
+  }
+  const email = typeof identity.email === "string" ? identity.email : "";
+  if (!email) return false;
+  const adminEmails = new Set(
+    (process.env.ADMIN_EMAILS ?? "")
+      .split(",")
+      .map((value) => value.trim().toLowerCase())
+      .filter(Boolean),
+  );
+  return adminEmails.has(email.toLowerCase());
 }
 
 /**
@@ -421,11 +430,7 @@ export const listUsers = action({
       };
     }
 
-    const { customers, total } = await listCustomersPage(
-      autumn,
-      offset,
-      limit,
-    );
+    const { customers, total } = await listCustomersPage(autumn, offset, limit);
     return { users: customers.map(toListedUser), total, truncated: false };
   },
 });
@@ -433,7 +438,10 @@ export const listUsers = action({
 // Reset a single customer's usage by zeroing the usage counter on each feature,
 // which restores their full included allotment. Returns true if at least one
 // feature reset succeeded.
-async function resetCustomer(autumn: Autumn, customerId: string): Promise<{
+async function resetCustomer(
+  autumn: Autumn,
+  customerId: string,
+): Promise<{
   ok: boolean;
   error?: string;
 }> {
@@ -558,9 +566,7 @@ export const resetUsage = action({
 /** Internal: upsert a pending reset notice for each affected user. */
 export const recordResetNotices = internalMutation({
   args: {
-    notices: v.array(
-      v.object({ userId: v.string(), message: v.string() }),
-    ),
+    notices: v.array(v.object({ userId: v.string(), message: v.string() })),
   },
   handler: async (ctx, { notices }) => {
     const now = Date.now();
@@ -572,7 +578,11 @@ export const recordResetNotices = internalMutation({
       if (existing) {
         await ctx.db.patch(existing._id, { message, createdAt: now });
       } else {
-        await ctx.db.insert("resetNotices", { userId, message, createdAt: now });
+        await ctx.db.insert("resetNotices", {
+          userId,
+          message,
+          createdAt: now,
+        });
       }
     }
     return null;

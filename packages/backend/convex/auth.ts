@@ -18,12 +18,13 @@ function requireEnvironmentValue(name: string): string {
 
 export const createAuth = (ctx: GenericCtx<DataModel>) => {
   const siteUrl = process.env.SITE_URL || "http://localhost:3000";
+  const consoleUrl = process.env.CONSOLE_URL?.replace(/\/+$/, "");
   const googleId = process.env.GOOGLE_CLIENT_ID;
   const googleSecret = process.env.GOOGLE_CLIENT_SECRET;
   return betterAuth({
     baseURL: siteUrl,
     secret: requireEnvironmentValue("BETTER_AUTH_SECRET"),
-    trustedOrigins: [siteUrl],
+    trustedOrigins: consoleUrl ? [siteUrl, consoleUrl] : [siteUrl],
     database: authComponent.adapter(ctx),
     socialProviders:
       googleId && googleSecret

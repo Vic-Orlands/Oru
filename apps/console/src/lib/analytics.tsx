@@ -1,14 +1,14 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { useAuth, useUser } from "@clerk/clerk-react";
 import { PostHogProvider, usePostHog } from "@posthog/react";
 import posthog from "posthog-js";
+
+import { useSessionUser } from "~/lib/auth/session";
 
 // Same PostHog project as the main app — console events are prefixed with
 // `console_` so the two surfaces stay easy to tell apart in one taxonomy.
 // When the token is absent, analytics quietly no-ops instead of erroring.
 const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_PROJECT_TOKEN as
-  | string
-  | undefined;
+  string | undefined;
 const POSTHOG_HOST =
   (import.meta.env.VITE_POSTHOG_HOST as string | undefined) ??
   "https://us.i.posthog.com";
@@ -88,13 +88,12 @@ export function captureEvent(
 }
 
 /**
- * Links captured events to the signed-in Clerk user — same distinct id scheme
+ * Links captured events to the signed-in Better Auth user — same distinct id scheme
  * as the main app, so a developer's console and chat activity line up.
  */
 export function useIdentifyUser() {
   const client = usePostHog();
-  const { isSignedIn } = useAuth();
-  const { user } = useUser();
+  const { isSignedIn, user } = useSessionUser();
   const wasSignedIn = useRef(false);
 
   useEffect(() => {
@@ -102,8 +101,8 @@ export function useIdentifyUser() {
 
     if (isSignedIn && user) {
       client.identify(user.id, {
-        email: user.primaryEmailAddress?.emailAddress,
-        name: user.fullName ?? user.username ?? undefined,
+        email: user.email,
+        name: user.name,
       });
       wasSignedIn.current = true;
     } else if (!isSignedIn && wasSignedIn.current) {

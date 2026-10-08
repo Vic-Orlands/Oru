@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { useClerk, useUser } from "@clerk/clerk-react";
 import { AnimatePresence, motion } from "motion/react";
 import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 
 import { Skeleton } from "~/components/skeleton";
 import { CONSOLE_EVENTS, useCapture } from "~/lib/analytics";
+import { signOut, useSessionUser } from "~/lib/auth/session";
 
 /** The signed-in developer chip in the top bar, with a small sign-out menu. */
 export function UserMenu() {
-  const { user, isLoaded } = useUser();
-  const { signOut } = useClerk();
+  const { user, isLoaded } = useSessionUser();
   const capture = useCapture();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -35,12 +34,7 @@ export function UserMenu() {
   }
   if (!user) return null;
 
-  const displayName =
-    user.firstName ||
-    user.fullName ||
-    user.username ||
-    user.primaryEmailAddress?.emailAddress ||
-    "Account";
+  const displayName = user.name || user.email || "Account";
 
   return (
     <div ref={rootRef} className="relative">
@@ -55,9 +49,9 @@ export function UserMenu() {
             : "hover:bg-[#E0E0E0] dark:hover:bg-[#1E1E1E]"
         }`}
       >
-        {user.imageUrl ? (
+        {user.image ? (
           <img
-            src={user.imageUrl}
+            src={user.image}
             alt={displayName}
             className="h-7 w-7 rounded-full object-cover"
           />
@@ -85,7 +79,7 @@ export function UserMenu() {
                 {displayName}
               </div>
               <div className="truncate text-[11.5px] text-neutral-500 dark:text-neutral-400">
-                {user.primaryEmailAddress?.emailAddress}
+                {user.email}
               </div>
             </div>
             <div className="mx-1 h-px bg-black/[0.06] dark:bg-white/[0.08]" />
