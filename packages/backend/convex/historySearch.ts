@@ -2,6 +2,10 @@ import { v } from "convex/values";
 
 import type { Doc, Id } from "./_generated/dataModel";
 import { internalQuery, query } from "./_generated/server";
+import {
+  DEFAULT_LEAD_AGENT,
+  leadAgentValidator,
+} from "./leadAgents";
 
 // How many raw search hits we consider before thread filtering, and how many
 // survive into the tool result. The search index scores by BM25, so the best
@@ -68,9 +72,10 @@ export const searchMessages = internalQuery({
   args: {
     userId: v.string(),
     query: v.string(),
+    leadAgent: leadAgentValidator,
     excludeThreadId: v.optional(v.id("threads")),
   },
-  handler: async (ctx, { userId, query, excludeThreadId }) => {
+  handler: async (ctx, { userId, query, leadAgent, excludeThreadId }) => {
     const hits = await ctx.db
       .query("messages")
       .withSearchIndex("search_content", (q) =>
@@ -91,7 +96,12 @@ export const searchMessages = internalQuery({
         thread = await ctx.db.get(message.threadId);
         threadCache.set(message.threadId, thread);
       }
-      if (!thread || thread.incognito || thread.lock) continue;
+      if (
+        !thread ||
+        thread.incognito ||
+        thread.lock ||
+        (thread.leadAgent ?? DEFAULT_LEAD_AGENT) !== leadAgent
+      ) continue;
 
       results.push({
         threadTitle: thread.title || "Untitled",
@@ -120,8 +130,9 @@ export const resolveThreadTitles = internalQuery({
   args: {
     userId: v.string(),
     threadIds: v.array(v.string()),
+    leadAgent: leadAgentValidator,
   },
-  handler: async (ctx, { userId, threadIds }) => {
+  handler: async (ctx, { userId, threadIds, leadAgent }) => {
     const titles: Record<string, string> = {};
     for (const raw of threadIds.slice(0, MAX_TITLE_LOOKUPS)) {
       if (titles[raw] !== undefined) continue;
@@ -129,7 +140,12 @@ export const resolveThreadTitles = internalQuery({
       if (!threadId) continue;
       const thread = await ctx.db.get(threadId);
       if (!thread) continue;
-      if (thread.userId !== userId || thread.incognito || thread.lock) continue;
+      if (
+        thread.userId !== userId ||
+        thread.incognito ||
+        thread.lock ||
+        (thread.leadAgent ?? DEFAULT_LEAD_AGENT) !== leadAgent
+      ) continue;
       titles[raw] = thread.title || "Untitled";
     }
     return titles;
@@ -152,6 +168,7 @@ const DEEP_EXCERPT_LENGTH = 140;
 export const deepSearch = query({
   args: {
     query: v.string(),
+    leadAgent: leadAgentValidator,
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -176,7 +193,12 @@ export const deepSearch = query({
       if (!message.content.trim()) continue;
 
       const thread = await ctx.db.get(message.threadId);
-      if (!thread || thread.incognito || thread.lock) continue;
+      if (
+        !thread ||
+        thread.incognito ||
+        thread.lock ||
+        (thread.leadAgent ?? DEFAULT_LEAD_AGENT) !== args.leadAgent
+      ) continue;
 
       results.push({
         threadId: thread._id,

@@ -134,6 +134,17 @@ import {
   capForFinalize,
   estimatePromptContentTokens,
 } from "./finalize";
+import type { LeadAgentKind } from "../leadAgents";
+
+async function sha256(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(value),
+  );
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
 
 // Replayed live 2026-08-09: a warm /v4/profile answers in ~1.4s and a cold
 // isolate runs slower still, so anything tighter than this quietly starved
@@ -613,8 +624,13 @@ export async function runAssistantTurn(
       let text = "";
       let firstTextDeltaSeen = false;
       const stepOutput = new StepOutputBuffer();
-      const protectStepText =
-        requestInfo.thinking || requestInfo.latestMessageHasRuntimeMentions;
+      // Every step is buffered until the provider tells us how it ended.
+      // Models sometimes emit planning prose as ordinary `text-delta`s before
+      // a tool call (even when their dedicated reasoning channel is disabled).
+      // Streaming those bytes immediately makes private scratch work look like
+      // the answer. A step that calls a tool is discarded by StepOutputBuffer;
+      // only a genuinely final step is allowed into the visible transcript.
+      const protectStepText = true;
       // The user can stop generation from the UI, which writes status
       // "stopped" to the assistant message. The HTTP action keeps running
       // independently, so we poll that status while streaming and abort the
@@ -839,11 +855,22 @@ export async function runAssistantTurn(
 
       // Finalize an MCP tool call onto the message's pending `mcp` phase and
       // record an analytics event (mirrors the web_fetch capture).
+      let latestLeadReceipt:
+        | {
+            id: Id<"leadSourceReceipts">;
+            provider: string;
+            tool: string;
+            responseText: string;
+            responseHash: string;
+            capturedAt: number;
+          }
+        | undefined;
       const persistMcp = async (info: {
         server: string;
         tool: string;
         ok: boolean;
         error?: string;
+        resultText?: string;
       }) => {
         const lifecycle = resolveMcpLifecycleMetadata(
           requestInfo.mcpServers,
@@ -869,6 +896,28 @@ export async function runAssistantTurn(
             thread_id: requestInfo.threadId,
           },
         });
+        if (info.ok && info.resultText && info.tool !== MCP_LIST_TOOLS_NAME) {
+          const capturedAt = Date.now();
+          const responseHash = await sha256(info.resultText);
+          const id = await runMutation(internal.leads.recordSourceReceipt, {
+            userId: customerId,
+            threadId: requestInfo.threadId,
+            assistantId: requestInfo.assistantId,
+            provider: info.server,
+            tool: info.tool,
+            responseText: info.resultText,
+            responseHash,
+            capturedAt,
+          });
+          latestLeadReceipt = {
+            id,
+            provider: info.server,
+            tool: info.tool,
+            responseText: info.resultText,
+            responseHash,
+            capturedAt,
+          };
+        }
       };
 
       // Finalize a load_skill call onto the message's pending `skill` phase
@@ -1632,20 +1681,41 @@ export async function runAssistantTurn(
           }
 
           for (const [index, image] of result.images.entries()) {
-            const storageId = await ctx.storage.store(image.blob);
             const extension =
               image.mediaType.split("/")[1]?.split("+")[0] || "png";
+            const name =
+              result.images.length > 1
+                ? `generated-image-${index + 1}.${extension}`
+                : `generated-image.${extension}`;
+            let cdn = await ctx.runAction(
+              internal.mediaStorage.createMediaUploadInternal,
+              {
+                ownerId: customerId,
+                name,
+                type: image.mediaType,
+                size: image.blob.size,
+              },
+            );
+            if (cdn) {
+              const uploaded = await fetch(cdn.uploadUrl, {
+                method: "PUT",
+                headers: { "Content-Type": image.mediaType },
+                body: image.blob,
+              }).catch(() => null);
+              if (!uploaded?.ok) cdn = null;
+            }
+            const storageId = cdn
+              ? undefined
+              : await ctx.storage.store(image.blob);
             await runMutation(internal.inference.attachGeneratedImage, {
               assistantId: requestInfo.assistantId,
               attachment: {
                 id: crypto.randomUUID(),
-                name:
-                  result.images.length > 1
-                    ? `generated-image-${index + 1}.${extension}`
-                    : `generated-image.${extension}`,
+                name,
                 size: image.blob.size,
                 type: image.mediaType,
-                storageId,
+                ...(storageId ? { storageId } : {}),
+                ...(cdn ? { url: cdn.publicUrl } : {}),
               },
             });
           }
@@ -2021,6 +2091,7 @@ export async function runAssistantTurn(
       const ctxUnitsSystem = anon ? undefined : requestInfo.unitsSystem;
 
       const systemPrompt = buildSystemPrompt({
+        leadAgent: requestInfo.leadAgent as LeadAgentKind,
         search: searchEnabled,
         compactionSummary: requestInfo.compactionSummary,
         userPreferences: ctxPreferences,
@@ -2276,6 +2347,8 @@ export async function runAssistantTurn(
             ...createLeadTools({
               ctx,
               userId: customerId,
+              leadAgent: requestInfo.leadAgent as LeadAgentKind,
+              latestProviderReceipt: () => latestLeadReceipt,
               onCard: persistLead,
             }),
             suggestIntegrations: createSuggestIntegrationsTool({
@@ -2308,6 +2381,7 @@ export async function runAssistantTurn(
                   ctx.runQuery(internal.historySearch.searchMessages, {
                     userId: customerId,
                     query,
+                    leadAgent: requestInfo.leadAgent as LeadAgentKind,
                     excludeThreadId: requestInfo.threadId,
                   });
                 if (!memoryActive) return keywordSearch();
@@ -2335,6 +2409,7 @@ export async function runAssistantTurn(
                   {
                     userId: customerId,
                     threadIds: [...new Set(hits.map((hit) => hit.threadId))],
+                    leadAgent: requestInfo.leadAgent as LeadAgentKind,
                   },
                 );
                 const matches = hits.flatMap<ChatHistoryMatch>((hit) => {

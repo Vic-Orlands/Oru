@@ -2,6 +2,9 @@ import { jsonSchema, tool } from "ai";
 
 import { internal } from "../_generated/api";
 import type { ActionCtx } from "../_generated/server";
+import type { Id } from "../_generated/dataModel";
+import type { LeadAgentKind } from "../leadAgents";
+import { scoreLead, type LeadScoringSignals } from "./leadScoring";
 
 export const LEAD_TOOL_NAMES = new Set([
   "findProspects",
@@ -10,9 +13,18 @@ export const LEAD_TOOL_NAMES = new Set([
   "writeSequence",
   "queueEmail",
   "createDeskTask",
+  "recordCampaignActivity",
 ]);
 
 type Card = { name?: string; title: string; text: string };
+type ProviderReceipt = {
+  id: Id<"leadSourceReceipts">;
+  provider: string;
+  tool: string;
+  responseText: string;
+  responseHash: string;
+  capturedAt: number;
+};
 
 function webUrl(value: string, field: string): string {
   try {
@@ -29,9 +41,11 @@ function webUrl(value: string, field: string): string {
 export function createLeadTools(opts: {
   ctx: ActionCtx;
   userId: string;
+  leadAgent: LeadAgentKind;
+  latestProviderReceipt: () => ProviderReceipt | undefined;
   onCard: (card: Card) => Promise<void>;
 }) {
-  const { ctx, userId, onCard } = opts;
+  const { ctx, userId, leadAgent, latestProviderReceipt, onCard } = opts;
   return {
     findProspects: tool({
       description:
@@ -45,11 +59,9 @@ export function createLeadTools(opts: {
           email?: string;
           emailVerification: "verified" | "risky" | "invalid" | "unknown";
           location: string;
-          score: number;
-          fit: "Strong" | "Possible" | "Weak";
           scoreReason: string;
+          scoringSignals: LeadScoringSignals;
           sourceUrl: string;
-          sourceProvider: string;
           profileUrl?: string;
           companyUrl?: string;
           evidence: string[];
@@ -74,18 +86,26 @@ export function createLeadTools(opts: {
                   enum: ["verified", "risky", "invalid", "unknown"],
                 },
                 location: { type: "string" },
-                score: { type: "number", minimum: 0, maximum: 100 },
-                fit: { type: "string", enum: ["Strong", "Possible", "Weak"] },
                 scoreReason: { type: "string" },
+                scoringSignals: {
+                  type: "object",
+                  properties: {
+                    fit: { type: "string", enum: ["exact", "partial", "weak", "none"] },
+                    timing: { type: "string", enum: ["active", "recent", "possible", "none"] },
+                    authority: { type: "string", enum: ["decision_maker", "influencer", "user", "unknown"] },
+                    contactability: { type: "string", enum: ["verified_email", "risky_email", "profile_only", "none"] },
+                  },
+                  required: ["fit", "timing", "authority", "contactability"],
+                  additionalProperties: false,
+                },
                 sourceUrl: { type: "string", format: "uri" },
-                sourceProvider: { type: "string" },
                 profileUrl: { type: "string", format: "uri" },
                 companyUrl: { type: "string", format: "uri" },
                 evidence: { type: "array", items: { type: "string" } },
               },
               required: [
                 "name", "title", "company", "emailVerification", "location",
-                "score", "fit", "scoreReason", "sourceUrl", "sourceProvider", "evidence",
+                "scoreReason", "scoringSignals", "sourceUrl", "evidence",
               ],
               additionalProperties: false,
             },
@@ -95,23 +115,74 @@ export function createLeadTools(opts: {
         additionalProperties: false,
       }),
       execute: async ({ icp, rows }) => {
+        const receipt = latestProviderReceipt();
+        if (!receipt) {
+          throw new Error(
+            "Run a connected prospecting or enrichment provider before saving leads.",
+          );
+        }
         const enrichedAt = Date.now();
-        const persisted = rows.map((row) => ({
-          ...row,
-          email: row.email ?? "",
-          sourceUrl: webUrl(row.sourceUrl, "sourceUrl"),
-          ...(row.profileUrl
-            ? { profileUrl: webUrl(row.profileUrl, "profileUrl") }
-            : {}),
-          ...(row.companyUrl
-            ? { companyUrl: webUrl(row.companyUrl, "companyUrl") }
-            : {}),
-          list: icp.slice(0, 80),
-          status: "New" as const,
-          enrichedAt,
-        }));
+        const persisted = rows.map((row) => {
+          const sourceUrl = webUrl(row.sourceUrl, "sourceUrl");
+          const profileUrl = row.profileUrl
+            ? webUrl(row.profileUrl, "profileUrl")
+            : undefined;
+          const companyUrl = row.companyUrl
+            ? webUrl(row.companyUrl, "companyUrl")
+            : undefined;
+          const claimedUrls = [
+            { raw: row.sourceUrl, normalized: sourceUrl },
+            ...(row.profileUrl && profileUrl
+              ? [{ raw: row.profileUrl, normalized: profileUrl }]
+              : []),
+            ...(row.companyUrl && companyUrl
+              ? [{ raw: row.companyUrl, normalized: companyUrl }]
+              : []),
+          ];
+          for (const url of claimedUrls) {
+            if (
+              !receipt.responseText.includes(url.raw) &&
+              !receipt.responseText.includes(url.normalized)
+            ) {
+              throw new Error(
+                `The provider response did not contain the claimed source URL: ${url.raw}`,
+              );
+            }
+          }
+          const identityClaims = [row.name, row.title, row.company, row.email]
+            .filter((claim): claim is string => Boolean(claim?.trim()));
+          const missingClaim = identityClaims.find(
+            (claim) => !receipt.responseText.toLowerCase().includes(claim.toLowerCase()),
+          );
+          if (missingClaim) {
+            throw new Error(
+              `The provider response did not contain the claimed lead identity: ${missingClaim}`,
+            );
+          }
+          const scored = scoreLead(row.scoringSignals);
+          const { scoringSignals: _scoringSignals, ...persistedRow } = row;
+          return {
+            ...persistedRow,
+            score: scored.score,
+            fit: scored.fit,
+            scoreBreakdown: scored.breakdown,
+            email: row.email ?? "",
+            sourceUrl,
+            ...(profileUrl ? { profileUrl } : {}),
+            ...(companyUrl ? { companyUrl } : {}),
+            sourceProvider: receipt.provider,
+            sourceReceiptId: receipt.id,
+            sourceReceiptHash: receipt.responseHash,
+            sourceTool: receipt.tool,
+            sourceCapturedAt: receipt.capturedAt,
+            list: icp.slice(0, 80),
+            status: "New" as const,
+            enrichedAt,
+          };
+        });
         await ctx.runMutation(internal.leads.recordProspects, {
           userId,
+          leadAgent,
           rows: persisted,
         });
         const text = JSON.stringify({
@@ -163,7 +234,12 @@ export function createLeadTools(opts: {
         additionalProperties: false,
       }),
       execute: async ({ name, count }) => {
-        await ctx.runMutation(internal.leads.recordList, { userId, name, count });
+        await ctx.runMutation(internal.leads.recordList, {
+          userId,
+          leadAgent,
+          name,
+          count,
+        });
         await onCard({
           title: name,
           text: JSON.stringify({ title: name, rows: [] }),
@@ -229,6 +305,7 @@ export function createLeadTools(opts: {
       execute: async (draft) => {
         await ctx.runMutation(internal.leads.recordApproval, {
           userId,
+          leadAgent,
           ...draft,
           step: "1 of 4",
         });
@@ -253,8 +330,108 @@ export function createLeadTools(opts: {
         additionalProperties: false,
       }),
       execute: async (task) => {
-        await ctx.runMutation(internal.leads.recordTask, { userId, ...task });
+        await ctx.runMutation(internal.leads.recordTask, {
+          userId,
+          leadAgent,
+          ...task,
+        });
         return { created: task.title };
+      },
+    }),
+    recordCampaignActivity: tool({
+      description:
+        "Store campaign, pipeline, and daily activity returned by a connected provider. Call the live campaign or CRM integration immediately before this tool. Never estimate metrics.",
+      inputSchema: jsonSchema<{
+        campaign: {
+          name: string;
+          sent: number;
+          replies: number;
+          meetings: number;
+          status: string;
+        };
+        pipeline: { stage: string; count: number; rate: string }[];
+        bars: { day: string; value: number }[];
+      }>({
+        type: "object",
+        properties: {
+          campaign: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              sent: { type: "number", minimum: 0 },
+              replies: { type: "number", minimum: 0 },
+              meetings: { type: "number", minimum: 0 },
+              status: { type: "string" },
+            },
+            required: ["name", "sent", "replies", "meetings", "status"],
+            additionalProperties: false,
+          },
+          pipeline: {
+            type: "array",
+            maxItems: 12,
+            items: {
+              type: "object",
+              properties: {
+                stage: { type: "string" },
+                count: { type: "number", minimum: 0 },
+                rate: { type: "string" },
+              },
+              required: ["stage", "count", "rate"],
+              additionalProperties: false,
+            },
+          },
+          bars: {
+            type: "array",
+            maxItems: 31,
+            items: {
+              type: "object",
+              properties: {
+                day: { type: "string" },
+                value: { type: "number", minimum: 0 },
+              },
+              required: ["day", "value"],
+              additionalProperties: false,
+            },
+          },
+        },
+        required: ["campaign", "pipeline", "bars"],
+        additionalProperties: false,
+      }),
+      execute: async ({ campaign, pipeline, bars }) => {
+        const receipt = latestProviderReceipt();
+        if (!receipt) {
+          throw new Error(
+            "Read campaign activity from a connected provider before saving metrics.",
+          );
+        }
+        const claimedNumbers = [
+          campaign.sent,
+          campaign.replies,
+          campaign.meetings,
+          ...pipeline.map((row) => row.count),
+          ...bars.map((row) => row.value),
+        ];
+        const unsupported = claimedNumbers.find(
+          (value) => !receipt.responseText.includes(String(value)),
+        );
+        if (unsupported !== undefined) {
+          throw new Error(
+            `The provider response did not contain the claimed metric: ${unsupported}`,
+          );
+        }
+        await ctx.runMutation(internal.leads.recordProviderMetrics, {
+          userId,
+          leadAgent,
+          sourceReceiptId: receipt.id,
+          campaign,
+          pipeline,
+          bars,
+        });
+        return {
+          stored: true,
+          provider: receipt.provider,
+          receipt: receipt.responseHash,
+        };
       },
     }),
   };

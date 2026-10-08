@@ -14,8 +14,7 @@ type DocumentMarkdown = FunctionReturnType<
   typeof api.attachmentMarkdown.convert
 >;
 
-/* v2's port of v1's attachment pipeline (apps/legacy/app/lib/
-   attachment-upload.ts): type detection, the free-plan cap, image
+/* Attachment pipeline: type detection, the free-plan cap, image
    compression, document→Markdown conversion, and the XHR upload to Convex
    storage that reports real progress. Files upload the moment they're
    picked — send just waits for whatever's still in flight. */
@@ -292,6 +291,28 @@ function uploadToStorage(
   });
 }
 
+function uploadToCdn(
+  url: string,
+  type: string,
+  body: Blob,
+  onProgress?: (fraction: number) => void,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url);
+    xhr.setRequestHeader("Content-Type", type);
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress?.(event.loaded / event.total);
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) resolve();
+      else reject(new Error(`CDN upload failed (${xhr.status})`));
+    };
+    xhr.onerror = () => reject(new Error("CDN upload failed"));
+    xhr.send(body);
+  });
+}
+
 /** The ready-to-send shape, matching the backend's attachment validator
  * fields the client fills (convex/validators.ts attachmentValidator). */
 export type AttachmentUpload = {
@@ -302,6 +323,8 @@ export type AttachmentUpload = {
   /** Where the blob landed in Convex storage. Empty for a direct
    *  attachment, which never went anywhere (see `dataUrl`). */
   storageId: string;
+  /** Public CDN URL for media stored in Cloudflare R2. */
+  url?: string;
   /** A locked chat's images: base64 in the tab, handed straight to the
    *  model with the turn and stored by nobody. Set instead of `storageId`,
    *  never alongside it. */
@@ -321,6 +344,12 @@ export type DocumentConverter = (args: {
   storageId: string;
   name: string;
 }) => Promise<DocumentMarkdown>;
+
+export type MediaUploadSigner = (args: {
+  name: string;
+  type: string;
+  size: number;
+}) => Promise<{ uploadUrl: string; publicUrl: string } | null>;
 
 /** Why a file can't ride a locked chat, or null when it can. Locked chats
  *  have no server-side stage: an image can be inlined and a text file can be
@@ -381,17 +410,39 @@ function readAsDataUrl(file: File): Promise<string> {
 export async function prepareAttachment({
   file: raw,
   getUploadUrl,
+  getMediaUpload,
   convertDocument,
   onProgress,
 }: {
   file: File;
   getUploadUrl: () => Promise<string>;
+  getMediaUpload?: MediaUploadSigner;
   convertDocument: DocumentConverter;
   onProgress?: (fraction: number) => void;
 }): Promise<AttachmentUpload> {
   const rawType = getAttachmentType(raw);
   const file = rawType.startsWith("image/") ? await compressImage(raw) : raw;
   const type = getAttachmentType(file);
+
+  const mediaUpload = /^(image|audio|video)\//.test(type)
+    ? await getMediaUpload?.({ name: file.name, type, size: file.size })
+    : null;
+  if (mediaUpload) {
+    try {
+      await uploadToCdn(mediaUpload.uploadUrl, type, file, onProgress);
+      return {
+        id: makeAttachmentId(),
+        name: file.name,
+        size: file.size,
+        type,
+        storageId: "",
+        url: mediaUpload.publicUrl,
+      };
+    } catch (error) {
+      console.warn("CDN upload failed; using primary storage instead.", error);
+      onProgress?.(0);
+    }
+  }
 
   /* Reading a text file and uploading its bytes are independent — run them
      together so neither waits on the other. */

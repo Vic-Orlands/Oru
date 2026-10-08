@@ -9,6 +9,7 @@ import {
 import { components, internal } from "./_generated/api";
 import { drainQueuedMessages } from "./messageQueue";
 import { resolveSendModel } from "./models";
+import { DEFAULT_LEAD_AGENT } from "./leadAgents";
 import {
   appendUserTurn,
   displayNameFromIdentity,
@@ -544,6 +545,7 @@ export const sendUserMessage = mutationGeneric({
         // No generated title: the thread is hidden and short-lived.
         resolvedThreadId = await ctx.db.insert("threads", {
           userId,
+          leadAgent: options?.leadAgent ?? DEFAULT_LEAD_AGENT,
           title: "Incognito chat",
           titleStatus: "ready",
           createdAt: now,
@@ -555,6 +557,7 @@ export const sendUserMessage = mutationGeneric({
         scheduleTitleFor = titlePromptInput(content);
         resolvedThreadId = await ctx.db.insert("threads", {
           userId,
+          leadAgent: options?.leadAgent ?? DEFAULT_LEAD_AGENT,
           title: fallbackTitleFromPrompt(scheduleTitleFor),
           titleStatus: "generating",
           createdAt: now,
@@ -919,16 +922,32 @@ export const continueDeclinedIntegrationGate = internalMutation({
     if (!thread || thread.lock) return null;
     const now = Date.now();
     const integrationName = phase.items?.[0]?.name ?? "the integration";
-    const instruction =
+    const originalTurn = (
+      await ctx.db
+        .query("messages")
+        .withIndex("by_thread_created_at", (q) =>
+          q.eq("threadId", message.threadId),
+        )
+        .order("desc")
+        .take(24)
+    ).find(
+      (candidate) =>
+        candidate.role === "user" &&
+        candidate.systemGenerated !== true &&
+        candidate.createdAt < message.createdAt,
+    );
+    const pendingRequest =
+      originalTurn?.content.trim() ||
       phase.resumeInstruction?.trim() ||
-      "Continue the user's interrupted request without the declined integration.";
+      "Continue the interrupted request.";
     await ctx.db.patch(thread._id, { updatedAt: now });
     await appendUserTurn(ctx, {
       threadId: thread._id,
       userId: thread.userId,
       content: [
         "<whirl_system_log>",
-        `The user declined the ${integrationName} connection. ${instruction}`,
+        `The user declined the ${integrationName} connection.`,
+        `Original request: ${pendingRequest}`,
         "Continue the pending work without that integration. If it cannot be completed, explain exactly what remains blocked and offer the closest useful alternative. Do not ask the user to repeat the request.",
         "</whirl_system_log>",
       ].join("\n"),
@@ -1029,16 +1048,32 @@ export const resumeIntegrationGateForServer = internalMutation({
     });
     await ctx.db.patch(thread._id, { updatedAt: now });
 
-    const instruction =
+    const originalTurn = (
+      await ctx.db
+        .query("messages")
+        .withIndex("by_thread_created_at", (q) =>
+          q.eq("threadId", gate.threadId),
+        )
+        .order("desc")
+        .take(24)
+    ).find(
+      (candidate) =>
+        candidate.role === "user" &&
+        candidate.systemGenerated !== true &&
+        candidate.createdAt < message.createdAt,
+    );
+    const pendingRequest =
+      originalTurn?.content.trim() ||
       phase.resumeInstruction?.trim() ||
-      "Continue the user's interrupted request using the newly connected integration.";
+      "Continue the interrupted request.";
     await appendUserTurn(ctx, {
       threadId: thread._id,
       userId: server.userId,
       content: [
         "<whirl_system_log>",
-        `${server.name} is now connected. ${instruction}`,
-        "This is a system continuation, not a new user request. Continue the pending work without asking the user to repeat it.",
+        `${server.name} is now connected.`,
+        `Original request: ${pendingRequest}`,
+        `Continue the pending work with ${server.name}. Any provider-specific instruction from an earlier failed connection is obsolete. This is a system continuation, not a new user request; do not ask the user to repeat it.`,
         "</whirl_system_log>",
       ].join("\n"),
       attachments: undefined,

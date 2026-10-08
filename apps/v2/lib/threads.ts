@@ -9,6 +9,7 @@ import type { Id } from "@whirl/backend/convex/_generated/dataModel";
 
 import { ANALYTICS_EVENTS, captureEvent } from "./posthog";
 import { requestDelete, usePendingDeleteIds } from "./toasts";
+import { useLeadAgent } from "./lead-agents";
 
 export type ThreadSummary = FunctionReturnType<
   typeof api.threads.listForCurrentUser
@@ -50,14 +51,18 @@ function compareThreads(a: ThreadSummary, b: ThreadSummary) {
    reply streaming in doesn't hand this list a new identity thirty times a
    second and re-render every row that reads it. */
 export function useThreads(enabled: boolean): ThreadSummary[] | undefined {
+  const leadAgent = useLeadAgent();
   const raw = useQuery(api.threads.listForCurrentUser, enabled ? {} : "skip");
   const pendingDeleteIds = usePendingDeleteIds();
   return useMemo(() => {
     if (!raw) return undefined;
     return raw
-      .filter((thread) => !pendingDeleteIds.has(thread.id))
+      .filter(
+        (thread) =>
+          thread.leadAgent === leadAgent && !pendingDeleteIds.has(thread.id),
+      )
       .sort(compareThreads);
-  }, [raw, pendingDeleteIds]);
+  }, [raw, pendingDeleteIds, leadAgent]);
 }
 
 const NO_RUNNING_THREADS: ReadonlySet<string> = new Set();

@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Mirrors the main app's design tokens (apps/legacy/app/app.css) so the console
+/* Mirrors the main app's design tokens so the console
    reads as the same product wearing a suit. */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,

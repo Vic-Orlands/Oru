@@ -39,6 +39,7 @@ import { SquishButton } from "./squish-button";
 import { ThreadList } from "./thread-list";
 import { UserButton } from "./user-button";
 import { WhirlLogo } from "./whirl-logo";
+import { AgentSwitcher } from "./agent-switcher";
 
 /* Width rides `--sidebar-width` (painted pre-hydration by the layout script,
    driven live by useSidebar), so drags track 1:1 and the collapse toggle
@@ -209,6 +210,9 @@ export function Sidebar() {
                 New chat
               </TooltipContent>
             </Tooltip>
+            <div className="mt-1 mb-1">
+              <AgentSwitcher />
+            </div>
             {/* -mt pulls the nav onto the same pitch as the New pill: 2px
                 seams all the way down, so a hovered row's pill stacks under
                 New exactly like the rows stack under each other. */}

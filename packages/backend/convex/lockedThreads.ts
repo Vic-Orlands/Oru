@@ -5,6 +5,7 @@ import { internalMutation, internalQuery } from "./_generated/server";
 import { deleteDocumentBody, deleteHtmlBody } from "./artifactContent";
 import { clearCompactionSummary } from "./threadCompaction";
 import { threadLockValidator } from "./validators";
+import { leadAgentValidator } from "./leadAgents";
 
 /* Locked threads: end-to-end encrypted chats.
 
@@ -225,12 +226,17 @@ export const lockThread = mutationGeneric({
  * ever passes through it.
  */
 export const createLockedThread = mutationGeneric({
-  args: { lock: threadLockValidator, lockedTitle: v.string() },
-  handler: async (ctx, { lock, lockedTitle }) => {
+  args: {
+    lock: threadLockValidator,
+    lockedTitle: v.string(),
+    leadAgent: leadAgentValidator,
+  },
+  handler: async (ctx, { lock, lockedTitle, leadAgent }) => {
     const userId = await getCurrentUserId(ctx);
     const now = Date.now();
     const threadId = await ctx.db.insert("threads", {
       userId,
+      leadAgent,
       title: LOCKED_THREAD_TITLE,
       titleStatus: "ready",
       createdAt: now,

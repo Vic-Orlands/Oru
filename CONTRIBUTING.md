@@ -42,9 +42,7 @@ yarn, or pnpm. They don't understand the `workspace:*` links and will leave
 | `packages/backend` | The Convex backend: schema, queries, mutations, AI pipeline |
 | `apps/console`     | Admin console for models, integrations, and skills (Vite)   |
 | `apps/mobile`      | Native app (Expo)                                           |
-| `apps/waitlist`    | Standalone waitlist page                                    |
 | `apps/remotion`    | Promo video compositions                                    |
-| `apps/legacy`      | The previous web app. Frozen; please don't send PRs here.   |
 
 See [docs/architecture.md](docs/architecture.md) for how a message travels
 from the composer to the model and back.
@@ -119,16 +117,6 @@ Whirl tabs stay open for hours, so leaks are correctness bugs, not polish:
 Read [`packages/backend/convex/_generated/ai/guidelines.md`](packages/backend/convex/_generated/ai/guidelines.md)
 before writing backend code. It covers validators, indexes, and the
 query/mutation/action split, and it overrides older habits.
-
-### Line endings
-
-The repository has a mix of CRLF and LF files. Keep whatever a file already
-uses. If your editor normalized a whole file, restore the untouched lines
-with:
-
-```sh
-bun apps/legacy/scripts/fix-endings.mjs <repo-relative-path>
-```
 
 ## Pull requests
 

@@ -8,6 +8,7 @@ import {
 
 import { useDeskData } from "@/lib/desk-data";
 import { ApprovalActions } from "./approval-actions";
+import { ProspectEvidence } from "./prospect-evidence";
 
 export function LeadPanelBody({ leadId }: { leadId: string }) {
   const desk = useDeskData();
@@ -64,6 +65,15 @@ function List({ rows }: { rows: ReturnType<typeof useDeskData>["prospects"] }) {
               <IconExternalLink size={12} />
             </a>
           )}
+          <ProspectEvidence
+            provider={row.sourceProvider}
+            tool={row.sourceTool}
+            receiptHash={row.sourceReceiptHash}
+            capturedAt={row.sourceCapturedAt}
+            reason={row.scoreReason}
+            evidence={row.evidence}
+            breakdown={row.scoreBreakdown}
+          />
         </li>
       ))}
     </ul>

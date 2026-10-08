@@ -19,6 +19,7 @@ import {
   type LockEnvelope,
 } from "./crypto";
 import { forgetLocked, rememberLocked } from "./locked-ids";
+import { useLeadAgent } from "../lead-agents";
 import {
   forgetKey,
   holdKey,
@@ -210,6 +211,7 @@ export function titleFromPrompt(prompt: string): string {
 }
 
 export function useLockActions() {
+  const leadAgent = useLeadAgent();
   const convex = useConvex();
   const lockThread = useMutation(api.lockedThreads.lockThread);
   const createLockedThread = useMutation(api.lockedThreads.createLockedThread);
@@ -262,6 +264,7 @@ export function useLockActions() {
       const { threadId } = await createLockedThread({
         lock: minted.envelope,
         lockedTitle: await seal(minted.contentKey, LOCKED_THREAD_TITLE),
+        leadAgent,
       });
       holdKey(threadId, minted.contentKey);
       rememberLocked(threadId);
@@ -271,7 +274,7 @@ export function useLockActions() {
       });
       return { threadId: threadId as string, recoveryCode: minted.recoveryCode };
     },
-    [createLockedThread],
+    [createLockedThread, leadAgent],
   );
 
   /** Open a thread for this session. Throws WrongKeyError on a bad

@@ -5,6 +5,8 @@ import type { DeskPage } from "@/lib/view";
 import { IconExternalLink } from "@tabler/icons-react";
 import { ApprovalActions } from "./approval-actions";
 import { DeskEmptyState } from "./desk-empty-state";
+import { AgentSwitcher } from "@/components/agent-switcher";
+import { ProspectEvidence } from "./prospect-evidence";
 
 const COPY: Record<DeskPage, { title: string; lede: string }> = {
   prospects: {
@@ -37,9 +39,14 @@ export function DeskPages({ page }: { page: DeskPage }) {
   const copy = COPY[page];
   return (
     <div className="h-full min-h-0 overflow-y-auto px-5 py-6 md:px-8">
-      <header className="mb-5 max-w-2xl">
-        <h1 className="text-[20px] font-medium tracking-tight">{copy.title}</h1>
-        <p className="mt-1 text-[13px]/5 text-muted-foreground">{copy.lede}</p>
+      <header className="mb-5 flex max-w-3xl items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[20px] font-medium tracking-tight">{copy.title}</h1>
+          <p className="mt-1 text-[13px]/5 text-muted-foreground">{copy.lede}</p>
+        </div>
+        <div className="shrink-0 rounded-lg bg-card ring-1 ring-border md:hidden">
+          <AgentSwitcher compact />
+        </div>
       </header>
       {page === "prospects" && <Prospects />}
       {page === "approvals" && <Approvals />}
@@ -105,6 +112,15 @@ function Prospects() {
                     )}
                   </div>
                   <div className="text-[11.5px] text-muted-foreground">{row.title}</div>
+                  <ProspectEvidence
+                    provider={row.sourceProvider}
+                    tool={row.sourceTool}
+                    receiptHash={row.sourceReceiptHash}
+                    capturedAt={row.sourceCapturedAt}
+                    reason={row.scoreReason}
+                    evidence={row.evidence}
+                    breakdown={row.scoreBreakdown}
+                  />
                 </td>
                 <td className="px-3 py-2">{row.company}</td>
                 <td className="px-3 py-2 text-muted-foreground">{row.list}</td>

@@ -452,6 +452,7 @@ export function createMcpGatewayTools({
     tool: string;
     ok: boolean;
     error?: string;
+    resultText?: string;
   }) => Promise<void>;
   /** Persist a connection outcome for the settings UI ("Connected" / lastError). */
   onServerResult?: (info: {
@@ -710,6 +711,7 @@ export function createMcpGatewayTools({
           tool: toolName,
           ok: !result.isError,
           ...(result.isError ? { error: result.text } : {}),
+          ...(!result.isError ? { resultText: result.text } : {}),
         });
         return result.text;
       } catch (error) {

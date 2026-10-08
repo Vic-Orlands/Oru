@@ -26,6 +26,7 @@ import { useOpenedTitles } from "@/lib/locked/thread-lock";
 import { MASK_TEXT } from "@/lib/replay-guard";
 import { cn } from "@/lib/utils";
 import { groupThreads, useThreads, type ThreadSummary } from "@/lib/threads";
+import { useLeadAgent } from "@/lib/lead-agents";
 
 const MAX_RESULTS = 50;
 
@@ -151,6 +152,7 @@ export function SearchModal({
      open toggles closed instead of racing outside-press dismissal. */
   trigger?: ReactNode;
 }) {
+  const leadAgent = useLeadAgent();
   const { isAuthenticated } = useConvexAuth();
   const threads = useThreads(isAuthenticated);
   /* Real names for the locked chats this tab has open — used for matching
@@ -272,7 +274,7 @@ export function SearchModal({
 
   const deepHits = useQuery(
     api.historySearch.deepSearch,
-    isAuthenticated && deepQuery ? { query: deepQuery } : "skip",
+    isAuthenticated && deepQuery ? { query: deepQuery, leadAgent } : "skip",
   );
   const deepSettled = Boolean(query) && deepQuery === query && deepHits !== undefined;
 

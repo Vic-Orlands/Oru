@@ -45,6 +45,7 @@ export function useAttachments({
   const generateUploadUrl = useMutation(
     api.messages.generateAttachmentUploadUrl,
   );
+  const createMediaUpload = useAction(api.mediaStorage.createMediaUpload);
   const convertDocument = useAction(api.attachmentMarkdown.convert);
   const [drafts, setDrafts] = useState<AttachmentDraft[]>([]);
   /* Write-through mirror so resolve() reads the post-settle truth without
@@ -102,6 +103,7 @@ export function useAttachments({
               : await prepareAttachment({
                   file,
                   getUploadUrl: () => generateUploadUrl(),
+                  getMediaUpload: createMediaUpload,
                   /* The converter is also the stage boundary: it only ever
                      runs once the bytes have landed, so flipping the chip
                      here saves threading a second callback through
@@ -138,7 +140,7 @@ export function useAttachments({
         pendingRef.current.set(id, job);
       }
     },
-    [commit, patch, direct, generateUploadUrl, convertDocument],
+    [commit, patch, direct, generateUploadUrl, createMediaUpload, convertDocument],
   );
 
   const remove = useCallback(

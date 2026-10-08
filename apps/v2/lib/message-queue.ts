@@ -9,6 +9,7 @@ import type { Id } from "@whirl/backend/convex/_generated/dataModel";
 import type { AttachmentUpload } from "./attachments";
 import { isCustomModelKey, type ThinkingLevel } from "./models";
 import { ANALYTICS_EVENTS, captureEvent } from "./posthog";
+import { useLeadAgent } from "./lead-agents";
 
 /* Messages typed while a reply was still being written. They wait in the
    database, not in this tab (convex/messageQueue.ts): the deployment
@@ -54,6 +55,7 @@ function wireModel(model: string): string {
 }
 
 export function useQueueActions() {
+  const leadAgent = useLeadAgent();
   const enqueueBase = useMutation(api.messageQueue.enqueue);
   /* Optimistic, so the card lands under the streaming reply on the
      keypress. The placeholder carries a made-up id; the echo replaces it
@@ -128,7 +130,10 @@ export function useQueueActions() {
                 name: file.name,
                 size: file.size,
                 type: file.type,
-                storageId: file.storageId as Id<"_storage">,
+                ...(file.storageId
+                  ? { storageId: file.storageId as Id<"_storage"> }
+                  : {}),
+                ...(file.url ? { url: file.url } : {}),
                 ...(file.text !== undefined ? { text: file.text } : {}),
                 ...(file.skippedReason !== undefined
                   ? { skippedReason: file.skippedReason }
@@ -156,6 +161,7 @@ export function useQueueActions() {
           thinking: thinking !== "none",
           search,
           model: wireModel(model),
+          leadAgent,
         },
       });
       captureEvent(ANALYTICS_EVENTS.messageQueued, {
@@ -166,7 +172,7 @@ export function useQueueActions() {
       });
       return result;
     },
-    [enqueue],
+    [enqueue, leadAgent],
   );
 
   const dequeue = useCallback(

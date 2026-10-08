@@ -326,7 +326,8 @@ export function IntegrationsView() {
         </div>
 
         <p className="mt-10 text-center text-[12.5px] text-muted-foreground">
-          Need something that isn’t in the store? Add it as an MCP server from settings.
+          Pipedream and anything else outside the Composio catalog can connect
+          through an MCP server in Settings.
         </p>
 
         <IntegrationInstallModal

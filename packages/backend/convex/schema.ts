@@ -1,6 +1,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { slotTables } from "./slots/tables";
+import { leadAgentValidator } from "./leadAgents";
 
 import {
   artifactBindingValidator,
@@ -26,6 +27,9 @@ export default defineSchema({
   ...slotTables,
   threads: defineTable({
     userId: v.string(),
+    // Lead agents are isolated desks, not folders. Old conversations predate
+    // the split and belong to Sales.
+    leadAgent: v.optional(leadAgentValidator),
     title: v.string(),
     titleStatus: v.optional(
       v.union(v.literal("generating"), v.literal("ready")),
@@ -1059,6 +1063,7 @@ export default defineSchema({
 
   prospects: defineTable({
     userId: v.string(),
+    leadAgent: v.optional(leadAgentValidator),
     name: v.string(),
     title: v.string(),
     company: v.string(),
@@ -1078,6 +1083,18 @@ export default defineSchema({
     companyUrl: v.optional(v.string()),
     evidence: v.optional(v.array(v.string())),
     scoreReason: v.optional(v.string()),
+    scoreBreakdown: v.optional(
+      v.object({
+        fit: v.number(),
+        timing: v.number(),
+        authority: v.number(),
+        contactability: v.number(),
+      }),
+    ),
+    sourceReceiptId: v.optional(v.id("leadSourceReceipts")),
+    sourceReceiptHash: v.optional(v.string()),
+    sourceTool: v.optional(v.string()),
+    sourceCapturedAt: v.optional(v.number()),
     enrichedAt: v.optional(v.number()),
     score: v.number(),
     fit: v.union(v.literal("Strong"), v.literal("Possible"), v.literal("Weak")),
@@ -1092,6 +1109,7 @@ export default defineSchema({
 
   prospectLists: defineTable({
     userId: v.string(),
+    leadAgent: v.optional(leadAgentValidator),
     name: v.string(),
     count: v.number(),
     updated: v.string(),
@@ -1099,6 +1117,7 @@ export default defineSchema({
 
   approvals: defineTable({
     userId: v.string(),
+    leadAgent: v.optional(leadAgentValidator),
     to: v.string(),
     company: v.string(),
     subject: v.string(),
@@ -1109,11 +1128,19 @@ export default defineSchema({
       v.literal("pending"),
       v.literal("approved"),
       v.literal("held"),
+      v.literal("sent"),
+      v.literal("failed"),
     ),
+    provider: v.optional(v.string()),
+    providerTool: v.optional(v.string()),
+    providerResponseHash: v.optional(v.string()),
+    sentAt: v.optional(v.number()),
+    error: v.optional(v.string()),
   }).index("by_user", ["userId"]),
 
   deskTasks: defineTable({
     userId: v.string(),
+    leadAgent: v.optional(leadAgentValidator),
     title: v.string(),
     when: v.string(),
     kind: v.string(),
@@ -1122,25 +1149,47 @@ export default defineSchema({
 
   campaigns: defineTable({
     userId: v.string(),
+    leadAgent: v.optional(leadAgentValidator),
     name: v.string(),
     sent: v.number(),
     replies: v.number(),
     meetings: v.number(),
     status: v.string(),
+    sourceReceiptId: v.optional(v.id("leadSourceReceipts")),
   }).index("by_user", ["userId"]),
 
   pipelineStages: defineTable({
     userId: v.string(),
+    leadAgent: v.optional(leadAgentValidator),
     stage: v.string(),
     count: v.number(),
     rate: v.string(),
     order: v.number(),
+    sourceReceiptId: v.optional(v.id("leadSourceReceipts")),
   }).index("by_user", ["userId"]),
 
   performanceBars: defineTable({
     userId: v.string(),
+    leadAgent: v.optional(leadAgentValidator),
     day: v.string(),
     value: v.number(),
     order: v.number(),
+    sourceReceiptId: v.optional(v.id("leadSourceReceipts")),
   }).index("by_user", ["userId"]),
+
+  // Immutable evidence for provider-backed lead writes. The response is the
+  // exact, already bounded MCP result shown to the model; its SHA-256 digest
+  // makes later tampering visible and prospects point back to this row.
+  leadSourceReceipts: defineTable({
+    userId: v.string(),
+    threadId: v.id("threads"),
+    assistantId: v.id("messages"),
+    provider: v.string(),
+    tool: v.string(),
+    responseText: v.string(),
+    responseHash: v.string(),
+    capturedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_thread", ["threadId"]),
 });

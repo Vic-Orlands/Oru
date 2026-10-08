@@ -11,7 +11,7 @@ import {
    backend's MODEL_IDS keys (convex/inference/billing.ts) — they're what
    gets persisted, so never rename them; the white-label names here are the
    user-facing truth (key Fast = the Free tier). Capabilities and thinking
-   configs follow the notes in apps/legacy/app/lib/attachment-upload.ts and
+   configs follow the attachment pipeline's provider constraints and
    the backend's REASONING_OFF_OPTIONS. The picker only surfaces Free for
    free users (lib/model-access.ts) — paid plans ride Fast/Heavy instead. */
 

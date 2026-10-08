@@ -1,4 +1,8 @@
 import type { SupermemoryPromptContext } from "./supermemory";
+import {
+  leadAgentInstruction,
+  type LeadAgentKind,
+} from "./leadAgents";
 
 export const LATEX_SYSTEM_INSTRUCTION =
   "Write math as $$...$$ only. Never use single $, \\(...\\), \\[...\\], or bare LaTeX. Escape | inside table math.";
@@ -76,7 +80,7 @@ export const WEB_FETCH_SYSTEM_INSTRUCTION =
   "Use `fetchUrl` to read specific URLs, even when search is off. Never claim to have read a page unless it succeeds.";
 
 export const LEAD_SYSTEM_INSTRUCTION =
-  "The sales desk is available on every turn. Real lead discovery must begin with a connected prospecting or enrichment integration such as FuseAI; if none is connected, use suggestIntegrations and explain that connection is required. Only call findProspects after a live provider returns the rows, preserving its source/profile/company URLs and email verification state. Never invent a person, company, URL, email, enrichment fact, or campaign metric. Use qualifyLead before recommending a send. Use saveList, writeSequence, and queueEmail to file the work — queueEmail never sends. Use createDeskTask for follow-ups. Report campaign performance only after reading live campaign data from a connected provider. The user sees the tool cards, so don't paste the same table back as markdown.";
+  "The lead desk is available on every turn. Real lead discovery must begin with a connected prospecting or enrichment integration such as FuseAI; if none is connected, use suggestIntegrations and explain that connection is required. Only call findProspects immediately after a live provider returns the rows, preserving its source/profile/company URLs and email verification state. Classify each lead's evidence using the tool's fixed rubric states for goal fit, timing, authority, and contactability; the tool deterministically assigns the visible 0-25 points, total, and fit label. Never invent a person, company, URL, email, enrichment fact, score, or campaign metric. Use qualifyLead before recommending a send. Use saveList, writeSequence, and queueEmail to file the work. queueEmail never sends; the user's approval executes the connected email provider. Use createDeskTask for follow-ups. After reading live campaign or CRM data, call recordCampaignActivity so analytics retain the provider receipt. The user sees the tool cards, so don't paste the same table back as markdown.";
 
 export const WEATHER_SYSTEM_INSTRUCTION =
   "Use `getWeather` for every weather question. Omit `location` for 'here'; otherwise pass the named place. Give a short useful take because the widget has details. Ask for a city if needed and label approximate locations honestly.";
@@ -315,6 +319,7 @@ function buildSupermemorySection(context: SupermemoryPromptContext) {
 }
 
 export function buildSystemPrompt({
+  leadAgent,
   search,
   compactionSummary,
   userPreferences,
@@ -333,6 +338,7 @@ export function buildSystemPrompt({
   threadHtmlArtifacts,
   now,
 }: {
+  leadAgent: LeadAgentKind;
   search: boolean;
   compactionSummary?: string;
   userPreferences?: string;
@@ -389,6 +395,7 @@ export function buildSystemPrompt({
 }) {
   const sections = [
     PERSONALITY_SYSTEM_INSTRUCTION,
+    leadAgentInstruction(leadAgent),
     WRITING_STYLE_SYSTEM_INSTRUCTION,
     FORMATTING_SYSTEM_INSTRUCTION,
     TOOL_EFFICIENCY_SYSTEM_INSTRUCTION,

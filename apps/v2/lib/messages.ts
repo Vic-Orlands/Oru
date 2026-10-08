@@ -23,6 +23,7 @@ import { isCustomModelKey, type ThinkingLevel } from "./models";
 import { reportFrontendPerformance } from "./performance";
 import { ANALYTICS_EVENTS, captureEvent } from "./posthog";
 import type { QuestionAnswer, QuestionSpec } from "./questions";
+import { useLeadAgent } from "./lead-agents";
 
 /* The chat data layer: sending, subscribing, stopping, retrying. The wire
    protocol (see convex/messages.ts): sendUserMessage writes the user row
@@ -437,6 +438,7 @@ function wireModel(model: string): string {
 }
 
 export function useMessageActions() {
+  const leadAgent = useLeadAgent();
   const sendUserMessage = useMutation(api.messages.sendUserMessage);
   const resetAssistantMessage = useMutation(api.messages.resetAssistantMessage);
   const prepareRetryFromUser = useMutation(
@@ -582,7 +584,10 @@ export function useMessageActions() {
                   name: file.name,
                   size: file.size,
                   type: file.type,
-                  storageId: file.storageId as Id<"_storage">,
+                  ...(file.storageId
+                    ? { storageId: file.storageId as Id<"_storage"> }
+                    : {}),
+                  ...(file.url ? { url: file.url } : {}),
                   ...(file.text !== undefined ? { text: file.text } : {}),
                   ...(file.skippedReason !== undefined
                     ? { skippedReason: file.skippedReason }
@@ -610,6 +615,7 @@ export function useMessageActions() {
             thinking: thinking !== "none",
             search,
             model: wireModel(model),
+            leadAgent,
           },
         });
       } catch (error) {
@@ -683,7 +689,7 @@ export function useMessageActions() {
       });
       return result.threadId;
     },
-    [sendUserMessage],
+    [sendUserMessage, leadAgent],
   );
 
   /* Wipe an errored/stopped reply and run it again on a fresh stream. */

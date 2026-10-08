@@ -39,6 +39,7 @@ controls it can't honor instead of letting them fail.
 | Long-term memory     | Convex | `SUPERMEMORY_API_KEY`                      | Memory stays off                                                    |
 | Billing              | Convex | `AUTUMN_SECRET_KEY`                        | Everyone gets every feature, nothing is metered, and plan UI hides |
 | Composio integrations| Convex | `COMPOSIO_API_KEY`                         | Composio listings can't be installed                                |
+| Media CDN             | Convex | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_URL` | Media uploads fall back to Convex storage |
 | Support agent        | Both   | `MEDIAN_KEY`, `MEDIAN_SUPPORT_SECRET` (shared) | The Support menu item hides                                     |
 | Kirkify              | Both   | `KIRKIFY_SECRET` (shared)                  | `/kirkify` returns 404 and drops out of the nav and sitemap         |
 
@@ -151,6 +152,3 @@ when it's set.
 | `EXPO_PUBLIC_CONVEX_URL`            | Same deployment as the web app    |
 | `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` | Same Clerk instance               |
 | `EXPO_PUBLIC_SITE_URL`              | The web app's origin, for share links |
-
-**Waitlist** (`apps/waitlist/.env.local`): `RESEND_API_KEY` and
-`RESEND_AUDIENCE_ID`.

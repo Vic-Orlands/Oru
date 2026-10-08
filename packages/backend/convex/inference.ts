@@ -43,6 +43,7 @@ import { readCustomModel, readTierOverride } from "./models";
 import { documentShareLink, visualShareLink } from "./shareLinks";
 import { listRuntimeCustomSkills } from "./customSkills";
 import { listRuntimeSkills } from "./skillStore";
+import { DEFAULT_LEAD_AGENT } from "./leadAgents";
 import {
   attachmentValidator,
   calcItemValidator,
@@ -485,6 +486,7 @@ export const getRequestForStream = internalQuery({
       assistantId: assistant._id,
       streamId,
       threadId: assistant.threadId,
+      leadAgent: thread.leadAgent ?? DEFAULT_LEAD_AGENT,
       model: assistant.model ?? "Auto",
       thinking: assistant.thinking ?? false,
       search: assistant.search ?? false,

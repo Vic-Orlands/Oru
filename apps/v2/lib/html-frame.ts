@@ -2,7 +2,7 @@
    writes a self-contained body fragment styled with --whirl-* theme tokens
    (convex/inference/htmlTheme.ts); here we define those tokens for the
    current light/dark theme, add a reset and a height reporter, and wrap
-   the fragment. Ported from apps/legacy/app/lib/html-frame.ts — keep the
+   the fragment. Keep the
    token names in sync with the backend. */
 
 type ThemeVars = Record<string, string>;

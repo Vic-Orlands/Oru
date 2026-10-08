@@ -45,7 +45,6 @@ apps/remotion/out/
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
 
-# Local-only agent plugins and residue from the retired web workspace
+# Local-only agent plugins
 .agents/skills/composio/
 .claude/skills/composio
-/apps/web/

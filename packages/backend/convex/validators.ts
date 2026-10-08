@@ -1,4 +1,5 @@
 import { type Infer, v } from "convex/values";
+import { leadAgentValidator } from "./leadAgents";
 
 export const attachmentValidator = v.object({
   id: v.string(),
@@ -484,6 +485,8 @@ export const sendOptionsValidator = v.object({
   // the value against the catalog (resolveSendModel in convex/models.ts) —
   // anything unknown lands as Auto, never as an error.
   model: v.string(),
+  // Optional for turns created before lead workspaces existed.
+  leadAgent: v.optional(leadAgentValidator),
 });
 
 // What an admin-curated model can do, detected from OpenRouter's model

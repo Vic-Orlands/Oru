@@ -5,7 +5,7 @@ import {
   IconSettings,
 } from "@tabler/icons-react";
 
-// Ripped from apps/legacy: dropdown-menu.tsx shell classes + the UsageBlock and
+// Uses the app's dropdown shell classes plus the UsageBlock and
 // compact menu rows in __root.tsx, light mode only. Keep in sync by eye.
 const shellClass =
   "cursor-default select-none rounded-xl border border-black/[0.08] bg-white p-1 shadow-[0_8px_24px_rgba(0,0,0,0.08),_0_2px_4px_rgba(0,0,0,0.04)]";

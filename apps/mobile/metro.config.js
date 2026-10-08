@@ -9,7 +9,7 @@ const config = getDefaultConfig(projectRoot);
 /*
  * The monorepo hoists shared dependencies, so metro has to watch and search
  * both node_modules trees — but *only* those. Watching the workspace root
- * pulled apps/legacy and apps/v2 into the crawl too, and holding handles open
+ * pulled sibling web apps into the crawl too, and holding handles open
  * across all of it left too few for the transform cache: builds died with
  * EMFILE part-way through, which surfaces as half-built modules and
  * "undefined is not a function" at runtime rather than as a build error.

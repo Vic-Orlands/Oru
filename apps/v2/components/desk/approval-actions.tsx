@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { IconCircleCheckFilled, IconPlayerPauseFilled } from "@tabler/icons-react";
 import { api } from "@whirl/backend/convex/_generated/api";
 import type { Id } from "@whirl/backend/convex/_generated/dataModel";
@@ -16,19 +16,21 @@ export function ApprovalActions({
   approvalId: Id<"approvals">;
   recipient: string;
 }) {
-  const decide = useMutation(api.leads.decideApproval);
+  const approveAndSend = useAction(api.leadDispatch.approveAndSend);
+  const hold = useMutation(api.leads.holdApproval);
   const [pending, setPending] = useState<"approved" | "held" | null>(null);
 
   const submit = async (decision: "approved" | "held") => {
     if (pending) return;
     setPending(decision);
     try {
-      await decide({ approvalId, decision });
-      showToast(
-        decision === "approved"
-          ? `Approved the draft for ${recipient}.`
-          : `Held the draft for ${recipient}.`,
-      );
+      if (decision === "approved") {
+        const result = await approveAndSend({ approvalId });
+        showToast(`Sent to ${recipient} through ${result.provider}.`);
+      } else {
+        await hold({ approvalId });
+        showToast(`Held the draft for ${recipient}.`);
+      }
     } catch (cause) {
       showToast(
         cause instanceof Error
@@ -49,7 +51,7 @@ export function ApprovalActions({
         className="rounded-lg"
       >
         <IconCircleCheckFilled size={13} />
-        {pending === "approved" ? "Approving…" : "Approve"}
+        {pending === "approved" ? "Sending…" : "Approve and send"}
       </Button>
       <Button
         type="button"

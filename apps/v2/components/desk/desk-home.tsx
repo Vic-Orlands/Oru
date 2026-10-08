@@ -14,6 +14,8 @@ import { useDeskData } from "@/lib/desk-data";
 import { CHAT_MODELS } from "@/lib/models";
 import { useRunningThreadIds, useThreads } from "@/lib/threads";
 import { useView } from "@/lib/view";
+import { AgentSwitcher } from "@/components/agent-switcher";
+import { leadAgentById, useLeadAgent } from "@/lib/lead-agents";
 
 const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
 
@@ -62,6 +64,8 @@ export function DeskHome({
   onSubmit: (text: string) => void;
 }) {
   const { isAuthenticated } = useConvexAuth();
+  const leadAgentId = useLeadAgent();
+  const leadAgent = leadAgentById(leadAgentId);
   const { openDesk, openThread } = useView();
   const desk = useDeskData();
   const threads = useThreads(isAuthenticated) ?? [];
@@ -122,8 +126,19 @@ export function DeskHome({
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/55" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-background" />
         <h1 className="absolute inset-x-4 bottom-[5.75rem] text-center text-[22px] font-medium tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.75)] md:text-[26px]">
-          Who should we reach today?
+          {leadAgentId === "job_hunt"
+            ? "Which opportunity should we chase?"
+            : leadAgentId === "recruiting"
+              ? "Who should join the team?"
+              : leadAgentId === "partnerships"
+                ? "Who should we build with?"
+                : leadAgentId === "fundraising"
+                  ? "Who should hear the story?"
+                  : "Who should we reach today?"}
         </h1>
+        <div className="absolute top-3 right-3 rounded-xl bg-black/35 text-white backdrop-blur-md md:hidden">
+          <AgentSwitcher compact />
+        </div>
       </div>
 
       <div className="relative z-10 -mt-10 flex min-h-0 flex-1 flex-col px-4 pb-4 md:px-8">
@@ -151,7 +166,7 @@ export function DeskHome({
                   }
                 }}
                 rows={3}
-                placeholder="Describe who you want, or a list to write to…"
+                placeholder={`Describe the ${leadAgent.noun} you want to find…`}
                 className="w-full resize-none bg-transparent px-3.5 py-3 text-[13.5px]/5 outline-none placeholder:text-muted-foreground"
               />
               <div className="flex items-center gap-2 px-2.5 pb-2.5">

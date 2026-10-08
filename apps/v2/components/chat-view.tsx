@@ -39,9 +39,19 @@ import {
   type QuestionAnswer,
   type QuestionSpec,
 } from "@/lib/questions";
-import { runMutation as run, showToast } from "@/lib/toasts";
+import {
+  runMutation as run,
+  showActionToast,
+  showToast,
+} from "@/lib/toasts";
 import { cn } from "@/lib/utils";
 import { useView } from "@/lib/view";
+import {
+  leadAgentById,
+  recommendLeadAgent,
+  setLeadAgent,
+  useLeadAgent,
+} from "@/lib/lead-agents";
 import { useThreadActions, type ThreadSummary } from "@/lib/threads";
 import { DeskHome } from "./desk/desk-home";
 import { ChatComposer } from "./chat-composer";
@@ -105,6 +115,7 @@ export function ChatView({
   activeThread?: ThreadSummary;
 }) {
   const { threadId: routeThreadId, openThread, openHome } = useView();
+  const leadAgent = useLeadAgent();
   const { isAuthenticated, isLoading } = useConvexAuth();
   const actions = useMessageActions();
   const queueActions = useQueueActions();
@@ -342,6 +353,19 @@ export function ChatView({
     gates: ComposerGates,
     mentions: ComposerMentions,
   ) => {
+    const recommendedAgent = recommendLeadAgent(text, leadAgent);
+    if (recommendedAgent) {
+      const recommended = leadAgentById(recommendedAgent);
+      showActionToast({
+        message: `${recommended.name} is trained for this kind of work.`,
+        label: `Switch to ${recommended.shortName}`,
+        onAction: () => {
+          setLeadAgent(recommendedAgent);
+          openHome();
+        },
+      });
+      throw new Error("A better lead agent is available.");
+    }
     if (!isAuthenticated) {
       showToast("Sign in to start chatting");
       return;

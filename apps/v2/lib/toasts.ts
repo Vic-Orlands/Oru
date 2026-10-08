@@ -24,6 +24,7 @@ const pending = new Map<
   string,
   { timer: ReturnType<typeof setTimeout>; toastId: number }
 >();
+const actionTimers = new Map<number, ReturnType<typeof setTimeout>>();
 let pendingIds: ReadonlySet<string> = new Set();
 
 const listeners = new Set<() => void>();
@@ -63,12 +64,36 @@ export function runMutation(promise: Promise<unknown>) {
 }
 
 export function dismissToast(toastId: number) {
+  const timer = actionTimers.get(toastId);
+  if (timer) clearTimeout(timer);
+  actionTimers.delete(toastId);
   toasts = toasts.filter((toast) => toast.id !== toastId);
   emit();
 }
 
 export function showToast(message: string, durationMs = UNDO_WINDOW_MS) {
   toast(message, { duration: durationMs });
+}
+
+export function showActionToast({
+  message,
+  label,
+  onAction,
+  durationMs = 10_000,
+}: {
+  message: string;
+  label: string;
+  onAction: () => void;
+  durationMs?: number;
+}) {
+  const id = nextId++;
+  const act = () => {
+    dismissToast(id);
+    onAction();
+  };
+  toasts = [...toasts, { id, message, action: { label, onAction: act } }];
+  actionTimers.set(id, setTimeout(() => dismissToast(id), durationMs));
+  emit();
 }
 
 let updateToastId: number | null = null;

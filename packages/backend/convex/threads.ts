@@ -19,6 +19,7 @@ import { uniqueDocumentShortId } from "./documents";
 import { deleteQueuedForThread } from "./messageQueue";
 import { clearCompactionSummary } from "./threadCompaction";
 import { modelKeyValidator } from "./validators";
+import { DEFAULT_LEAD_AGENT } from "./leadAgents";
 
 const persistentTextStreaming = new PersistentTextStreaming(
   components.persistentTextStreaming,
@@ -111,6 +112,7 @@ async function formatThread(ctx: any, thread: any) {
   const title = await fallbackTitleForThread(ctx, thread);
   return {
     id: thread._id,
+    leadAgent: thread.leadAgent ?? DEFAULT_LEAD_AGENT,
     title,
     titleStatus: thread.titleStatus ?? "ready",
     createdAt: thread.createdAt,
@@ -671,6 +673,7 @@ export const forkSharedThread = mutationGeneric({
 
     const newThreadId = await ctx.db.insert("threads", {
       userId,
+      leadAgent: source.leadAgent ?? DEFAULT_LEAD_AGENT,
       title: source.title?.trim() || "Shared conversation",
       titleStatus: "ready",
       createdAt: now,
@@ -824,6 +827,7 @@ export const branchThread = mutationGeneric({
     const now = Date.now();
     const newThreadId = await ctx.db.insert("threads", {
       userId,
+      leadAgent: thread.leadAgent ?? DEFAULT_LEAD_AGENT,
       title: thread.title?.trim() || "New thread",
       titleStatus: "ready",
       createdAt: now,
