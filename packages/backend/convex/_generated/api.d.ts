@@ -81,6 +81,7 @@ import type * as inference_turnUsage from "../inference/turnUsage.js";
 import type * as inference_urlSafety from "../inference/urlSafety.js";
 import type * as inference_weather from "../inference/weather.js";
 import type * as inference_webFetch from "../inference/webFetch.js";
+import type * as integrationProviderPolicy from "../integrationProviderPolicy.js";
 import type * as integrationScan from "../integrationScan.js";
 import type * as integrationStore from "../integrationStore.js";
 import type * as integrations from "../integrations.js";
@@ -239,6 +240,7 @@ declare const fullApi: ApiFromModules<{
   "inference/urlSafety": typeof inference_urlSafety;
   "inference/weather": typeof inference_weather;
   "inference/webFetch": typeof inference_webFetch;
+  integrationProviderPolicy: typeof integrationProviderPolicy;
   integrationScan: typeof integrationScan;
   integrationStore: typeof integrationStore;
   integrations: typeof integrations;

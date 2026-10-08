@@ -12,6 +12,10 @@ import {
   type QueryCtx,
 } from "./_generated/server";
 import { isAdminIdentity, requireAdmin } from "./admin";
+import {
+  isPlatformManagedToolkit,
+  platformManagedToolkitSlugs,
+} from "./integrationProviderPolicy";
 
 // Admin-curated Composio extensions. Rather than exposing Composio's entire
 // catalog to users, an admin hand-picks toolkits from the console's
@@ -287,8 +291,6 @@ const TOOLKIT_SHELVES: Record<string, string> = {
   excel: "Spreadsheets",
   fusedesk: "Communication",
   fuseai: "LinkedIn & enrichment",
-  exa: "Research & enrichment",
-  parallel: "Research & enrichment",
   gmail: "Email",
   googlecalendar: "Calendar",
   googledocs: "Docs",
@@ -430,7 +432,10 @@ async function addedComposioRows(
     .withIndex("by_status", (q) => q.eq("status", "approved"))
     .take(MAX_APPROVED_SCAN);
   return rows
-    .filter((row) => row.composio)
+    .filter(
+      (row) =>
+        row.composio && !isPlatformManagedToolkit(row.composio.slug),
+    )
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
@@ -462,6 +467,27 @@ export const listAddedSlugs = internalQuery({
   handler: async (ctx): Promise<string[]> => {
     const rows = await addedComposioRows(ctx);
     return rows.map((row) => row.composio!.slug);
+  },
+});
+
+export const listPlatformManagedRows = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db
+      .query("integrations")
+      .withIndex("by_status", (q) => q.eq("status", "approved"))
+      .take(MAX_APPROVED_SCAN);
+    return rows
+      .filter(
+        (row) =>
+          row.composio && isPlatformManagedToolkit(row.composio.slug),
+      )
+      .map((row) => ({
+        id: row._id,
+        slug: row.composio!.slug,
+        authConfigId: row.composio!.authConfigId,
+        mcpServerId: row.composio!.mcpServerId,
+      }));
   },
 });
 
@@ -521,7 +547,10 @@ export const searchCatalog = action({
     );
     const toolkits = listItems(json)
       .map((item) => toCatalogToolkit(item, addedSlugs))
-      .filter((t): t is CatalogToolkit => t !== null);
+      .filter(
+        (t): t is CatalogToolkit =>
+          t !== null && !isPlatformManagedToolkit(t.slug),
+      );
     if (!search) return toolkits.slice(0, CATALOG_PAGE_SIZE);
 
     const matches = (t: CatalogToolkit) =>
@@ -592,6 +621,11 @@ async function provisionToolkit(
 ): Promise<{ id: Id<"integrations"> }> {
   const slug = rawSlug.trim().toLowerCase();
   if (!slug) throw new Error("Pick a toolkit first.");
+  if (isPlatformManagedToolkit(slug)) {
+    throw new Error(
+      "That provider is built into Oso-Ahia and cannot be added as a Composio integration.",
+    );
+  }
 
   const addedSlugs: string[] = await ctx.runQuery(
     internal.composio.listAddedSlugs,
@@ -819,8 +853,6 @@ async function provisionToolkit(
 
 const CURATED_TOOLKITS = [
   "fuseai",
-  "exa",
-  "parallel",
   "gmail",
   "googlecalendar",
   "hubspot",
@@ -874,6 +906,7 @@ const CURATED_TOOLKITS = [
 export const initializeCuratedToolkits = internalAction({
   args: {},
   handler: async (ctx) => {
+    await purgePlatformManagedToolkits(ctx);
     await ctx.runMutation(internal.composio.normalizeCatalog, {});
     const existing = new Set(
       await ctx.runQuery(internal.composio.listAddedSlugs, {}),
@@ -927,6 +960,11 @@ export const insertListing = internalMutation({
     ownerEmail: v.optional(v.string()),
   },
   handler: async (ctx, args): Promise<{ id: Id<"integrations"> }> => {
+    if (isPlatformManagedToolkit(args.slug)) {
+      throw new Error(
+        "Platform-managed providers cannot be stored as Composio integrations.",
+      );
+    }
     const now = Date.now();
     const id = await ctx.db.insert("integrations", {
       userId: args.ownerId,
@@ -961,6 +999,70 @@ export const insertListing = internalMutation({
       updatedAt: now,
     });
     return { id };
+  },
+});
+
+async function purgePlatformManagedToolkits(ctx: ActionCtx) {
+  const rows = await ctx.runQuery(internal.composio.listPlatformManagedRows, {});
+  const removed: string[] = [];
+  for (const row of rows) {
+    await composioFetch(
+      `/api/v3/mcp/servers/${encodeURIComponent(row.mcpServerId)}`,
+      { method: "DELETE" },
+    ).catch(() => {});
+    await composioFetch(
+      `/api/v3/auth_configs/${encodeURIComponent(row.authConfigId)}`,
+      { method: "DELETE" },
+    ).catch(() => {});
+    await ctx.runMutation(internal.composio.removePlatformManagedListing, {
+      id: row.id,
+    });
+    removed.push(row.slug);
+  }
+  return removed;
+}
+
+/** One-time/idempotent cleanup for deployments that previously exposed a
+ * first-party provider in the Composio store. Safe to run after every deploy. */
+export const purgePlatformManaged = internalAction({
+  args: {},
+  handler: async (ctx) => ({
+    reserved: platformManagedToolkitSlugs(),
+    removed: await purgePlatformManagedToolkits(ctx),
+  }),
+});
+
+export const removePlatformManagedListing = internalMutation({
+  args: { id: v.id("integrations") },
+  handler: async (ctx, { id }) => {
+    const row = await ctx.db.get(id);
+    if (!row?.composio || !isPlatformManagedToolkit(row.composio.slug)) {
+      return { listings: 0, installs: 0, gates: 0 };
+    }
+
+    const installs = await ctx.db
+      .query("mcpServers")
+      .withIndex("by_integration", (q) => q.eq("integrationId", id))
+      .collect();
+    for (const install of installs) {
+      const oauthFlows = await ctx.db
+        .query("mcpOAuthFlows")
+        .withIndex("by_server", (q) => q.eq("serverId", install._id))
+        .collect();
+      for (const flow of oauthFlows) await ctx.db.delete(flow._id);
+      await ctx.db.delete(install._id);
+    }
+
+    const gates = await ctx.db
+      .query("integrationGates")
+      .withIndex("by_integration", (q) => q.eq("integrationId", id))
+      .collect();
+    for (const gate of gates) await ctx.db.delete(gate._id);
+
+    if (row.logoId) await ctx.storage.delete(row.logoId);
+    if (row.bannerId) await ctx.storage.delete(row.bannerId);
+    await ctx.db.delete(id);
+    return { listings: 1, installs: installs.length, gates: gates.length };
   },
 });
 

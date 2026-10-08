@@ -240,6 +240,7 @@ export default defineSchema({
     resolvedAt: v.optional(v.number()),
   })
     .index("by_message_phase", ["messageId", "phaseIndex"])
+    .index("by_integration", ["integrationId"])
     .index("by_user_integration_status", [
       "userId",
       "integrationId",
@@ -652,7 +653,9 @@ export default defineSchema({
     authExpiredAt: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_user", ["userId"]),
+  })
+    .index("by_user", ["userId"])
+    .index("by_integration", ["integrationId"]),
 
   // In-flight OAuth authorization-code flows (PKCE). One short-lived row per
   // "Connect" click; looked up by `state` when the provider redirects back to

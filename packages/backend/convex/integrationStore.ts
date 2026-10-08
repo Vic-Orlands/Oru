@@ -12,6 +12,7 @@ import {
   type QueryCtx,
 } from "./_generated/server";
 import { createComposioConnectLink, isComposioAccountActive } from "./composio";
+import { isPlatformManagedToolkit } from "./integrationProviderPolicy";
 import { isPaidCustomer } from "./inference/billing";
 import { encryptSecret } from "./inference/crypto";
 import { callbackHtml } from "./mcpOAuthFlow";
@@ -37,7 +38,12 @@ function isApproved(row: Doc<"integrations">): boolean {
 
 /** Listable = approved by an admin, switched on by its developer, installable. */
 function isListable(row: Doc<"integrations">): boolean {
-  return isApproved(row) && row.enabled && Boolean(row.mcpUrl);
+  return (
+    isApproved(row) &&
+    row.enabled &&
+    Boolean(row.mcpUrl) &&
+    !(row.composio && isPlatformManagedToolkit(row.composio.slug))
+  );
 }
 
 /** Composio listings whose toolkit needs an account run the hosted connect

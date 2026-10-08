@@ -6,6 +6,8 @@ export default defineConfig({
     include: [
       "convex/slots/**/*.test.ts",
       "convex/inference/leadScoring.test.ts",
+      "convex/leadAgents.test.ts",
+      "convex/integrationProviderPolicy.test.ts",
     ],
   },
 });
