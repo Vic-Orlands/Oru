@@ -4,6 +4,7 @@ import {
   IconAppsFilled,
   IconAdjustmentsFilled,
   IconBook,
+  IconChartAreaFilled,
   IconDiamondFilled,
   IconExternalLink,
   IconPuzzleFilled,
@@ -50,7 +51,7 @@ export function ConsoleShell() {
         <div className="flex items-center gap-2.5">
           <WhirlMark size={20} />
           <span className="text-[14px] font-semibold tracking-tight">
-            Whirl
+            Oso-Ahia
           </span>
           <span className="rounded-full border border-black/[0.1] px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:border-white/[0.14] dark:text-neutral-400">
             Console
@@ -63,7 +64,7 @@ export function ConsoleShell() {
             rel="noreferrer"
             className="flex h-9 items-center gap-1.5 rounded-xl px-3 text-[12.5px] font-medium text-neutral-500 transition-colors hover:bg-[#E0E0E0] hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-[#1E1E1E] dark:hover:text-neutral-200"
           >
-            Open Whirl
+            Open Oso-Ahia
             <IconExternalLink size={13} stroke={2} />
           </a>
           <ThemeToggle />
@@ -86,6 +87,9 @@ export function ConsoleShell() {
           {isAdmin && (
             <nav className="flex flex-col gap-0.5">
               <SectionLabel>Admin</SectionLabel>
+              <NavItem to="/dashboard" icon={<IconChartAreaFilled size={15} />}>
+                Operations
+              </NavItem>
               <NavItem
                 to="/approvals"
                 icon={<IconRosetteDiscountCheckFilled size={15} />}

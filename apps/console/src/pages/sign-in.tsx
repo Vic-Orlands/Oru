@@ -5,8 +5,8 @@ import { WhirlMark } from "~/components/whirl-mark";
 import { useIsDark } from "~/lib/theme";
 
 /**
- * Signed-out landing: the console shares Whirl's Clerk instance, so an
- * existing Whirl account signs straight in. Clerk's prebuilt card handles the
+ * Signed-out landing: the console shares Oso-Ahia's Clerk instance, so an
+ * existing Oso-Ahia account signs straight in. Clerk's prebuilt card handles the
  * flow; we dress the room around it.
  */
 export function SignInPage() {
@@ -18,14 +18,14 @@ export function SignInPage() {
         <div className="flex items-center gap-2.5">
           <WhirlMark size={24} />
           <span className="text-[18px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-            Whirl
+            Oso-Ahia
           </span>
           <span className="rounded-full border border-black/[0.1] px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:border-white/[0.14] dark:text-neutral-400">
             Console
           </span>
         </div>
         <p className="max-w-sm text-[13.5px] leading-relaxed text-neutral-500 dark:text-neutral-400">
-          Sign in with your Whirl account to manage your integrations and API
+          Sign in with your Oso-Ahia account to manage your integrations and API
           keys.
         </p>
       </div>

@@ -9,6 +9,7 @@
  */
 
 import type * as admin from "../admin.js";
+import type * as adminAnalytics from "../adminAnalytics.js";
 import type * as artifactBackfill from "../artifactBackfill.js";
 import type * as artifactContent from "../artifactContent.js";
 import type * as artifactData from "../artifactData.js";
@@ -163,6 +164,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  adminAnalytics: typeof adminAnalytics;
   artifactBackfill: typeof artifactBackfill;
   artifactContent: typeof artifactContent;
   artifactData: typeof artifactData;

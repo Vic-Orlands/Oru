@@ -1,7 +1,7 @@
 import { MultiplierSection } from "./multiplier-section";
 import { ResetUsageSection } from "./reset-usage-section";
 
-/** Admin-only operational controls ported from the original Whirl admin page. */
+/** Admin-only operational controls ported from the original Oso-Ahia admin page. */
 export function AdminPage() {
   return (
     <>

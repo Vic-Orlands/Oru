@@ -300,7 +300,7 @@ export function IntegrationsEmptyState({ onCreate }: { onCreate: () => void }) {
           No integrations yet
         </h3>
         <p className="mx-auto max-w-sm text-[13px] leading-relaxed text-neutral-500 dark:text-neutral-400">
-          Register your MCP server to get it into the Whirl integration store.
+          Register your MCP server to get it into the Oso-Ahia integration store.
         </p>
       </div>
       <button

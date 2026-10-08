@@ -1,7 +1,7 @@
 /**
  * Renders an integration's SVG icon as a single-color silhouette via CSS
- * mask — the same trick the main app uses for the Whirl logo. This is how the
- * icon appears wherever Whirl uses the integration: small and gray, in place
+ * mask — the same trick the main app uses for the Oso-Ahia logo. This is how the
+ * icon appears wherever Oso-Ahia uses the integration: small and gray, in place
  * of the generic plug icon.
  */
 export function MonoIcon({

@@ -8,10 +8,10 @@ import type { ToolDraft } from "~/pages/integrations/tool-scan-section";
  */
 export function toolsToJsonc(tools: ToolDraft[]): string {
   const lines = [
-    "// Whirl tool descriptions",
+    "// Oso-Ahia tool descriptions",
     "//",
     "// Each key below is a tool advertised by your MCP server. Fill in both",
-    "// fields for every tool — these show up in the chat while Whirl uses it:",
+    "// fields for every tool — these show up in the chat while Oso-Ahia uses it:",
     '//   "description" — while the tool runs, e.g. "Searching your issues"',
     '//   "completed"   — once it finishes, e.g. "Searched your issues"',
     "//",

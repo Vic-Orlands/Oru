@@ -99,7 +99,7 @@ export function MultiplierSection() {
             </h2>
             <p className="mt-0.5 text-[12.5px] text-neutral-500 dark:text-neutral-400">
               Temporarily make every allowance go further and announce it in
-              Whirl.
+              Oso-Ahia.
             </p>
           </div>
         </div>

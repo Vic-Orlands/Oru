@@ -1,4 +1,4 @@
-/** The Whirl logomark, inverted for dark mode like the main app. */
+/** The Oso-Ahia logomark, inverted for dark mode like the main app. */
 export function WhirlMark({
   size = 20,
   className = "",

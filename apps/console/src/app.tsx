@@ -10,6 +10,7 @@ import { useIdentifyUser } from "~/lib/analytics";
 import { readThemePref, resolveDark } from "~/lib/theme";
 import { useIsAdmin } from "~/lib/use-admin";
 import { AdminPage } from "~/pages/admin/admin-page";
+import { DashboardPage } from "~/pages/dashboard/dashboard-page";
 import { ApprovalDetailPage } from "~/pages/approvals/approval-detail-page";
 import { ApprovalsPage } from "~/pages/approvals/approvals-page";
 import { SkillApprovalDetailPage } from "~/pages/approvals/skill-approval-detail-page";
@@ -69,7 +70,15 @@ export function App() {
             <Route element={<ConsoleShell />}>
               <Route
                 index
-                element={<Navigate to="/integrations" replace />}
+                element={<Navigate to="/dashboard" replace />}
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <RequireAdmin>
+                    <DashboardPage />
+                  </RequireAdmin>
+                }
               />
               <Route path="/integrations" element={<IntegrationsPage />} />
               <Route
@@ -169,7 +178,7 @@ export function App() {
               />
               <Route
                 path="*"
-                element={<Navigate to="/integrations" replace />}
+                element={<Navigate to="/dashboard" replace />}
               />
             </Route>
           </Routes>

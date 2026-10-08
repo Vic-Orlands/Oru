@@ -90,7 +90,7 @@ function SkillFormPage({ initial }: { initial?: Skill }) {
     if (!author.trim()) return "Who made this skill?";
     if (!logo) return "Upload a logo for the store listing.";
     if (!description.trim()) {
-      return "Write a description — it's how Whirl decides when to load the skill.";
+      return "Write a description — it's how Oso-Ahia decides when to load the skill.";
     }
     if (!instructions.trim()) return "Paste the skill's instructions.";
     if (instructions.length > MAX_INSTRUCTIONS) {
@@ -165,7 +165,7 @@ function SkillFormPage({ initial }: { initial?: Skill }) {
         <p className="mt-1 text-[13px] text-neutral-500 dark:text-neutral-400">
           {editing
             ? "Change anything you like — saving sends it back through review."
-            : "Write instructions Whirl learns mid-chat. It goes live in the store once an admin approves it."}
+            : "Write instructions Oso-Ahia learns mid-chat. It goes live in the store once an admin approves it."}
         </p>
       </div>
 
@@ -180,7 +180,7 @@ function SkillFormPage({ initial }: { initial?: Skill }) {
       <div className="mt-6 flex flex-col gap-4">
         <FormSection
           title="Details"
-          subtitle="What users see in the store listing. The description doubles as Whirl's cue for when to reach for this skill — make it say what the skill is for."
+          subtitle="What users see in the store listing. The description doubles as Oso-Ahia's cue for when to reach for this skill — make it say what the skill is for."
         >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1.5">
@@ -211,7 +211,7 @@ function SkillFormPage({ initial }: { initial?: Skill }) {
                   </span>
                 ) : (
                   <span className="text-[11.5px] text-neutral-400 dark:text-neutral-500">
-                    Heads up: only Whirl team accounts get the verified badge.
+                    Heads up: only Oso-Ahia team accounts get the verified badge.
                   </span>
                 ))}
             </label>
@@ -255,7 +255,7 @@ function SkillFormPage({ initial }: { initial?: Skill }) {
 
         <FormSection
           title="The skill"
-          subtitle="The instructions Whirl follows once it loads the skill. Paste the whole thing — structure, examples, edge cases and all."
+          subtitle="The instructions Oso-Ahia follows once it loads the skill. Paste the whole thing — structure, examples, edge cases and all."
         >
           <label className="flex flex-col gap-1.5">
             <FieldLabel label="Instructions" />
