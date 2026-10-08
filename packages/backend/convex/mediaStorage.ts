@@ -15,9 +15,34 @@ function requiredEnvironment(name: string) {
   return value;
 }
 
+function gatewayOrigin() {
+  const configured = requiredEnvironment("R2_GATEWAY_URL");
+  let url: URL;
+  try {
+    url = new URL(configured);
+  } catch {
+    throw new Error(
+      "R2_GATEWAY_URL must be a plain HTTPS URL, not a Markdown link.",
+    );
+  }
+  if (
+    url.protocol !== "https:" ||
+    url.username ||
+    url.password ||
+    url.search ||
+    url.hash ||
+    (url.pathname !== "/" && url.pathname !== "")
+  ) {
+    throw new Error(
+      "R2_GATEWAY_URL must contain only the private gateway's HTTPS origin.",
+    );
+  }
+  return url.origin;
+}
+
 function configuration() {
   return {
-    gatewayUrl: requiredEnvironment("R2_GATEWAY_URL").replace(/\/$/, ""),
+    gatewayUrl: gatewayOrigin(),
     secret: requiredEnvironment("R2_GATEWAY_SECRET"),
   };
 }
