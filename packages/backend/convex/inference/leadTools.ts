@@ -5,6 +5,8 @@ import type { ActionCtx } from "../_generated/server";
 import type { Id } from "../_generated/dataModel";
 import type { LeadAgentKind } from "../leadAgents";
 import { scoreLead, type LeadScoringSignals } from "./leadScoring";
+import { createOpportunityTools } from "./opportunityTools";
+import { OPPORTUNITY_PROFILES } from "../opportunityProfiles";
 
 export const LEAD_TOOL_NAMES = new Set([
   "findProspects",
@@ -14,6 +16,8 @@ export const LEAD_TOOL_NAMES = new Set([
   "queueEmail",
   "createDeskTask",
   "recordCampaignActivity",
+  "requestHumanApproval",
+  ...Object.values(OPPORTUNITY_PROFILES).map((profile) => profile.toolName),
 ]);
 
 type Card = { name?: string; title: string; text: string };
@@ -44,8 +48,9 @@ export function createLeadTools(opts: {
   leadAgent: LeadAgentKind;
   latestProviderReceipt: () => ProviderReceipt | undefined;
   onCard: (card: Card) => Promise<void>;
+  timeZone?: string;
 }) {
-  const { ctx, userId, leadAgent, latestProviderReceipt, onCard } = opts;
+  const { ctx, userId, leadAgent, latestProviderReceipt, onCard, timeZone } = opts;
   const leadKind =
     leadAgent === "job_hunt"
       ? "job opportunities"
@@ -57,6 +62,7 @@ export function createLeadTools(opts: {
             ? "investor leads"
             : "sales prospects";
   return {
+    ...createOpportunityTools(opts),
     findProspects: tool({
       description:
         `Save real ${leadKind} returned by live web research or a connected data provider. Call the appropriate live source first. Every row must include a source URL; never invent people, roles, organizations, links, or emails. For Job Hunt, use the role title as name, the team or employment type as title, and the employer as company.`,
@@ -327,6 +333,26 @@ export function createLeadTools(opts: {
         return { queued: true };
       },
     }),
+    requestHumanApproval: tool({
+      description: "Pause before a consequential external action such as submitting an application, contacting a candidate, sharing a document, changing a CRM, or publishing. This records the proposed action but never performs it.",
+      inputSchema: jsonSchema<{ actionType: string; title: string; summary: string; target: string; payload: string }>({
+        type: "object",
+        properties: {
+          actionType: { type: "string" },
+          title: { type: "string" },
+          summary: { type: "string" },
+          target: { type: "string" },
+          payload: { type: "string", description: "A compact JSON or text representation of exactly what would be sent or changed." },
+        },
+        required: ["actionType", "title", "summary", "target", "payload"],
+        additionalProperties: false,
+      }),
+      execute: async (request) => {
+        const id = await ctx.runMutation(internal.actionApprovals.request, { userId, leadAgent, ...request });
+        await onCard({ name: "approval", title: request.title, text: JSON.stringify({ ...request, approvalId: id }) });
+        return { waitingForHuman: true, approvalId: id };
+      },
+    }),
     createDeskTask: tool({
       description:
         "Schedule real future agent work. At the due time Oso-Ahia opens a dedicated thread, runs these instructions with live web search enabled, and repeats when requested.",
@@ -381,6 +407,7 @@ export function createLeadTools(opts: {
           ...task,
           when: firstRunAt,
           runAt,
+          timeZone,
         });
         return {
           created: task.title,

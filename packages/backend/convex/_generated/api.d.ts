@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as actionApprovals from "../actionApprovals.js";
 import type * as admin from "../admin.js";
 import type * as adminAnalytics from "../adminAnalytics.js";
 import type * as artifactBackfill from "../artifactBackfill.js";
@@ -65,6 +66,7 @@ import type * as inference_mcpResolve from "../inference/mcpResolve.js";
 import type * as inference_memory from "../inference/memory.js";
 import type * as inference_mutationQueue from "../inference/mutationQueue.js";
 import type * as inference_openMeteo from "../inference/openMeteo.js";
+import type * as inference_opportunityTools from "../inference/opportunityTools.js";
 import type * as inference_parallelSearch from "../inference/parallelSearch.js";
 import type * as inference_reactArtifact from "../inference/reactArtifact.js";
 import type * as inference_reasoningReplay from "../inference/reasoningReplay.js";
@@ -107,6 +109,9 @@ import type * as messages from "../messages.js";
 import type * as modelCatalog from "../modelCatalog.js";
 import type * as modelFavorites from "../modelFavorites.js";
 import type * as models from "../models.js";
+import type * as opportunities from "../opportunities.js";
+import type * as opportunityProfiles from "../opportunityProfiles.js";
+import type * as opportunityValidators from "../opportunityValidators.js";
 import type * as performance from "../performance.js";
 import type * as platinum from "../platinum.js";
 import type * as posthog from "../posthog.js";
@@ -167,6 +172,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  actionApprovals: typeof actionApprovals;
   admin: typeof admin;
   adminAnalytics: typeof adminAnalytics;
   artifactBackfill: typeof artifactBackfill;
@@ -224,6 +230,7 @@ declare const fullApi: ApiFromModules<{
   "inference/memory": typeof inference_memory;
   "inference/mutationQueue": typeof inference_mutationQueue;
   "inference/openMeteo": typeof inference_openMeteo;
+  "inference/opportunityTools": typeof inference_opportunityTools;
   "inference/parallelSearch": typeof inference_parallelSearch;
   "inference/reactArtifact": typeof inference_reactArtifact;
   "inference/reasoningReplay": typeof inference_reasoningReplay;
@@ -266,6 +273,9 @@ declare const fullApi: ApiFromModules<{
   modelCatalog: typeof modelCatalog;
   modelFavorites: typeof modelFavorites;
   models: typeof models;
+  opportunities: typeof opportunities;
+  opportunityProfiles: typeof opportunityProfiles;
+  opportunityValidators: typeof opportunityValidators;
   performance: typeof performance;
   platinum: typeof platinum;
   posthog: typeof posthog;

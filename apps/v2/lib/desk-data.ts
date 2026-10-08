@@ -5,6 +5,8 @@ import { api } from "@whirl/backend/convex/_generated/api";
 import { useLeadAgent } from "@/lib/lead-agents";
 
 const EMPTY_DESK = {
+  actionApprovals: [],
+  opportunities: [],
   prospects: [],
   lists: [],
   approvals: [],

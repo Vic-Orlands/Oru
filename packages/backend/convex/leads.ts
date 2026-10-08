@@ -13,6 +13,13 @@ import {
   leadAgentValidator,
   type LeadAgentKind,
 } from "./leadAgents";
+import { OPPORTUNITY_PROFILES } from "./opportunityProfiles";
+import {
+  opportunityDetailsValidator,
+  opportunityFeedbackValidator,
+  opportunityScoreItemValidator,
+  opportunitySourceStatusValidator,
+} from "./opportunityValidators";
 
 const fit = v.union(v.literal("Strong"), v.literal("Possible"), v.literal("Weak"));
 const status = v.union(
@@ -62,6 +69,34 @@ const prospectValidator = v.object({
 });
 
 export const snapshotValidator = v.object({
+  actionApprovals: v.array(v.object({
+    id: v.id("actionApprovals"),
+    actionType: v.string(),
+    title: v.string(),
+    summary: v.string(),
+    target: v.string(),
+  })),
+  opportunities: v.array(v.object({
+    id: v.id("opportunities"),
+    title: v.string(),
+    organization: v.string(),
+    subtitle: v.optional(v.string()),
+    location: v.optional(v.string()),
+    sourceUrl: v.string(),
+    sourceStatus: opportunitySourceStatusValidator,
+    sourceProvider: v.string(),
+    sourceTool: v.string(),
+    sourceCapturedAt: v.number(),
+    evidence: v.array(v.string()),
+    details: opportunityDetailsValidator,
+    score: v.number(),
+    scoreLabel: fit,
+    scoreBreakdown: v.array(opportunityScoreItemValidator),
+    stage: v.string(),
+    feedback: v.optional(opportunityFeedbackValidator),
+    lastVerifiedAt: v.number(),
+    changeSummary: v.optional(v.string()),
+  })),
   prospects: v.array(prospectValidator),
   lists: v.array(
     v.object({
@@ -88,6 +123,11 @@ export const snapshotValidator = v.object({
       title: v.string(),
       when: v.string(),
       kind: v.string(),
+      status: v.optional(v.string()),
+      recurrence: v.optional(v.string()),
+      nextRunAt: v.optional(v.number()),
+      lastRunAt: v.optional(v.number()),
+      lastThreadId: v.optional(v.id("threads")),
     }),
   ),
   campaigns: v.array(
@@ -110,6 +150,8 @@ export const snapshotValidator = v.object({
 });
 
 const EMPTY = {
+  actionApprovals: [],
+  opportunities: [],
   prospects: [],
   lists: [],
   approvals: [],
@@ -134,6 +176,14 @@ export const snapshot = query({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return EMPTY;
     const userId = identity.subject;
+    const opportunities = await ctx.db
+      .query("opportunities")
+      .withIndex("by_user_agent", (q) => q.eq("userId", userId).eq("leadAgent", leadAgent))
+      .take(100);
+    const actionApprovals = await ctx.db
+      .query("actionApprovals")
+      .withIndex("by_user_agent", (q) => q.eq("userId", userId).eq("leadAgent", leadAgent))
+      .take(50);
     const prospects = await ctx.db
       .query("prospects")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -165,6 +215,34 @@ export const snapshot = query({
     const belongsToAgent = (row: { leadAgent?: LeadAgentKind }) =>
       (row.leadAgent ?? DEFAULT_LEAD_AGENT) === leadAgent;
     return {
+      actionApprovals: actionApprovals.filter((row) => row.status === "pending").map((row) => ({
+        id: row._id,
+        actionType: row.actionType,
+        title: row.title,
+        summary: row.summary,
+        target: row.target,
+      })),
+      opportunities: opportunities.map((row) => ({
+        id: row._id,
+        title: row.title,
+        organization: row.organization,
+        subtitle: row.subtitle,
+        location: row.location,
+        sourceUrl: row.sourceUrl,
+        sourceStatus: row.sourceStatus,
+        sourceProvider: row.sourceProvider,
+        sourceTool: row.sourceTool,
+        sourceCapturedAt: row.sourceCapturedAt,
+        evidence: row.evidence,
+        details: row.details,
+        score: row.score,
+        scoreLabel: row.scoreLabel,
+        scoreBreakdown: row.scoreBreakdown,
+        stage: row.stage,
+        feedback: row.feedback,
+        lastVerifiedAt: row.lastVerifiedAt,
+        changeSummary: row.changeSummary,
+      })),
       prospects: prospects.filter(belongsToAgent).map((row) => ({
         id: row._id,
         name: row.name,
@@ -215,6 +293,11 @@ export const snapshot = query({
           title: row.title,
           when: row.when,
           kind: row.kind,
+          status: row.status,
+          recurrence: row.recurrence,
+          nextRunAt: row.nextRunAt,
+          lastRunAt: row.lastRunAt,
+          lastThreadId: row.lastThreadId,
         })),
       campaigns: campaigns.filter(belongsToAgent).map((row) => ({
         name: row.name,
@@ -223,7 +306,13 @@ export const snapshot = query({
         meetings: row.meetings,
         status: row.status,
       })),
-      pipeline: pipeline
+      pipeline: opportunities.length > 0
+        ? OPPORTUNITY_PROFILES[leadAgent].stages.map((stage, index, stages) => {
+            const count = opportunities.filter((row) => row.stage === stage).length;
+            const prior = index === 0 ? opportunities.length : opportunities.filter((row) => row.stage === stages[index - 1]).length;
+            return { stage, count, rate: index === 0 ? "100%" : prior > 0 ? `${Math.round((count / prior) * 100)}%` : "—" };
+          })
+        : pipeline
         .filter(belongsToAgent)
         .slice()
         .sort((a, b) => a.order - b.order)
@@ -386,6 +475,7 @@ export const recordTask = internalMutation({
       v.literal("weekly"),
     ),
     runAt: v.number(),
+    timeZone: v.optional(v.string()),
   },
   returns: v.id("deskTasks"),
   handler: async (ctx, args) => {

@@ -2,6 +2,12 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { slotTables } from "./slots/tables";
 import { leadAgentValidator } from "./leadAgents";
+import {
+  opportunityDetailsValidator,
+  opportunityFeedbackValidator,
+  opportunityScoreItemValidator,
+  opportunitySourceStatusValidator,
+} from "./opportunityValidators";
 
 import {
   artifactBindingValidator,
@@ -30,6 +36,7 @@ export default defineSchema({
     // Lead agents are isolated desks, not folders. Old conversations predate
     // the split and belong to Sales.
     leadAgent: v.optional(leadAgentValidator),
+    scheduledTaskId: v.optional(v.id("deskTasks")),
     title: v.string(),
     titleStatus: v.optional(
       v.union(v.literal("generating"), v.literal("ready")),
@@ -1110,6 +1117,44 @@ export default defineSchema({
     ),
   }).index("by_user", ["userId"]),
 
+  // Agent-native opportunity records. Sales prospects remain readable in the
+  // legacy table while new workflows write this typed, source-grounded shape.
+  // A new table is additive, so production needs no risky backfill window.
+  opportunities: defineTable({
+    userId: v.string(),
+    leadAgent: leadAgentValidator,
+    title: v.string(),
+    organization: v.string(),
+    subtitle: v.optional(v.string()),
+    location: v.optional(v.string()),
+    sourceUrl: v.string(),
+    sourceStatus: opportunitySourceStatusValidator,
+    sourceProvider: v.string(),
+    sourceTool: v.string(),
+    sourceReceiptId: v.id("leadSourceReceipts"),
+    sourceReceiptHash: v.string(),
+    sourceCapturedAt: v.number(),
+    evidence: v.array(v.string()),
+    details: opportunityDetailsValidator,
+    score: v.number(),
+    scoreLabel: v.union(
+      v.literal("Strong"),
+      v.literal("Possible"),
+      v.literal("Weak"),
+    ),
+    scoreBreakdown: v.array(opportunityScoreItemValidator),
+    stage: v.string(),
+    dedupeKey: v.string(),
+    feedback: v.optional(opportunityFeedbackValidator),
+    discoveredAt: v.number(),
+    lastSeenAt: v.number(),
+    lastVerifiedAt: v.number(),
+    changedAt: v.optional(v.number()),
+    changeSummary: v.optional(v.string()),
+  })
+    .index("by_user_agent", ["userId", "leadAgent"])
+    .index("by_user_agent_dedupe", ["userId", "leadAgent", "dedupeKey"]),
+
   prospectLists: defineTable({
     userId: v.string(),
     leadAgent: v.optional(leadAgentValidator),
@@ -1141,6 +1186,19 @@ export default defineSchema({
     error: v.optional(v.string()),
   }).index("by_user", ["userId"]),
 
+  actionApprovals: defineTable({
+    userId: v.string(),
+    leadAgent: leadAgentValidator,
+    actionType: v.string(),
+    title: v.string(),
+    summary: v.string(),
+    target: v.string(),
+    payload: v.string(),
+    status: v.union(v.literal("pending"), v.literal("approved"), v.literal("declined")),
+    createdAt: v.number(),
+    resolvedAt: v.optional(v.number()),
+  }).index("by_user_agent", ["userId", "leadAgent"]),
+
   deskTasks: defineTable({
     userId: v.string(),
     leadAgent: v.optional(leadAgentValidator),
@@ -1154,6 +1212,8 @@ export default defineSchema({
     recurrence: v.optional(
       v.union(v.literal("none"), v.literal("daily"), v.literal("weekly")),
     ),
+    timeZone: v.optional(v.string()),
+    lastError: v.optional(v.string()),
     status: v.optional(
       v.union(
         v.literal("active"),

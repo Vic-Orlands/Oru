@@ -26,7 +26,7 @@ const CHANGE_EVENT = "whirl:composer-gates";
 
 export type ComposerGates = { search: boolean; thinking: ThinkingLevel };
 
-const DEFAULT_GATES: ComposerGates = { search: false, thinking: "low" };
+const DEFAULT_GATES: ComposerGates = { search: true, thinking: "low" };
 
 const THINKING_LEVELS: readonly ThinkingLevel[] = [
   "none",

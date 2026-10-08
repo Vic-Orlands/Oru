@@ -430,13 +430,13 @@ export async function runAssistantTurn(
   // the web instead of failing over a toggle this deployment can't honor.
   // The composer hides the toggle in that case (convex/features.ts), so
   // this only catches a stale tab.
-  const explicitlyRequestsLiveResearch =
-    /\b(exa|parallel|web search|search the web|live search|look online|find (?:me )?(?:open |current |recent )?(?:jobs?|roles?|companies|investors|candidates|partners))\b/i.test(
-      requestInfo.latestUserText,
-    );
+  // Native search is an agent capability, not a phrase-matching trick. When a
+  // deployment has either provider configured, every ordinary turn can use it;
+  // the model's search policy still decides whether freshness is actually
+  // needed. This also lets natural questions such as "what's that game I'm
+  // hearing about?" search without requiring magic words or a stale UI toggle.
   const searchEnabled =
-    (requestInfo.search || explicitlyRequestsLiveResearch) &&
-    (exaApiKey !== undefined || parallelApiKey !== undefined);
+    exaApiKey !== undefined || parallelApiKey !== undefined;
   // Billing is optional (see createBillingClient): without it every gate
   // below stays open and nothing is deducted.
   const autumn = createBillingClient();
@@ -2414,6 +2414,7 @@ export async function runAssistantTurn(
               leadAgent: requestInfo.leadAgent as LeadAgentKind,
               latestProviderReceipt: () => latestLeadReceipt,
               onCard: persistLead,
+              timeZone: ctxTimeZone,
             }),
             suggestIntegrations: createSuggestIntegrationsTool({
               search: (query) =>

@@ -8,6 +8,8 @@ export default defineConfig({
       "convex/inference/leadScoring.test.ts",
       "convex/leadAgents.test.ts",
       "convex/integrationProviderPolicy.test.ts",
+      "convex/opportunityProfiles.test.ts",
+      "convex/scheduledTasks.test.ts",
     ],
   },
 });

@@ -108,5 +108,8 @@ export function leadAgentInstruction(agent: LeadAgentKind): string {
     profile.boundary,
     "This is an isolated workspace: use only this agent's chats and records.",
     "If the user's primary goal clearly belongs to another agent, explain the mismatch in one sentence and recommend exactly one better agent by name before proceeding.",
+    "Use native Exa or Parallel search whenever current public information can improve the answer; do not claim web search is unavailable when those tools are present.",
+    `When research produces durable records, file them with ${agent === "sales" ? "fileSalesLeads" : agent === "job_hunt" ? "fileJobOpportunities" : agent === "recruiting" ? "fileCandidates" : agent === "partnerships" ? "filePartnerships" : "fileInvestors"}.`,
+    "Never send outreach, submit an application, contact a candidate, share a document, or mutate an external CRM without an explicit human approval for that action.",
   ].join(" ");
 }

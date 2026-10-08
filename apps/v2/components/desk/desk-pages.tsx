@@ -7,6 +7,10 @@ import { ApprovalActions } from "./approval-actions";
 import { DeskEmptyState } from "./desk-empty-state";
 import { AgentSwitcher } from "@/components/agent-switcher";
 import { ProspectEvidence } from "./prospect-evidence";
+import { OpportunityTable } from "./opportunity-table";
+import { TaskActions } from "./task-actions";
+import { ActionApprovalList } from "./action-approval-list";
+import { leadAgentById, useLeadAgent } from "@/lib/lead-agents";
 
 const COPY: Record<DeskPage, { title: string; lede: string }> = {
   prospects: {
@@ -39,7 +43,7 @@ export function DeskPages({ page }: { page: DeskPage }) {
   const copy = COPY[page];
   return (
     <div className="h-full min-h-0 overflow-y-auto px-5 py-6 md:px-8">
-      <header className="mb-5 flex max-w-3xl items-start justify-between gap-4">
+      <header className="mb-5 flex w-full items-start justify-between gap-4">
         <div>
           <h1 className="text-[20px] font-medium tracking-tight">{copy.title}</h1>
           <p className="mt-1 text-[13px]/5 text-muted-foreground">{copy.lede}</p>
@@ -63,17 +67,20 @@ function Panel({ children }: { children: React.ReactNode }) {
 }
 
 function Prospects() {
-  const { lists, prospects } = useDeskData();
-  if (prospects.length === 0) {
+  const { lists, prospects, opportunities } = useDeskData();
+  const agent = leadAgentById(useLeadAgent());
+  if (prospects.length === 0 && opportunities.length === 0) {
     return (
       <DeskEmptyState
-        title="No prospects yet"
-        description="Ask the chat to find people matching your ICP. Only sourced results from a connected provider will appear here."
+        title={`No ${agent.noun} yet`}
+        description={`Ask the chat to research and file source-backed ${agent.noun}. Live Exa or Parallel results will appear here.`}
       />
     );
   }
   return (
     <div className="flex flex-col gap-4">
+      <OpportunityTable />
+      {prospects.length > 0 && <>
       <div className="flex flex-wrap gap-2">
         {lists.map((list) => (
           <span key={list.id} className="rounded-full bg-accent px-2.5 py-1 text-[12px]">
@@ -132,13 +139,14 @@ function Prospects() {
           </tbody>
         </table>
       </Panel>
+      </>}
     </div>
   );
 }
 
 function Approvals() {
-  const { approvals } = useDeskData();
-  if (approvals.length === 0) {
+  const { approvals, actionApprovals } = useDeskData();
+  if (approvals.length === 0 && actionApprovals.length === 0) {
     return (
       <DeskEmptyState
         title="Nothing is waiting"
@@ -147,7 +155,9 @@ function Approvals() {
     );
   }
   return (
-    <div className="grid w-full gap-3 xl:grid-cols-2">
+    <div className="flex w-full flex-col gap-3">
+      <ActionApprovalList />
+      <div className="grid w-full gap-3 xl:grid-cols-2">
       {approvals.map((draft) => (
         <Panel key={draft.id}>
           <div className="px-4 py-3">
@@ -165,6 +175,7 @@ function Approvals() {
           </div>
         </Panel>
       ))}
+      </div>
     </div>
   );
 }
@@ -261,7 +272,9 @@ function Tasks() {
               {task.kind}
             </span>
             <span className="min-w-0 flex-1 truncate">{task.title}</span>
-            <span className="text-[12px] text-muted-foreground">{task.when}</span>
+            <span className="text-[12px] text-muted-foreground">{task.recurrence && task.recurrence !== "none" ? task.recurrence : task.when}</span>
+            <span className="text-[11px] capitalize text-muted-foreground">{task.status}</span>
+            <TaskActions taskId={task.id} status={task.status} />
           </li>
         ))}
       </ul>
