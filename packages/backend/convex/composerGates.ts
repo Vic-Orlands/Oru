@@ -6,7 +6,7 @@ import { mutation, query } from "./_generated/server";
 // follow the user across devices — same shape as modelFavorites: one row
 // per user, whole-row writes (two tiny fields, toggles are rare), and the
 // client keeps a localStorage mirror for instant paint and signed-out use
-// (see apps/v2/lib/composer-gates.ts).
+// (see apps/web/lib/composer-gates.ts).
 
 export const get = query({
   args: {},

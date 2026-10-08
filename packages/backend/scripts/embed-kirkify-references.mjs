@@ -10,7 +10,7 @@
 // ~900px. The model resizes what it's given, so a face filling the frame
 // keeps far more of its detail than the same face in a wider portrait; the
 // crops measurably improved the likeness over the full photos the page shows
-// (apps/v2/public/kirkify). Output: convex/kirkify/references.ts. Rerun after
+// (apps/web/public/kirkify). Output: convex/kirkify/references.ts. Rerun after
 // changing a crop.
 
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";

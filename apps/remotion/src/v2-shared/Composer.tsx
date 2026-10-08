@@ -1,7 +1,7 @@
 import { COMPOSER_WIDTH } from "./composer-metrics";
 import { AttachButton, ModelChip, SendButton } from "./ComposerControls";
 
-/* Ripped from apps/v2/components/composer.tsx — the collapsed, empty,
+/* Ripped from apps/web/components/composer.tsx — the collapsed, empty,
    non-floating pill (the home dock; `floating` is only true in a thread,
    where it swaps to a translucent fill and a backdrop blur).
    Dropped: the attachment tray, mention chips, the command menu, the

@@ -1,6 +1,6 @@
 import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 
-/* v2's entrance and exit (apps/v2/lib/motion.ts `rise`, and the AwayFace
+/* v2's entrance and exit (apps/web/lib/motion.ts `rise`, and the AwayFace
    exit in app-shell.tsx), re-expressed as functions of the current frame,
    so the shots move with the motion the product actually ships.
 

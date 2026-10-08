@@ -8,7 +8,7 @@ import {
 import { WhirlLogo } from "./WhirlLogo";
 
 /* The home face's dressing around the composer, ripped from
-   apps/v2/components/home-intro.tsx, suggestion-cards.tsx and
+   apps/web/components/home-intro.tsx, suggestion-cards.tsx and
    incognito-toggle.tsx — at rest, with the greeting's crossfades, the
    capsules' hover-expand and torph morphing all dropped. */
 

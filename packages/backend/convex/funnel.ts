@@ -5,7 +5,7 @@
 //   visitor_landed → signup_completed → first_chat_sent → free_limit_reached
 //     → paywall_viewed → plan_purchased
 //
-// Three of them are emitted by the browser (apps/v2/lib/funnel.ts) because they
+// Three of them are emitted by the browser (apps/web/lib/funnel.ts) because they
 // are things a person *sees*. The other three live here, because only the
 // server knows whether they actually happened: a chat that really reached the
 // database, a gate that really denied a turn, a plan Autumn really confirms.
@@ -36,7 +36,7 @@ import { captureServerEvent } from "./posthog";
 
 /**
  * Funnel event names. The browser half of this list lives in
- * `apps/v2/lib/posthog.ts` — keep the two in sync; PostHog stitches them
+ * `apps/web/lib/posthog.ts` — keep the two in sync; PostHog stitches them
  * together by distinct id (the Clerk subject, which is also what
  * `posthog.identify()` sends).
  */

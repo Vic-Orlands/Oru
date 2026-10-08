@@ -462,7 +462,7 @@ export default defineSchema({
   // Which models the user starred into the composer's compact picker — tier
   // keys and catalog slugs mixed, order irrelevant. One row per user so
   // favorites roam devices (the client keeps a localStorage mirror for
-  // instant paint and signed-out use; see apps/v2/lib/model-favorites.ts).
+  // instant paint and signed-out use; see apps/web/lib/model-favorites.ts).
   modelFavorites: defineTable({
     userId: v.string(),
     keys: v.array(v.string()),
@@ -471,7 +471,7 @@ export default defineSchema({
 
   // The composer's search + thinking gate choices. One row per user so the
   // toggles roam devices (the client keeps a localStorage mirror for
-  // instant paint and signed-out use; see apps/v2/lib/composer-gates.ts).
+  // instant paint and signed-out use; see apps/web/lib/composer-gates.ts).
   // `thinking` stays a plain string here — the mutation validates against
   // the current levels, the client clamps unknowns to its default.
   composerGates: defineTable({

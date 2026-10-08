@@ -6,7 +6,7 @@ A tour of how Whirl fits together, for anyone about to change it.
 
 ```
 ┌────────────────────┐   queries, mutations    ┌──────────────────────────┐
-│  apps/v2 (Next.js) │ ◀─────── websocket ───▶ │  packages/backend        │
+│  apps/web (Next.js) │ ◀─────── websocket ───▶ │  packages/backend        │
 │  React 19 client   │                         │  (Convex)                │
 └────────┬───────────┘                         │                          │
          │ sign-in                             │  schema + functions      │
@@ -18,7 +18,7 @@ A tour of how Whirl fits together, for anyone about to change it.
                           (memory) · Autumn (billing) · MCP servers (tools)
 ```
 
-- **`apps/v2`** is the web app. Pages are thin; nearly all state is live
+- **`apps/web`** is the web app. Pages are thin; nearly all state is live
   Convex queries, so every open tab updates the moment the backend does.
 - **`packages/backend`** holds the Convex schema (`convex/schema.ts`) and
   every query, mutation, action, HTTP route, and cron. The apps import its
@@ -95,7 +95,7 @@ that open in a side panel and stay editable.
 ## Optional services
 
 `convex/features.ts` reports which optional services the deployment has keys
-for, and the web app hides what it can't use (`apps/v2/lib/deployment-features.ts`).
+for, and the web app hides what it can't use (`apps/web/lib/deployment-features.ts`).
 On the backend, each integration degrades on its own terms:
 
 | Missing          | Behaviour                                                          |
@@ -128,6 +128,6 @@ Defined in `convex/crons.ts`:
   is showing.
 - **Long-lived tabs.** Tabs stay open for hours, so every listener, timer,
   and module-level cache has a teardown or eviction path. Leaks are bugs.
-- **Motion** lives in `apps/v2/lib/motion.ts`: one shared entrance, blur
+- **Motion** lives in `apps/web/lib/motion.ts`: one shared entrance, blur
   that's always handed back as `filter: none`, and a raster pin that stops
   the one-pixel snap at the end of transforms.

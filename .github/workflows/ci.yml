@@ -35,7 +35,7 @@ jobs:
 
       # next-env.d.ts and the route types are generated, not committed.
       - name: Typecheck web app
-        working-directory: apps/v2
+        working-directory: apps/web
         run: |
           bunx next typegen
           bunx tsc --noEmit

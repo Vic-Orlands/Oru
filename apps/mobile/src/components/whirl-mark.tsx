@@ -2,7 +2,7 @@ import { Svg, Path } from "react-native-svg";
 
 /**
  * The Whirl mark: twelve petals swirling around a center. Path data is lifted
- * verbatim from apps/v2/public/whirl-ring-outer.svg, so the mark stays
+ * verbatim from apps/web/public/whirl-ring-outer.svg, so the mark stays
  * pixel-identical to the web app — regenerate from that file rather than
  * hand-editing these numbers.
  */

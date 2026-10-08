@@ -10,7 +10,7 @@ import type { HomeSuggestion } from "./types";
  *
  * This is the only pool that matters: every standby a user actually sees comes
  * from here. The client keeps a handful of its own for the case where it can't
- * reach this action at all (apps/v2/lib/suggestions.ts). */
+ * reach this action at all (apps/web/lib/suggestions.ts). */
 export const FALLBACK_SUGGESTIONS: HomeSuggestion[] = [
   { prompt: "Help me pick one useful thing to finish today", icon: "calendar" },
   { prompt: "Turn a half-formed idea into a tiny, practical plan", icon: "bulb" },

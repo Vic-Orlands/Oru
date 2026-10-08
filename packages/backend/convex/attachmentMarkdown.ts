@@ -46,7 +46,7 @@ export type DocumentMarkdown =
    *  model is told the text couldn't be had. */
   | { kind: "skipped"; reason: string };
 
-/* Matches MAX_FILE_BYTES in apps/v2/lib/attachments.ts. The composer stops
+/* Matches MAX_FILE_BYTES in apps/web/lib/attachments.ts. The composer stops
    anything larger long before here; this is the backstop. */
 const MAX_DOCUMENT_BYTES = 20 * 1024 * 1024;
 

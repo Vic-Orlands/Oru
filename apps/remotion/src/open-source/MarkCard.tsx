@@ -10,7 +10,7 @@ import {
 import { WhirlAnimatedMark } from "../v2-shared/WhirlAnimatedMark";
 
 /* The sign-off: the mark comes up out of black and flutters once — the
-   petal flip from apps/v2/public/whirl-animate.svg, driven by frame — then
+   petal flip from apps/web/public/whirl-animate.svg, driven by frame — then
    holds to the end. */
 
 const MARK_SIZE = 340;

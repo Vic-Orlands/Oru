@@ -89,7 +89,7 @@ You'll need both of them in the next step:
 ## 4. Configure the web app
 
 ```sh
-cd apps/v2
+cd apps/web
 cp .env.example .env.local
 ```
 
@@ -118,7 +118,7 @@ That starts three things side by side:
 | Console | [localhost:3001](http://localhost:3001)        |
 | Convex  | watches `packages/backend/convex` and pushes   |
 
-Prefer separate terminals? Use `bun run dev:v2`, `bun run dev:console`, and
+Prefer separate terminals? Use `bun run dev:web`, `bun run dev:console`, and
 `bun run dev:backend`.
 
 Sign in, send a message, and you're up. 🎉
@@ -192,8 +192,8 @@ picks it up automatically, and skips the deploy in any copy without one.
 
 Any host that runs Next.js works. On [Vercel](https://vercel.com):
 
-1. Import the repository and set the **root directory** to `apps/v2`.
-2. Add the environment variables from `apps/v2/.env.example`, using your
+1. Import the repository and set the **root directory** to `apps/web`.
+2. Add the environment variables from `apps/web/.env.example`, using your
    production Convex and Clerk values.
 3. Deploy.
 
@@ -203,7 +203,7 @@ build and start from the repository root:
 ```sh
 bun install
 bun run build
-bun run --cwd apps/v2 start
+bun run --cwd apps/web start
 ```
 
 ### Console (optional)
@@ -215,7 +215,7 @@ set to `apps/console`. Set `VITE_APP_URL` to the web app's address.
 ## Make it yours
 
 Whirl's name, links, and legal pages live in one file:
-[`apps/v2/lib/site.ts`](../apps/v2/lib/site.ts). Point the links at your own
+[`apps/web/lib/site.ts`](../apps/web/lib/site.ts). Point the links at your own
 status page, community, and policies, or set the optional ones to `null` to
 hide them. On the backend, `APP_NAME` in
 [`packages/backend/convex/site.ts`](../packages/backend/convex/site.ts) is
@@ -244,4 +244,4 @@ straight from Convex's HTTP endpoint.
 Set `MCP_ENCRYPTION_KEY` on Convex (step 3).
 
 **The dev server rejects requests from another device.**
-Add that host to `DEV_ALLOWED_ORIGINS` in `apps/v2/.env.local`.
+Add that host to `DEV_ALLOWED_ORIGINS` in `apps/web/.env.local`.

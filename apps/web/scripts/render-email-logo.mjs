@@ -6,7 +6,7 @@
  * so it stays crisp on retina without shipping a large file.
  *
  * One-shot: run it again only if public/whirl.svg changes.
- *   node apps/v2/scripts/render-email-logo.mjs
+ *   node apps/web/scripts/render-email-logo.mjs
  *
  * node, not bun: Playwright drives the browser over a pipe transport that
  * bun's child_process doesn't wire up on Windows, so the launch sits there

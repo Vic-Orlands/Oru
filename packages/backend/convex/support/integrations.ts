@@ -19,7 +19,7 @@ type IntegrationState =
   | "not_connected"
   | "paused";
 
-/* Mirrors integrationStatus in apps/v2/components/settings/integrations/
+/* Mirrors integrationStatus in apps/web/components/settings/integrations/
    installed-row.tsx, check for check, so the agent never contradicts the
    status line the customer is looking at. */
 function stateOf(server: Doc<"mcpServers">): {

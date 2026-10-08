@@ -1,6 +1,6 @@
 import { IconChevronRight, IconFolderFilled, IconPinFilled } from "@tabler/icons-react";
 
-/* Ripped from apps/v2/components/thread-list.tsx, thread-row.tsx and
+/* Ripped from apps/web/components/thread-list.tsx, thread-row.tsx and
    folder-section.tsx, at rest: collapsed folders on top, then date-labelled
    sections of rows. Hover pills, the ⋯ menus, drag handles and the skeleton
    reveal are all interactive-only, so what stays is the resting geometry —

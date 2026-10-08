@@ -1,7 +1,7 @@
 // /kirkify's server side: the daily budget, and the one edit it pays for.
 //
 // The page can't be trusted with any of this. Its route handler on Vercel
-// (apps/v2/app/api/kirkify/route.ts) is the only caller: it sees the
+// (apps/web/app/api/kirkify/route.ts) is the only caller: it sees the
 // visitor's IP, owns the device cookie, has the Clerk session, and has run
 // BotID. It proves itself with KIRKIFY_SECRET, the same shape as the support
 // agent's lookups in convex/support.ts. Configure the secret on both ends:
@@ -181,7 +181,7 @@ const DECLINED_MESSAGE =
 const CONFIG_MESSAGE = "Kirkify isn't set up on this deployment yet.";
 
 // How late into a request a second attempt may still start. The route on
-// Vercel gives up at 300s (apps/v2/app/api/kirkify/route.ts); a swap runs
+// Vercel gives up at 300s (apps/web/app/api/kirkify/route.ts); a swap runs
 // about a minute, so anything past this would finish for nobody.
 const RETRY_BUDGET_MS = 150_000;
 

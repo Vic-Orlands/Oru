@@ -5,7 +5,7 @@ const appUrl =
   (import.meta.env.VITE_APP_URL as string | undefined)?.replace(/\/+$/, "") ??
   "http://localhost:3000";
 
-/** Shares the Better Auth session and Convex token flow used by apps/v2. */
+/** Shares the Better Auth session and Convex token flow used by apps/web. */
 export const authClient = createAuthClient({
   baseURL: appUrl,
   plugins: [convexClient()],

@@ -13,7 +13,7 @@ import {
 import { UserButton, type SidebarUser } from "./UserButton";
 import { WhirlLogo } from "./WhirlLogo";
 
-/* Ripped from apps/v2/components/sidebar.tsx — the expanded desktop rail,
+/* Ripped from apps/web/components/sidebar.tsx — the expanded desktop rail,
    dark mode, at rest. Structure and spacing are v2's to the pixel: an even
    8px beat between blocks, with New and the nav rows pulled onto one shared
    32px pitch by the nav's -mt-1.5.

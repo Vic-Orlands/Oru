@@ -11,7 +11,7 @@
  * matches the black pill the app's primary action already wears.
  *
  * One-shot: run it again only if public/whirl.svg changes.
- *   node apps/v2/scripts/render-app-icons.mjs
+ *   node apps/web/scripts/render-app-icons.mjs
  *
  * node, not bun: Playwright drives the browser over a pipe transport that
  * bun's child_process doesn't wire up on Windows, so the launch sits there

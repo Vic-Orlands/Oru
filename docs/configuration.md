@@ -5,7 +5,7 @@ Whirl reads its configuration from environment variables in two places:
 - **The Convex deployment**, for everything the backend does. Set these with
   `bunx convex env set NAME value` from `packages/backend` (add `--prod` for
   production), or in the Convex dashboard. They never go in a file.
-- **The web app** (`apps/v2/.env.local` locally, your host's settings in
+- **The web app** (`apps/web/.env.local` locally, your host's settings in
   production).
 
 A few secrets have to match on both sides; they're marked _shared_ below.

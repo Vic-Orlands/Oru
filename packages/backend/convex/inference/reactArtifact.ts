@@ -38,7 +38,7 @@ export type ReactPhasePayload = {
  * it only costs context in the moment the model is actually writing a module.
  * Deliberately mechanical — what compiles and what renders, not what it should
  * look like. Keep in sync with the frame runtime's `require` shim
- * (apps/v2/artifact-runtime/index.tsx).
+ * (apps/web/artifact-runtime/index.tsx).
  */
 export const REACT_RUNTIME_REFERENCE = `Module rules:
 - Write ONE complete ES module ending in \`export default function App() { ... }\`. No markdown fence, no <html>, no ReactDOM.render call — the host mounts App itself.

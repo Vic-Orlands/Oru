@@ -1,4 +1,4 @@
-- apps/v2 is the app in prod. Ignore legacy.
+- apps/web is the app in prod. Ignore legacy.
 - Never run the dev server
 - Always commit your changes after a task
 - Always use Tabler icons (`@tabler/icons-react`), preferring filled variants where it reads well

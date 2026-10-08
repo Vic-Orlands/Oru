@@ -78,7 +78,7 @@ async function verifySignature(
 
 // The support agent's tool route, re-read after every production deploy.
 //
-// Median holds its own copy of what apps/v2/median.config.ts declares, and a
+// Median holds its own copy of what apps/web/median.config.ts declares, and a
 // GET on that route carrying `Authorization: Bearer $MEDIAN_KEY` is what
 // refreshes it (a bare GET is a 401 since agent-tools 0.3). Without this, a
 // tool renamed or retired in a release keeps being offered to customers until

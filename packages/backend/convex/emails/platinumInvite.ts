@@ -5,7 +5,7 @@
  * tokens, so nothing here can lean on the app's CSS.
  *
  * The logo is a PNG, not the SVG the app uses: Gmail and Outlook both refuse
- * to render SVG in a message body. See apps/v2/scripts/render-email-logo.mjs.
+ * to render SVG in a message body. See apps/web/scripts/render-email-logo.mjs.
  */
 
 export function platinumInviteSubject(planName: string): string {

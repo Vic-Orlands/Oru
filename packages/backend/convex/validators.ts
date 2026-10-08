@@ -582,7 +582,7 @@ export const usageChargeStatusValidator = v.union(
 // A locked thread's key material, exactly as the browser handed it over. The
 // server stores this and understands none of it: it never sees the password,
 // the recovery key, or the content key those two open. See
-// apps/v2/lib/locked/crypto.ts for the format and why each piece is here.
+// apps/web/lib/locked/crypto.ts for the format and why each piece is here.
 export const threadLockValidator = v.object({
   version: v.number(),
   // base64url, per thread. Salts the password stretch AND the recovery-key

@@ -1,3 +1,4 @@
+import { InlineScript } from "@/components/inline-script";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ThreadListSnapshot } from "@/lib/thread-cache";
 
@@ -5,15 +6,13 @@ const MAX_BOOT_ROWS = 24;
 
 /* Pre-hydration twin of the cached thread rows. Server HTML can't read
    localStorage, so until React hydrates the sidebar would sit empty (or
-   behind bones) — this script (same trick as the theme/sidebar boot
-   scripts in the layout) draws the snapshot's REAL rows during HTML
-   parsing: actual titles, actual group labels, actual folder names, in
-   the same classes the live rows wear. Once React resolves the snapshot
-   (pre-paint), identical real rows replace these wholesale.
+   behind bones) — this script draws the snapshot's real rows during HTML
+   parsing. On client navigation InlineScript makes it inert, because scripts
+   inserted by React cannot execute and should not pretend otherwise.
 
-   Cached text goes through textContent only — never innerHTML — so
-   nothing user-controlled is parsed as markup. The two inline SVGs are
-   static icon strings (tabler chevron-right + folder-filled). */
+   Cached text goes through textContent only — never innerHTML — so nothing
+   user-controlled is parsed as markup. The two inline SVGs are static Tabler
+   icon strings. */
 const BOOT_SCRIPT = `(function(){try{
 var el=document.currentScript&&document.currentScript.parentElement;if(!el)return;
 var snap=null;
@@ -64,31 +63,22 @@ r.appendChild(bone('h-3.5',(72-i*9)+'%',String(1-i*0.15)));el.appendChild(r)}
 }
 }catch(e){}})();`;
 
-/* Static bones — the t-skel layer pulses everything as one, so the
-   Skeleton primitive's own animate-pulse is switched off (same trick as
-   the user button's skeleton). */
 export function ThreadListSkeleton({
   snapshot,
 }: {
   snapshot: ThreadListSnapshot | null;
 }) {
   if (!snapshot) {
-    /* SSR + the instant before React resolves the cache — the boot script
-       paints the cached rows (or generic bones when nothing is cached).
-       Once the snapshot resolves, real React rows replace this node. */
     return (
       <div
         className="flex h-full flex-col gap-2 overflow-hidden px-3"
         suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: `<script>${BOOT_SCRIPT}</script>`,
-        }}
-      />
+      >
+        <InlineScript html={BOOT_SCRIPT} />
+      </div>
     );
   }
 
-  /* Resolved but nothing cached (a genuinely first visit): a plausible
-     generic silhouette that pulses until live data lands. */
   return (
     <div className="flex h-full flex-col gap-1 overflow-hidden px-3 pt-1">
       <Skeleton className="mb-1 ml-2.5 h-3 w-14 animate-none" />

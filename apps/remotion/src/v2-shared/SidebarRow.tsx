@@ -1,6 +1,6 @@
 import type { Icon } from "@tabler/icons-react";
 
-/* Ripped from apps/v2/components/sidebar-row.tsx (with row-pill.tsx folded
+/* Ripped from apps/web/components/sidebar-row.tsx (with row-pill.tsx folded
    in as the resting layer). Flat nav row: icon and label share the soft
    chrome ink. The interactive states — hover pill, press, the ::before hit
    area, the collapsed-rail variant — carry no pixels in a video, so what

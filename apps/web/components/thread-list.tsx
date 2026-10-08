@@ -42,9 +42,9 @@ import { ThreadRow } from "./thread-row";
    navigable immediately — and the live query replaces it silently in the
    background; threads that arrived since grow in through AnimatedItem.
    The skeleton only ever shows on a truly-first visit with nothing
-   cached (plus the pre-hydration boot-script silhouette). */
+   cached (plus the pre-hydration silhouette). */
 
-/* Hits ThreadListSkeleton's generic-bones branch on cache-less loads. */
+/* Marks a resolved cache miss while the live listing is still loading. */
 const EMPTY_SNAPSHOT: ThreadListSnapshot = { threads: [], folders: [] };
 
 /* How many loose threads are in the DOM at a time. A long history used to
@@ -273,9 +273,7 @@ export function ThreadList({ onNavigate }: { onNavigate?: () => void }) {
                               <AnimatedItem
                                 key={thread.id}
                                 enter={
-                                  freshIds
-                                    ? freshIds.has(thread.id)
-                                    : !paged
+                                  freshIds ? freshIds.has(thread.id) : !paged
                                 }
                               >
                                 <ThreadRow

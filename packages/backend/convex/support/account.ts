@@ -93,7 +93,7 @@ function activePlan(customer: SupportCustomer): PlanProduct | undefined {
   );
 }
 
-/* Mirrors readUsageSummary in apps/v2/lib/plan.ts. The agent and the usage
+/* Mirrors readUsageSummary in apps/web/lib/plan.ts. The agent and the usage
    meter in the app must never disagree about how much is left. */
 function summarize(customer: SupportCustomer): AccountSnapshot {
   const plan = activePlan(customer);

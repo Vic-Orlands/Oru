@@ -6,7 +6,7 @@ import { signInWithGoogle } from "~/lib/auth/session";
 import { userErrorMessage } from "~/lib/errors";
 
 /**
- * Signed-out landing. Better Auth and Convex share the same session as apps/v2,
+ * Signed-out landing. Better Auth and Convex share the same session as apps/web,
  * so an existing Oso-Ahia account signs straight in.
  */
 export function SignInPage() {

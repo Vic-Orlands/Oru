@@ -1,6 +1,6 @@
 // The one lock on every support function.
 //
-// Median's tool route (apps/v2/median.config.ts) runs on Vercel with no Clerk
+// Median's tool route (apps/web/median.config.ts) runs on Vercel with no Clerk
 // session, only the Clerk id the widget's signature proved. So it calls in
 // here with a shared secret instead, and trusts the id it was handed because
 // Median already checked it. Every function in this folder is public, which

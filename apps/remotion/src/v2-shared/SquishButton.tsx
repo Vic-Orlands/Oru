@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "./utils";
 
-/* Ripped from apps/v2/components/squish-button.tsx. Liquid-glass pill: a
+/* Ripped from apps/web/components/squish-button.tsx. Liquid-glass pill: a
    translucent gradient glaze, brighter at the top, layered over the
    background-color — translucent at every stop on purpose, so it may only
    LIGHTEN the base, never replace it. The press dip and hover colour are

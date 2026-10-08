@@ -1,7 +1,7 @@
 import { IconChevronUp } from "@tabler/icons-react";
 import { Img } from "remotion";
 
-/* The rail's bottom chrome, ripped from apps/v2/components/user-button.tsx
+/* The rail's bottom chrome, ripped from apps/web/components/user-button.tsx
    in its signed-in state: avatar, name, plan, and the chevron that opens
    the account menu. h-13 is the slot the skeleton reserves for it.
 

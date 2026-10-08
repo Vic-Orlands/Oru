@@ -6,11 +6,11 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently -n v2,console,convex -c cyan,magenta,yellow \"bun run dev:v2\" \"bun run dev:console\" \"bun run dev:backend\"",
-    "dev:v2": "bun run --cwd apps/v2 dev",
+    "dev": "concurrently -n web,console,convex -c cyan,magenta,yellow \"bun run dev:web\" \"bun run dev:console\" \"bun run dev:backend\"",
+    "dev:web": "bun run --cwd apps/web dev",
     "dev:backend": "bun run --cwd packages/backend dev",
     "dev:console": "bun run --cwd apps/console dev",
-    "build": "bun run --cwd apps/v2 build",
+    "build": "bun run --cwd apps/web build",
     "build:console": "bun run --cwd apps/console build",
     "dev:mobile": "bun run --cwd apps/mobile start"
   },

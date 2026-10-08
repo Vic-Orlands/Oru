@@ -10,14 +10,14 @@ Requires [Bun](https://bun.sh).
 
 ```bash
 bun install
-cp apps/v2/.env.example apps/v2/.env.local
+cp apps/web/.env.example apps/web/.env.local
 cp packages/backend/.env.example packages/backend/.env.local
 ```
 
 Fill in the real Convex, Better Auth, Google OAuth, OpenRouter, and Composio values before starting the app.
 
 ```bash
-bun run --cwd apps/v2 dev
+bun run --cwd apps/web dev
 ```
 
 Open http://localhost:3000 for the marketing site and http://localhost:3000/app for the desk.
@@ -34,13 +34,13 @@ cd packages/backend
 bunx convex dev
 ```
 
-Set the deployment URL and site URL (`*.convex.site`) in `apps/v2/.env.local`, then sign in with Google. New workspaces begin empty and populate only from real user actions and connected providers.
+Set the deployment URL and site URL (`*.convex.site`) in `apps/web/.env.local`, then sign in with Google. New workspaces begin empty and populate only from real user actions and connected providers.
 
 ## Environment
 
 | | |
 | --- | --- |
-| `apps/v2/.env.example` | Next.js: Convex URLs, site URL, Google client |
+| `apps/web/.env.example` | Next.js: Convex URLs, site URL, Google client |
 | `packages/backend/.env.example` | Convex: better-auth secret, Google, OpenRouter, Kimi + Jev model ids, Composio, MCP |
 
 Chat defaults to `moonshotai/kimi-k2.6` (`OPENROUTER_CHAT_MODEL`). Yes/no checks (fit, intent, duplicates, approval) call OpenRouter's Decisions API with `typesafe/jev-1.13` (`OPENROUTER_JUDGE_MODEL`) and fall back to `OPENROUTER_JUDGE_FALLBACK_MODEL`.
@@ -57,10 +57,10 @@ Chat defaults to `moonshotai/kimi-k2.6` (`OPENROUTER_CHAT_MODEL`). Yes/no checks
 
 ```bash
 bun run --cwd packages/backend typecheck
-bun run --cwd apps/v2 lint
-bun run --cwd apps/v2 build
+bun run --cwd apps/web lint
+bun run --cwd apps/web build
 ```
 
 ## Required services
 
-Google OAuth, `BETTER_AUTH_SECRET`, Convex, OpenRouter, and Composio must be configured. Legacy, mobile, and console apps from the Whirl tree are not the product and still mention Clerk; `apps/v2` does not.
+Google OAuth, `BETTER_AUTH_SECRET`, Convex, OpenRouter, and Composio must be configured. Legacy, mobile, and console apps from the Whirl tree are not the product and still mention Clerk; `apps/web` does not.

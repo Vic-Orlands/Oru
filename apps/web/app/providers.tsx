@@ -65,7 +65,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
     if (!convexUrl) {
       throw new Error(
-        "NEXT_PUBLIC_CONVEX_URL is required. Add the real Convex deployment URL to apps/v2/.env.local.",
+        "NEXT_PUBLIC_CONVEX_URL is required. Add the real Convex deployment URL to apps/web/.env.local.",
       );
     }
     return new ConvexReactClient(convexUrl, { unsavedChangesWarning: false });

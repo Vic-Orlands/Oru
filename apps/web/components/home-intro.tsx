@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useState } from "react";
 import { useUser } from "@/lib/auth/session";
 import { IconGhost2Filled } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -11,6 +11,7 @@ import { useHomeSuggestions } from "@/lib/home-suggestions";
 import { pickIncognitoTagline, useIncognitoState } from "@/lib/incognito";
 import { EASE_OUT, pinRasterPath, rise, SHED_BLUR } from "@/lib/motion";
 import { useCachedName } from "@/lib/name-cache";
+import { InlineScript } from "./inline-script";
 import { SuggestionCards } from "./suggestion-cards";
 import { WhirlLogo } from "./whirl-logo";
 
@@ -21,23 +22,7 @@ declare global {
   }
 }
 
-/* ---- Pre-hydration boot ---------------------------------------------- */
-
-/* The localStorage caches paint at hydration — but before React boots,
-   the page is the server's cache-blind HTML. This inline script (same
-   trick as the sidebar's thread-list boot) runs during HTML parsing and
-   paints the greeting from localStorage, then stashes its random pick on
-   `window` so React adopts it instead of re-rolling — the hydration swap
-   lands on identical pixels. The capsules below hold an empty silhouette
-   for that frame instead: their markup is interactive enough that a boot
-   copy would be a second design to keep in step, and an empty well is
-   already the shape they settle into.
-
-   Cached/user text goes through textContent only; the only innerHTML is
-   the static rest-pose Oso-Ahia mark below. */
-
-/* One masked ring of the logo's rest pose (mirrors WhirlRings' markup,
-   minus the interactivity). Static string — no user data. */
+/* One masked ring of the logo's rest pose. Static string — no user data. */
 function bootRing(url: string) {
   const mask =
     `-webkit-mask-image:url(${url});mask-image:url(${url});` +
@@ -57,19 +42,16 @@ const BOOT_LOGO =
   bootRing("/whirl-ring-inner.svg") +
   "</span>";
 
-/* The greeting's type, shared by the React header and by the boot script
-   that paints it during HTML parsing — the hydration swap between the two
-   has to land on identical pixels, so neither may carry a size the other
-   doesn't know about.
-
-   It steps down below md because the longest lines in lib/greetings.ts
+/* The greeting steps down below md because the longest lines in lib/greetings.ts
    ("Long time no see, {name}") plus a real first name do not fit across a
    phone at 28px; they truncated, which turns a warm welcome into "Long time
    no se…". The 40px slot above holds either size without moving. */
 const GREETING_CLASS =
   "min-w-0 truncate text-[22px]/8 font-medium tracking-tight md:text-[28px]/9";
 
-const GREETING_BOOT = `<script>(function(){try{
+/* InlineScript executes this only from server HTML. On client navigation it
+   renders as text/plain, avoiding React's executable-script warning. */
+const GREETING_BOOT = `(function(){try{
 var s=document.currentScript,el=s&&s.parentElement;if(!el)return;
 var name=null;try{name=localStorage.getItem("greeting-name")}catch(e){}
 if(!name)return;
@@ -85,7 +67,7 @@ var h=document.createElement("h1");
 h.className=${JSON.stringify(GREETING_CLASS)};
 h.textContent=line.split("{name}").join(name);
 row.appendChild(logo);row.appendChild(h);el.appendChild(row);
-}catch(e){}})();</script>`;
+}catch(e){}})();`;
 
 /* The home face's dressing around the composer: logo + a witty greeting
    above, a couple of random conversation starters below. Split out of the
@@ -103,15 +85,14 @@ export function HomeGreeting() {
   /* Randomized in the initializer (not an effect) so the first paint that
      shows it is already the real line; the server branch keeps SSR
      deterministic (nothing renders it before hydration anyway). */
-  /* The server always paints the first line. A client-only roll here
-     mismatches hydration the moment the name is already known from a warm
-     session. The boot script's pick is adopted after hydration,
-     and only when that script actually painted the empty slot. */
-  const [greeting, setGreeting] = useState(DEFAULT_GREETING);
-  useLayoutEffect(() => {
-    if (window.__whirlGreeting) setGreeting(window.__whirlGreeting);
+  /* The server always paints the first line. The boot pick is adopted during
+     hydration so the pre-paint DOM and React settle on the same greeting. */
+  const [greeting] = useState(() => {
+    if (typeof window === "undefined") return DEFAULT_GREETING;
+    const bootGreeting = window.__whirlGreeting ?? DEFAULT_GREETING;
     delete window.__whirlGreeting;
-  }, []);
+    return bootGreeting;
+  });
 
   const liveName = isLoaded
     ? user?.firstName ||
@@ -123,13 +104,10 @@ export function HomeGreeting() {
   const { name, warm } = useCachedName(liveName);
 
   /* Incognito: you're nobody in particular here, so the personalized line
-     steps aside for a tagline — re-rolled on every entry, and the swap
-     rides the same blur-crossfade a name change does. */
+     steps aside for a visit-stable tagline. The swap rides the same
+     blur-crossfade a name change does. */
   const { enabled: incognito } = useIncognitoState();
-  const [tagline, setTagline] = useState(pickIncognitoTagline);
-  useEffect(() => {
-    if (incognito) setTagline(pickIncognitoTagline());
-  }, [incognito]);
+  const [tagline] = useState(pickIncognitoTagline);
 
   const heading = incognito
     ? tagline
@@ -145,14 +123,9 @@ export function HomeGreeting() {
   return (
     <div className="mb-7 h-10">
       {heading === null && (
-        /* SSR + pre-resolve: the boot script paints the cached greeting
-           during HTML parsing (nothing when no name is cached). React
-           swaps in the identical real header below once the name lands. */
-        <div
-          className="h-full"
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: GREETING_BOOT }}
-        />
+        <div className="h-full" suppressHydrationWarning>
+          <InlineScript html={GREETING_BOOT} />
+        </div>
       )}
       {heading !== null && (
         <motion.div

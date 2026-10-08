@@ -8,7 +8,7 @@ import {
 } from "./whirl-petals";
 
 /* The Whirl mark's flip, ripped from the keyframes inside
-   apps/v2/public/whirl-animate.svg and re-expressed as a function of the
+   apps/web/public/whirl-animate.svg and re-expressed as a function of the
    current frame. Each petal squashes flat, reopens mirrored on the other
    side and flips back, growing a touch and drifting outward mid-flip,
    with a 0.04s cascade running round the mark.

@@ -1,7 +1,7 @@
 import { staticFile } from "remotion";
 import type { CSSProperties } from "react";
 
-/* Ripped from apps/v2/components/whirl-logo.tsx + whirl-rings.tsx, at rest.
+/* Ripped from apps/web/components/whirl-logo.tsx + whirl-rings.tsx, at rest.
    The mark is a mask over a solid fill (never an <img>) so it inherits the
    chrome ink — `bg-foreground-soft`, exactly like the sidebar labels.
 

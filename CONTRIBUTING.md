@@ -22,7 +22,7 @@ running. The short version:
 ```sh
 bun install
 cd packages/backend && bunx convex dev          # first run creates a dev deployment
-cp apps/v2/.env.example apps/v2/.env.local      # fill in Convex + Clerk
+cp apps/web/.env.example apps/web/.env.local      # fill in Convex + Clerk
 bun run dev                                     # from the repo root
 ```
 
@@ -38,7 +38,7 @@ yarn, or pnpm. They don't understand the `workspace:*` links and will leave
 
 | Path               | What it is                                                  |
 | ------------------ | ----------------------------------------------------------- |
-| `apps/v2`          | The web app (Next.js). This is the one that ships.          |
+| `apps/web`          | The web app (Next.js). This is the one that ships.          |
 | `packages/backend` | The Convex backend: schema, queries, mutations, AI pipeline |
 | `apps/console`     | Admin console for models, integrations, and skills (Vite)   |
 | `apps/mobile`      | Native app (Expo)                                           |
@@ -55,7 +55,7 @@ Run the type checker from inside the package you touched (running `tsc` from
 the repo root picks up the wrong binary):
 
 ```sh
-cd apps/v2 && bunx tsc --noEmit
+cd apps/web && bunx tsc --noEmit
 cd packages/backend && bunx tsc -p convex --noEmit
 ```
 

@@ -7,7 +7,7 @@ import {
 } from "./HomeIntro";
 import { useRise } from "./motion";
 
-/* The surface panel on home, ripped from apps/v2/components/app-shell.tsx
+/* The surface panel on home, ripped from apps/web/components/app-shell.tsx
    and chat-view.tsx: the dock centred in the pane with the greeting above
    it and the starter capsules below, and the incognito pill floating in
    the top-right corner.

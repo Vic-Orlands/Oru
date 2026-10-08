@@ -14,7 +14,7 @@
     "@tabler/icons-react": "^3.44.0",
     "@whirl/backend": "workspace:*",
     "better-auth": "1.6.15",
-    "convex": "^1.42.1",
+    "convex": "^1.46.0",
     "motion": "^12.42.2",
     "posthog-js": "^1.399.2",
     "react": "^19.2.7",

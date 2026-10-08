@@ -1,4 +1,4 @@
-/* v2's design tokens, lifted from apps/v2/app/globals.css so the ripped
+/* v2's design tokens, lifted from apps/web/app/globals.css so the ripped
    sidebar components can keep their real class names (bg-background,
    text-foreground-soft, rounded-lg …) instead of being re-skinned by hand.
 

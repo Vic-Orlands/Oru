@@ -5,7 +5,7 @@ import {
   integrationCompletedLabel,
   integrationPhaseAction,
   phaseAction,
-} from "../../../apps/v2/lib/phase-activity";
+} from "../../../apps/web/lib/phase-activity";
 
 test("uses snapshotted integration lifecycle descriptions", () => {
   const sheets = {

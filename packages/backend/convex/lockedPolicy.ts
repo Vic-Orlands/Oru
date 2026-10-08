@@ -1,7 +1,7 @@
 /* What a locked chat will and won't run, in one place.
  *
  * Imported by the turn handler (convex/lockedInference.ts) AND by the
- * composer in apps/v2, which is the point: the picker must offer exactly
+ * composer in apps/web, which is the point: the picker must offer exactly
  * the models the handler will accept, and refuse to send anything else. A
  * rule applied twice is a rule that eventually disagrees with itself, and
  * the failure mode here is a user picking a model, typing a message, and

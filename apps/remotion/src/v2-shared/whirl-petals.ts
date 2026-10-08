@@ -1,5 +1,5 @@
 /* The twelve petals of the animated Whirl mark, lifted from
-   apps/v2/public/whirl-animate.svg.
+   apps/web/public/whirl-animate.svg.
 
    Inlined rather than loaded as an <img>, because that SVG animates itself
    with CSS keyframes — and a self-animating image is exactly what a frame
