@@ -1145,7 +1145,28 @@ export default defineSchema({
     when: v.string(),
     kind: v.string(),
     done: v.boolean(),
-  }).index("by_user", ["userId"]),
+    // The original desk only stored display copy. These optional fields turn
+    // new rows into executable jobs without invalidating older task rows.
+    instructions: v.optional(v.string()),
+    recurrence: v.optional(
+      v.union(v.literal("none"), v.literal("daily"), v.literal("weekly")),
+    ),
+    status: v.optional(
+      v.union(
+        v.literal("active"),
+        v.literal("running"),
+        v.literal("completed"),
+        v.literal("paused"),
+      ),
+    ),
+    nextRunAt: v.optional(v.number()),
+    lastRunAt: v.optional(v.number()),
+    lastThreadId: v.optional(v.id("threads")),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_status_next_run", ["status", "nextRunAt"]),
 
   campaigns: defineTable({
     userId: v.string(),

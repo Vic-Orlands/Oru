@@ -111,6 +111,7 @@ import type * as platinum from "../platinum.js";
 import type * as posthog from "../posthog.js";
 import type * as preferences from "../preferences.js";
 import type * as prompts from "../prompts.js";
+import type * as scheduledTasks from "../scheduledTasks.js";
 import type * as serverLoad from "../serverLoad.js";
 import type * as shareLinks from "../shareLinks.js";
 import type * as site from "../site.js";
@@ -268,6 +269,7 @@ declare const fullApi: ApiFromModules<{
   posthog: typeof posthog;
   preferences: typeof preferences;
   prompts: typeof prompts;
+  scheduledTasks: typeof scheduledTasks;
   serverLoad: typeof serverLoad;
   shareLinks: typeof shareLinks;
   site: typeof site;

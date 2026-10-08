@@ -430,8 +430,13 @@ export async function runAssistantTurn(
   // the web instead of failing over a toggle this deployment can't honor.
   // The composer hides the toggle in that case (convex/features.ts), so
   // this only catches a stale tab.
+  const explicitlyRequestsLiveResearch =
+    /\b(exa|parallel|web search|search the web|live search|look online|find (?:me )?(?:open |current |recent )?(?:jobs?|roles?|companies|investors|candidates|partners))\b/i.test(
+      requestInfo.latestUserText,
+    );
   const searchEnabled =
-    requestInfo.search && (exaApiKey !== undefined || parallelApiKey !== undefined);
+    (requestInfo.search || explicitlyRequestsLiveResearch) &&
+    (exaApiKey !== undefined || parallelApiKey !== undefined);
   // Billing is optional (see createBillingClient): without it every gate
   // below stays open and nothing is deducted.
   const autumn = createBillingClient();
@@ -919,6 +924,32 @@ export async function runAssistantTurn(
             capturedAt: number;
           }
         | undefined;
+      const captureLeadReceipt = async (
+        provider: string,
+        tool: string,
+        responseText: string,
+      ) => {
+        const capturedAt = Date.now();
+        const responseHash = await sha256(responseText);
+        const id = await runMutation(internal.leads.recordSourceReceipt, {
+          userId: customerId,
+          threadId: requestInfo.threadId,
+          assistantId: requestInfo.assistantId,
+          provider,
+          tool,
+          responseText,
+          responseHash,
+          capturedAt,
+        });
+        latestLeadReceipt = {
+          id,
+          provider,
+          tool,
+          responseText,
+          responseHash,
+          capturedAt,
+        };
+      };
       const persistMcp = async (info: {
         server: string;
         tool: string;
@@ -951,26 +982,7 @@ export async function runAssistantTurn(
           },
         });
         if (info.ok && info.resultText && info.tool !== MCP_LIST_TOOLS_NAME) {
-          const capturedAt = Date.now();
-          const responseHash = await sha256(info.resultText);
-          const id = await runMutation(internal.leads.recordSourceReceipt, {
-            userId: customerId,
-            threadId: requestInfo.threadId,
-            assistantId: requestInfo.assistantId,
-            provider: info.server,
-            tool: info.tool,
-            responseText: info.resultText,
-            responseHash,
-            capturedAt,
-          });
-          latestLeadReceipt = {
-            id,
-            provider: info.server,
-            tool: info.tool,
-            responseText: info.resultText,
-            responseHash,
-            capturedAt,
-          };
+          await captureLeadReceipt(info.server, info.tool, info.resultText);
         }
       };
 
@@ -2643,6 +2655,7 @@ export async function runAssistantTurn(
                       items,
                       costDollars,
                       callIdx,
+                      responseText,
                     }) => {
                       // Charge Exa's reported cost plan-first (via the `search`
                       // member feature) and overflow to the extra-usage bucket,
@@ -2666,6 +2679,11 @@ export async function runAssistantTurn(
                           items,
                         },
                       );
+                      await captureLeadReceipt(
+                        "Exa",
+                        "web_search",
+                        responseText,
+                      );
                     },
                   }),
                 }
@@ -2674,7 +2692,12 @@ export async function runAssistantTurn(
               ? {
                   researchWeb: createParallelSearchTool({
                     apiKey: parallelApiKey,
-                    onSearch: async ({ sources, items, callIdx }) => {
+                    onSearch: async ({
+                      sources,
+                      items,
+                      callIdx,
+                      responseText,
+                    }) => {
                       await runMutation(
                         internal.inference.finalizeLastPendingSearch,
                         {
@@ -2682,6 +2705,11 @@ export async function runAssistantTurn(
                           sources,
                           items,
                         },
+                      );
+                      await captureLeadReceipt(
+                        "Parallel",
+                        "web_search",
+                        responseText,
                       );
                       await captureServerEvent({
                         event: "web_search",

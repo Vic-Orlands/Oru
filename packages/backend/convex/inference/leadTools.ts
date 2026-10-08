@@ -46,10 +46,20 @@ export function createLeadTools(opts: {
   onCard: (card: Card) => Promise<void>;
 }) {
   const { ctx, userId, leadAgent, latestProviderReceipt, onCard } = opts;
+  const leadKind =
+    leadAgent === "job_hunt"
+      ? "job opportunities"
+      : leadAgent === "recruiting"
+        ? "candidate leads"
+        : leadAgent === "partnerships"
+          ? "partner opportunities"
+          : leadAgent === "fundraising"
+            ? "investor leads"
+            : "sales prospects";
   return {
     findProspects: tool({
       description:
-        "Save real prospects returned by a connected prospecting integration such as FuseAI. Call the live integration first. Every row must include a source URL; never invent people, links, or emails.",
+        `Save real ${leadKind} returned by live web research or a connected data provider. Call the appropriate live source first. Every row must include a source URL; never invent people, roles, organizations, links, or emails. For Job Hunt, use the role title as name, the team or employment type as title, and the employer as company.`,
       inputSchema: jsonSchema<{
         icp: string;
         rows: Array<{
@@ -118,7 +128,7 @@ export function createLeadTools(opts: {
         const receipt = latestProviderReceipt();
         if (!receipt) {
           throw new Error(
-            "Run a connected prospecting or enrichment provider before saving leads.",
+            "Run live web research or a connected data provider before saving leads.",
           );
         }
         const enrichedAt = Date.now();
@@ -204,7 +214,7 @@ export function createLeadTools(opts: {
     }),
     qualifyLead: tool({
       description:
-        "Yes/no ICP fit check. Uses the Jev judge, then a cheap structured model if Jev is unavailable.",
+        `Yes/no fit check for ${leadKind}. Uses the Jev judge, then a cheap structured model if Jev is unavailable.`,
       inputSchema: jsonSchema<{ name: string; notes: string }>({
         type: "object",
         properties: {
@@ -216,7 +226,7 @@ export function createLeadTools(opts: {
       }),
       execute: async ({ name, notes }) => {
         const decision = await ctx.runAction(internal.judge.decide, {
-          question: `Is ${name} a fit to contact?`,
+          question: `Is ${name} a strong fit for this ${leadKind} workflow?`,
           state: notes,
         });
         return decision;
@@ -318,24 +328,66 @@ export function createLeadTools(opts: {
       },
     }),
     createDeskTask: tool({
-      description: "Create a manual, scheduled, or recurring desk task.",
-      inputSchema: jsonSchema<{ title: string; when: string; kind: string }>({
+      description:
+        "Schedule real future agent work. At the due time Oso-Ahia opens a dedicated thread, runs these instructions with live web search enabled, and repeats when requested.",
+      inputSchema: jsonSchema<{
+        title: string;
+        instructions: string;
+        firstRunAt: string;
+        recurrence: "none" | "daily" | "weekly";
+        kind: string;
+      }>({
         type: "object",
         properties: {
           title: { type: "string" },
-          when: { type: "string" },
+          instructions: {
+            type: "string",
+            description:
+              "Complete, self-contained instructions for the future run, including desired output and filters.",
+          },
+          firstRunAt: {
+            type: "string",
+            description:
+              "ISO-8601 date-time with an explicit UTC offset for the first run.",
+          },
+          recurrence: {
+            type: "string",
+            enum: ["none", "daily", "weekly"],
+          },
           kind: { type: "string" },
         },
-        required: ["title", "when", "kind"],
+        required: [
+          "title",
+          "instructions",
+          "firstRunAt",
+          "recurrence",
+          "kind",
+        ],
         additionalProperties: false,
       }),
-      execute: async (task) => {
-        await ctx.runMutation(internal.leads.recordTask, {
+      execute: async ({ firstRunAt, ...task }) => {
+        const runAt = Date.parse(firstRunAt);
+        if (!Number.isFinite(runAt)) {
+          throw new Error(
+            "The scheduled time must be a valid ISO-8601 date-time with a UTC offset.",
+          );
+        }
+        if (runAt < Date.now() - 60_000) {
+          throw new Error("The scheduled time is already in the past.");
+        }
+        const taskId = await ctx.runMutation(internal.leads.recordTask, {
           userId,
           leadAgent,
           ...task,
+          when: firstRunAt,
+          runAt,
         });
-        return { created: task.title };
+        return {
+          created: task.title,
+          taskId,
+          firstRunAt,
+          recurrence: task.recurrence,
+        };
       },
     }),
     recordCampaignActivity: tool({

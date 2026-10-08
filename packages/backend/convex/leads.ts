@@ -1,5 +1,7 @@
 import { v } from "convex/values";
 
+import { internal } from "./_generated/api";
+
 import {
   internalMutation,
   internalQuery,
@@ -377,11 +379,28 @@ export const recordTask = internalMutation({
     title: v.string(),
     when: v.string(),
     kind: v.string(),
+    instructions: v.string(),
+    recurrence: v.union(
+      v.literal("none"),
+      v.literal("daily"),
+      v.literal("weekly"),
+    ),
+    runAt: v.number(),
   },
-  returns: v.null(),
+  returns: v.id("deskTasks"),
   handler: async (ctx, args) => {
-    await ctx.db.insert("deskTasks", { ...args, done: false });
-    return null;
+    const now = Date.now();
+    const { runAt, ...task } = args;
+    const taskId = await ctx.db.insert("deskTasks", {
+      ...task,
+      done: false,
+      status: "active",
+      nextRunAt: runAt,
+      createdAt: now,
+      updatedAt: now,
+    });
+    await ctx.scheduler.runAt(runAt, internal.scheduledTasks.run, { taskId });
+    return taskId;
   },
 });
 

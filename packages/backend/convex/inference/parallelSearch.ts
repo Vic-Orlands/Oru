@@ -31,6 +31,7 @@ export function createParallelSearchTool({
     sources: number;
     items: SearchSource[];
     callIdx: number;
+    responseText: string;
   }) => Promise<void>;
 }) {
   let callIndex = 0;
@@ -40,7 +41,7 @@ export function createParallelSearchTool({
       "Research a broad or complex topic on the live web and return source-grounded excerpts. Prefer this for market research, company discovery, comparisons, and lead research.",
     inputSchema: jsonSchema<{
       objective: string;
-      searchQueries?: string[];
+      searchQueries: string[];
     }>({
       type: "object",
       properties: {
@@ -51,13 +52,14 @@ export function createParallelSearchTool({
         },
         searchQueries: {
           type: "array",
+          minItems: 1,
           maxItems: 5,
           items: { type: "string", minLength: 1 },
           description:
-            "Optional focused queries that support the objective. Omit when the objective is already precise.",
+            "One to five focused web queries, ideally 3-6 words each, that support the objective.",
         },
       },
-      required: ["objective"],
+      required: ["objective", "searchQueries"],
       additionalProperties: false,
     }),
     execute: async ({ objective, searchQueries }) => {
@@ -71,9 +73,7 @@ export function createParallelSearchTool({
         body: JSON.stringify({
           objective,
           mode: "fast",
-          ...(searchQueries?.length
-            ? { search_queries: searchQueries.slice(0, 5) }
-            : {}),
+          search_queries: searchQueries.slice(0, 5),
         }),
       });
 
@@ -96,7 +96,12 @@ export function createParallelSearchTool({
         ...(result.publish_date ? { publishedDate: result.publish_date } : {}),
       }));
 
-      await onSearch({ sources: items.length, items, callIdx });
+      await onSearch({
+        sources: items.length,
+        items,
+        callIdx,
+        responseText: JSON.stringify(results),
+      });
 
       return {
         objective,

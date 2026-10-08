@@ -26,6 +26,16 @@ crons.interval(
   {},
 );
 
+// Convex's per-task scheduler is the primary clock. This small indexed sweep
+// is the seatbelt: if a scheduled function was cancelled during a deployment,
+// due work is re-enqueued instead of silently disappearing.
+crons.interval(
+  "recover due desk tasks",
+  { minutes: 5 },
+  internal.scheduledTasks.recoverDue,
+  {},
+);
+
 // The billing backstop: retries every charge Autumn hasn't confirmed yet (see
 // convex/usageLedger.ts). One indexed read and nothing else when the ledger is
 // clean, which is the normal state — it only does work after Autumn was slow,
