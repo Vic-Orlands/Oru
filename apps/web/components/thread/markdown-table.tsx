@@ -15,7 +15,7 @@ export const TABLE_COMPONENTS: NonNullable<StreamdownProps["components"]> = {
       <div
         className={cn(
           THREAD_ANALYSIS_WIDTH,
-          "my-4 overflow-hidden rounded-xl bg-card shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(0_0_0/0.03)] dark:shadow-[0_0_0_1px_var(--border)]",
+          "my-4 overflow-hidden rounded-xl bg-card",
         )}
       >
         <div className="w-full overflow-x-auto [scrollbar-width:thin]">
@@ -34,7 +34,7 @@ export const TABLE_COMPONENTS: NonNullable<StreamdownProps["components"]> = {
   },
   thead: ({ node, className, ...props }) => {
     void node;
-    return <thead className={cn("bg-muted/35", className)} {...props} />;
+    return <thead className={className} {...props} />;
   },
   tbody: ({ node, className, ...props }) => {
     void node;
@@ -60,7 +60,7 @@ export const TABLE_COMPONENTS: NonNullable<StreamdownProps["components"]> = {
     return (
       <th
         className={cn(
-          "border-r border-b border-border px-3.5 py-2.5 text-left align-bottom text-[11px]/4 font-medium tracking-[0.025em] whitespace-nowrap text-muted-foreground last:border-r-0",
+          "border-b border-border/70 px-3.5 py-2.5 text-left align-bottom text-[11px]/4 font-medium tracking-[0.025em] whitespace-nowrap text-muted-foreground",
           className,
         )}
         {...props}
@@ -72,7 +72,7 @@ export const TABLE_COMPONENTS: NonNullable<StreamdownProps["components"]> = {
     return (
       <td
         className={cn(
-          "border-r border-b border-border px-3.5 py-3 align-top text-wrap-pretty last:border-r-0 group-last/chat-table-row:border-b-0",
+          "border-b border-border/60 px-3.5 py-3 align-top text-wrap-pretty group-last/chat-table-row:border-b-0",
           className,
         )}
         {...props}

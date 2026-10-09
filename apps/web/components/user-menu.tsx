@@ -1,44 +1,30 @@
 "use client";
 
-import { useClerk, useUser } from "@/lib/auth/session";
+import { switchGoogleAccount, useClerk, useUser } from "@/lib/auth/session";
 import Link from "next/link";
 import {
   IconCreditCardFilled,
-  IconDeviceDesktopFilled,
-  IconLifebuoyFilled,
   IconLogout,
-  IconMoonFilled,
-  IconSettingsFilled,
-  IconSunFilled,
+  IconUserPlus,
 } from "@tabler/icons-react";
 import { useCustomer } from "autumn-js/react";
 
 import {
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatFreeMessagesLeft, formatResetsIn } from "@/lib/plan";
 import { useCachedUsage } from "@/lib/usage-cache";
 import { resetSupport } from "@/lib/support";
-import { useTheme, type Theme } from "@/lib/theme";
-import { useView } from "@/lib/view";
+import { showToast } from "@/lib/toasts";
 import { PlanBadge } from "./plan-badge";
 import { UsageMeter } from "./usage-meter";
 
 /* Compact, Cursor-ish rows: tight vertical rhythm, muted icons that
    brighten on focus (the base item styles handle the brighten). */
 const ITEM = "gap-2 px-2 py-1.5";
-
-/* Radio items reserve right padding for the absolutely-positioned check
-   indicator — overriding it with px would run the label under the check. */
-const RADIO_ITEM = "gap-2 py-1.5 pr-8 pl-2";
 
 /* On the icon itself (not a descendant selector) so the item's
    focus:**:text-accent-foreground rule still wins on hover. */
@@ -119,16 +105,13 @@ function UsageBlock() {
 
 export function UserMenuContent({
   billing = true,
-  onSupport,
+  side = "bottom",
 }: {
   /** False on a deployment without billing: no usage, no plans. */
   billing?: boolean;
-  /** Absent when the deployment has no support agent. */
-  onSupport?: () => void;
+  side?: "top" | "bottom";
 }) {
   const { signOut } = useClerk();
-  const { theme, setTheme } = useTheme();
-  const { openSettings } = useView();
 
   return (
     /* Solid on purpose — the user menu is the one popover that stays
@@ -137,7 +120,7 @@ export function UserMenuContent({
        the popup aligns to the pill's left edge); min-w-56 is the floor
        for the collapsed rail's tiny anchor. */
     <DropdownMenuContent
-      side="top"
+      side={side}
       sideOffset={8}
       className="w-(--anchor-width) min-w-56 bg-popover p-1 backdrop-blur-none"
     >
@@ -148,47 +131,22 @@ export function UserMenuContent({
         </>
       )}
 
-      <DropdownMenuSub>
-        <DropdownMenuSubTrigger className={ITEM}>
-          <IconMoonFilled size={15} className={ICON} />
-          Theme
-        </DropdownMenuSubTrigger>
-        <DropdownMenuSubContent className="p-1">
-          <DropdownMenuRadioGroup
-            value={theme}
-            onValueChange={(value) => setTheme(value as Theme)}
-          >
-            <DropdownMenuRadioItem value="light" className={RADIO_ITEM}>
-              <IconSunFilled size={15} className={ICON} />
-              Light
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="dark" className={RADIO_ITEM}>
-              <IconMoonFilled size={15} className={ICON} />
-              Dark
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="system" className={RADIO_ITEM}>
-              <IconDeviceDesktopFilled size={15} className={ICON} />
-              System
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
-        </DropdownMenuSubContent>
-      </DropdownMenuSub>
-
-      {onSupport && (
-        <DropdownMenuItem className={ITEM} onClick={onSupport}>
-          <IconLifebuoyFilled size={15} className={ICON} />
-          Support
-        </DropdownMenuItem>
-      )}
       {billing && (
         <DropdownMenuItem render={<Link href="/pricing" />} className={ITEM}>
           <IconCreditCardFilled size={15} className={ICON} />
           Plans & pricing
         </DropdownMenuItem>
       )}
-      <DropdownMenuItem className={ITEM} onClick={() => openSettings()}>
-        <IconSettingsFilled size={15} className={ICON} />
-        Settings
+      <DropdownMenuItem
+        className={ITEM}
+        onClick={() => {
+          void switchGoogleAccount().catch(() => {
+            showToast("Couldn’t open the account chooser. Try again.");
+          });
+        }}
+      >
+        <IconUserPlus size={15} className={ICON} />
+        Use another account
       </DropdownMenuItem>
 
       <DropdownMenuSeparator />

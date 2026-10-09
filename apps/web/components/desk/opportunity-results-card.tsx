@@ -96,7 +96,7 @@ export function OpportunityResultsCard({
     <section
       className={cn(
         THREAD_ANALYSIS_WIDTH,
-        "my-3 overflow-hidden rounded-xl bg-card shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(0_0_0/0.03)] dark:shadow-[0_0_0_1px_var(--border)]",
+        "my-3 overflow-hidden rounded-xl bg-card",
       )}
     >
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
@@ -135,18 +135,18 @@ export function OpportunityResultsCard({
 
       <div className="hidden overflow-x-auto md:block">
         <table className="w-full min-w-[780px] table-fixed border-separate border-spacing-0 text-left text-[12.5px]/5">
-          <thead className="bg-muted/35 text-[11px]/4 font-medium tracking-[0.025em] text-muted-foreground">
+          <thead className="text-[11px]/4 font-medium tracking-[0.025em] text-muted-foreground">
             <tr>
-              <th className="w-[42%] border-r border-b border-border px-4 py-2.5 font-medium">
+              <th className="w-[42%] border-b border-border/70 px-4 py-2.5 font-medium">
                 Opportunity
               </th>
-              <th className="w-[17%] border-r border-b border-border px-3 py-2.5 font-medium">
+              <th className="w-[17%] border-b border-border/70 px-3 py-2.5 font-medium">
                 Fit
               </th>
-              <th className="w-[19%] border-r border-b border-border px-3 py-2.5 font-medium">
+              <th className="w-[19%] border-b border-border/70 px-3 py-2.5 font-medium">
                 Stage
               </th>
-              <th className="w-[22%] border-b border-border px-3 py-2.5 font-medium">
+              <th className="w-[22%] border-b border-border/70 px-3 py-2.5 font-medium">
                 Source
               </th>
             </tr>
@@ -184,17 +184,17 @@ function OpportunityTableGroup({
   return (
     <tbody className="group/result-row">
       <tr className="align-top transition-colors duration-150 hover:bg-muted/20">
-        <td className="border-r border-border px-4 pt-3 pb-2">
+        <td className="px-4 pt-3 pb-2">
           <OpportunityIdentity row={row} />
         </td>
-        <td className="border-r border-border px-3 pt-3 pb-2">
+        <td className="px-3 pt-3 pb-2">
           <span
             className={`inline-flex rounded-full px-2 py-0.5 font-semibold tabular-nums ${scoreTone(row.score)}`}
           >
             {row.score}% · {row.scoreLabel}
           </span>
         </td>
-        <td className="border-r border-border px-3 pt-3 pb-2 text-muted-foreground">
+        <td className="px-3 pt-3 pb-2 text-muted-foreground">
           {row.stage}
         </td>
         <td className="px-3 pt-3 pb-2">
@@ -204,7 +204,7 @@ function OpportunityTableGroup({
       <tr>
         <td
           colSpan={4}
-          className="border-b border-border px-4 pt-0 pb-3 group-last/result-row:border-b-0"
+          className="border-b border-border/60 px-4 pt-0 pb-3 group-last/result-row:border-b-0"
         >
           <MatchRationale row={row} />
         </td>

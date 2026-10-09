@@ -14,7 +14,7 @@ export function DataTableFrame({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl bg-card shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(0_0_0/0.03)] dark:shadow-[0_0_0_1px_var(--border)]",
+        "overflow-hidden rounded-xl bg-card",
         className,
       )}
     >
@@ -37,7 +37,7 @@ export function DataTableHead({
   return (
     <thead
       className={cn(
-        "bg-muted/35 text-[11px]/4 font-medium tracking-[0.025em] text-muted-foreground",
+        "text-[11px]/4 font-medium tracking-[0.025em] text-muted-foreground",
         className,
       )}
       {...props}
@@ -52,7 +52,7 @@ export function DataTableHeaderCell({
   return (
     <th
       className={cn(
-        "border-b border-r border-border px-3.5 py-2.5 font-medium whitespace-nowrap last:border-r-0",
+        "border-b border-border/70 px-3.5 py-2.5 font-medium whitespace-nowrap",
         className,
       )}
       {...props}
@@ -82,7 +82,7 @@ export function DataTableCell({
   return (
     <td
       className={cn(
-        "border-r border-b border-border px-3.5 py-3 align-middle last:border-r-0 group-last/data-row:border-b-0",
+        "border-b border-border/60 px-3.5 py-3 align-middle group-last/data-row:border-b-0",
         className,
       )}
       {...props}

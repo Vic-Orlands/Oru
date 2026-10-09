@@ -8,12 +8,10 @@ import {
   IconCheckbox,
   IconFilter,
   IconMail,
-  IconHelpCircle,
   IconPlus,
   IconSend,
   IconPuzzleFilled,
   IconSearch,
-  IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
 
@@ -26,7 +24,6 @@ import {
 } from "@/lib/sidebar";
 import { useView } from "@/lib/view";
 import { DialogTrigger } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -42,15 +39,7 @@ import { ThreadList } from "./thread-list";
 import { UserButton } from "./user-button";
 import { OruLogo } from "./oru-logo";
 import { AgentSwitcher } from "./agent-switcher";
-import { openSupport, useSupportAvailable } from "@/lib/support";
-
-function SidebarSectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mt-3 mb-1.5 h-4 overflow-hidden px-2.5 text-[10px]/4 font-medium tracking-[0.06em] text-muted-foreground/70 uppercase transition-[height,margin,opacity,visibility] duration-150 sidebar-collapsed:invisible sidebar-collapsed:my-0 sidebar-collapsed:h-0 sidebar-collapsed:opacity-0">
-      {children}
-    </div>
-  );
-}
+import { SidebarFooter } from "./sidebar-footer";
 
 /* Width rides `--sidebar-width` (painted pre-hydration by the layout script,
    driven live by useSidebar), so drags track 1:1 and the collapse toggle
@@ -126,7 +115,6 @@ export function Sidebar() {
     openHome,
     openIntegrations,
     openDesk,
-    openSettings,
   } = useView();
   /* Incognito tucks the whole rail away: width glides to a slim gutter
      (so the main pane keeps its 8px inset) while the contents fade, and
@@ -134,7 +122,6 @@ export function Sidebar() {
      Nothing here unmounts — leaving glides it right back. */
   const { enabled: incognito } = useIncognitoState();
   const expiredIntegrations = useExpiredIntegrations();
-  const supportAvailable = useSupportAvailable();
 
   return (
     /* An even 8px beat between blocks; New and the nav rows tighten onto
@@ -181,8 +168,11 @@ export function Sidebar() {
           )}
         </button>
       </div>
+      <div className="mt-1 mb-2">
+        <UserButton />
+      </div>
       {/* The middle is a two-faced strip (chats vs settings) riding the
-          page slide; the header above and user row below stay put as
+          page slide; the account above and utility footer below stay put as
           chrome, so opening settings only swipes the rows between them. */}
       <PageSlide
         page={settingsOpen ? 2 : 1}
@@ -226,7 +216,6 @@ export function Sidebar() {
             <div className="mt-1 mb-1">
               <AgentSwitcher />
             </div>
-            <SidebarSectionLabel>Workspace</SidebarSectionLabel>
             {/* -mt pulls the nav onto the same pitch as the New pill: 2px
                 seams all the way down, so a hovered row's pill stacks under
                 New exactly like the rows stack under each other. */}
@@ -241,7 +230,6 @@ export function Sidebar() {
                 className="before:-top-px before:-bottom-px"
               />
             </nav>
-            <SidebarSectionLabel>Agent desk</SidebarSectionLabel>
             <nav className="flex flex-col gap-0">
               <SidebarRow
                 icon={IconUsers}
@@ -281,30 +269,13 @@ export function Sidebar() {
                 className="before:-top-px before:-bottom-1"
               />
             </nav>
-            {/* w-auto: the base w-full ignores the mx inset and skews right. */}
-            <Separator className="sidebar-glide mx-1.5 transition-[margin] data-horizontal:w-auto sidebar-collapsed:mx-0" />
-            <SidebarSectionLabel>Recent chats</SidebarSectionLabel>
+            <div className="h-2" aria-hidden />
             <ThreadList />
           </>
         }
         two={<SettingsSidebar />}
       />
-      <nav className="mb-1 flex flex-col gap-0 border-t border-border pt-1.5">
-        {supportAvailable ? (
-          <SidebarRow
-            icon={IconHelpCircle}
-            label="Help & support"
-            onClick={openSupport}
-          />
-        ) : null}
-        <SidebarRow
-          icon={IconSettings}
-          label="Settings"
-          active={settingsOpen}
-          onClick={() => openSettings()}
-        />
-      </nav>
-      <UserButton />
+      <SidebarFooter />
       <div
         role="separator"
         aria-orientation="vertical"

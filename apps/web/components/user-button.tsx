@@ -11,8 +11,6 @@ import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDeploymentFeatures } from "@/lib/deployment-features";
 import { useCachedPlan, type PlanSummary } from "@/lib/plan-cache";
-import { ANALYTICS_EVENTS, captureEvent } from "@/lib/posthog";
-import { openSupport, useSupportAvailable } from "@/lib/support";
 import { PlanBadge } from "./plan-badge";
 import { SkeletonReveal } from "./skeleton-reveal";
 import { UserMenuContent } from "./user-menu";
@@ -90,7 +88,6 @@ function SignedInRow({
   imageUrl: string;
   plan: PlanSummary;
 }) {
-  const supportAvailable = useSupportAvailable();
   const { billing } = useDeploymentFeatures();
 
   return (
@@ -126,17 +123,7 @@ function SignedInRow({
           className="ml-auto shrink-0 text-foreground-soft transition-[rotate,opacity,visibility] duration-150 group-data-popup-open:rotate-180 sidebar-collapsed:invisible sidebar-collapsed:opacity-0"
         />
       </DropdownMenuTrigger>
-      <UserMenuContent
-        billing={billing}
-        onSupport={
-          supportAvailable
-            ? () => {
-                captureEvent(ANALYTICS_EVENTS.supportOpened);
-                openSupport();
-              }
-            : undefined
-        }
-      />
+      <UserMenuContent billing={billing} side="bottom" />
     </DropdownMenu>
   );
 }

@@ -72,3 +72,11 @@ export async function signInWithGoogle() {
     callbackURL: "/app",
   });
 }
+
+/** Leave the current session before asking Google to choose an account.
+ *  Better Auth otherwise reuses the active account without showing its
+ *  chooser, which makes an "add account" action look like it did nothing. */
+export async function switchGoogleAccount() {
+  await authClient.signOut();
+  await signInWithGoogle();
+}
