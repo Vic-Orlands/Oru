@@ -9,6 +9,8 @@ import {
 } from "@tabler/icons-react";
 
 import { openLeadPanel } from "@/lib/artifact-panel";
+import { THREAD_ANALYSIS_WIDTH } from "@/lib/thread-layout";
+import { cn } from "@/lib/utils";
 
 type ScoreBreakdown = {
   criterion: string;
@@ -91,7 +93,12 @@ export function OpportunityResultsCard({
   const updated = data.changes?.updated ?? 0;
 
   return (
-    <section className="my-2 w-full overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border">
+    <section
+      className={cn(
+        THREAD_ANALYSIS_WIDTH,
+        "my-2 overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border",
+      )}
+    >
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 text-[12px]/5 font-medium text-muted-foreground">
@@ -135,15 +142,13 @@ export function OpportunityResultsCard({
               <th className="w-[22%] px-3 py-2 font-medium">Source</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
-            {rows.map((row) => (
-              <OpportunityTableRow
-                key={`${row.sourceUrl}-${row.title}`}
-                row={row}
-                provider={data.source?.provider}
-              />
-            ))}
-          </tbody>
+          {rows.map((row) => (
+            <OpportunityTableGroup
+              key={`${row.sourceUrl}-${row.title}`}
+              row={row}
+              provider={data.source?.provider}
+            />
+          ))}
         </table>
       </div>
 
@@ -160,7 +165,7 @@ export function OpportunityResultsCard({
   );
 }
 
-function OpportunityTableRow({
+function OpportunityTableGroup({
   row,
   provider,
 }: {
@@ -168,23 +173,29 @@ function OpportunityTableRow({
   provider?: string;
 }) {
   return (
-    <tr className="align-top transition-colors hover:bg-muted/25">
-      <td className="px-4 py-3">
-        <OpportunityIdentity row={row} />
-        <OpportunityEvidence row={row} />
-      </td>
-      <td className="px-3 py-3">
-        <span
-          className={`inline-flex rounded-full px-2 py-0.5 font-semibold tabular-nums ${scoreTone(row.score)}`}
-        >
-          {row.score}% · {row.scoreLabel}
-        </span>
-      </td>
-      <td className="px-3 py-3 text-muted-foreground">{row.stage}</td>
-      <td className="px-3 py-3">
-        <SourceLink row={row} provider={provider} />
-      </td>
-    </tr>
+    <tbody className="border-b border-border last:border-b-0">
+      <tr className="align-top transition-colors hover:bg-muted/25">
+        <td className="px-4 pt-3 pb-2">
+          <OpportunityIdentity row={row} />
+        </td>
+        <td className="px-3 pt-3 pb-2">
+          <span
+            className={`inline-flex rounded-full px-2 py-0.5 font-semibold tabular-nums ${scoreTone(row.score)}`}
+          >
+            {row.score}% · {row.scoreLabel}
+          </span>
+        </td>
+        <td className="px-3 pt-3 pb-2 text-muted-foreground">{row.stage}</td>
+        <td className="px-3 pt-3 pb-2">
+          <SourceLink row={row} provider={provider} />
+        </td>
+      </tr>
+      <tr>
+        <td colSpan={4} className="px-4 pt-0 pb-3">
+          <MatchRationale row={row} />
+        </td>
+      </tr>
+    </tbody>
   );
 }
 
@@ -209,7 +220,7 @@ function OpportunityMobileRow({
       <div className="mt-2">
         <SourceLink row={row} provider={provider} />
       </div>
-      <OpportunityEvidence row={row} />
+      <MatchRationale row={row} />
     </article>
   );
 }
@@ -275,7 +286,7 @@ function SourceLink({
   );
 }
 
-function OpportunityEvidence({ row }: { row: OpportunityRow }) {
+function MatchRationale({ row }: { row: OpportunityRow }) {
   const evidence = row.evidence ?? [];
   const breakdown = row.scoreBreakdown ?? [];
   const salary = row.details?.salary ?? row.details?.checkSize;
@@ -283,48 +294,113 @@ function OpportunityEvidence({ row }: { row: OpportunityRow }) {
 
   return (
     <details className="group mt-2 text-[12px]/5">
-      <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
-        Why it matches
+      <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-2 text-muted-foreground transition-colors hover:bg-muted/55 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="font-medium text-foreground">Match rationale</span>
+          <span className="truncate">
+            {breakdown.length > 0
+              ? `${breakdown.length} scored signals`
+              : `${evidence.length} evidence points`}
+          </span>
+        </span>
         <IconChevronDown
-          size={13}
-          className="transition-transform duration-200 group-open:rotate-180"
+          size={14}
+          className="shrink-0 transition-transform duration-200 group-open:rotate-180"
           aria-hidden="true"
         />
       </summary>
-      <div className="mt-2 rounded-xl bg-muted/40 p-3 text-muted-foreground ring-1 ring-border/70">
-        {salary && (
-          <p className="mb-1.5 font-medium text-foreground">{salary}</p>
-        )}
-        {evidence.length > 0 && (
-          <ul className="space-y-1">
-            {evidence.slice(0, 4).map((item) => (
-              <li key={item} className="flex gap-1.5">
-                <IconCircleCheckFilled
-                  size={12}
-                  className="mt-1 shrink-0 text-primary"
-                  aria-hidden="true"
-                />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-        {breakdown.length > 0 && (
-          <div className="mt-2 grid gap-1.5 sm:grid-cols-2">
-            {breakdown.map((signal) => (
-              <div key={signal.criterion} className="min-w-0">
-                <span className="font-medium text-foreground capitalize">
-                  {signal.criterion}
-                </span>
-                <span className="ml-1 tabular-nums">
-                  {signal.points}/{signal.maxPoints}
-                </span>
-                <p className="line-clamp-2">{signal.reason}</p>
-              </div>
-            ))}
-          </div>
-        )}
+      <div className="mt-1 grid gap-4 rounded-xl bg-muted/35 p-3.5 text-muted-foreground shadow-[inset_0_0_0_1px_var(--well-outline)] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.35fr)]">
+        <EvidenceList evidence={evidence} salary={salary} />
+        <SignalBreakdown breakdown={breakdown} />
       </div>
     </details>
+  );
+}
+
+function EvidenceList({
+  evidence,
+  salary,
+}: {
+  evidence: string[];
+  salary?: string;
+}) {
+  if (evidence.length === 0 && !salary) return null;
+  return (
+    <div className="min-w-0">
+      <div className="mb-2 text-[11px]/4 font-semibold tracking-[0.05em] text-muted-foreground uppercase">
+        Source evidence
+      </div>
+      {salary && (
+        <p className="mb-2 font-semibold text-foreground tabular-nums">
+          {salary}
+        </p>
+      )}
+      <ul className="space-y-1.5">
+        {evidence.slice(0, 5).map((item) => (
+          <li key={item} className="flex gap-2 text-wrap-pretty">
+            <IconCircleCheckFilled
+              size={13}
+              className="mt-0.75 shrink-0 text-primary"
+              aria-hidden="true"
+            />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function SignalBreakdown({ breakdown }: { breakdown: ScoreBreakdown[] }) {
+  if (breakdown.length === 0) return null;
+  return (
+    <div className="min-w-0">
+      <div className="mb-2 text-[11px]/4 font-semibold tracking-[0.05em] text-muted-foreground uppercase">
+        Profile fit
+      </div>
+      <div className="grid gap-x-5 gap-y-2.5 sm:grid-cols-2">
+        {breakdown.map((signal) => (
+          <div key={signal.criterion} className="min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <span className="truncate font-medium text-foreground capitalize">
+                {signal.criterion}
+              </span>
+              <span className="shrink-0 tabular-nums">
+                {signal.points}/{signal.maxPoints}
+              </span>
+            </div>
+            <SignalMeter points={signal.points} maxPoints={signal.maxPoints} />
+            <p className="mt-1 line-clamp-2 text-wrap-pretty">
+              {signal.reason}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SignalMeter({
+  points,
+  maxPoints,
+}: {
+  points: number;
+  maxPoints: number;
+}) {
+  return (
+    <div
+      className="mt-1 flex gap-0.5"
+      aria-label={`${points} out of ${maxPoints}`}
+    >
+      {Array.from({ length: maxPoints }, (_, index) => (
+        <span
+          key={index}
+          className={cn(
+            "h-1 flex-1 rounded-full",
+            index < points ? "bg-primary" : "bg-foreground/10",
+          )}
+        />
+      ))}
+    </div>
   );
 }
