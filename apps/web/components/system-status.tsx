@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { IconBolt, IconFlame } from "@tabler/icons-react";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { useModelAccess } from "@/lib/model-access";
 import { dismissUpdateToast, showToast, showUpdateToast } from "@/lib/toasts";

@@ -1,7 +1,7 @@
 import { supermemoryRequest } from "./supermemory";
 
 /**
- * Semantic search over the conversation transcripts Oso-Ahia stores in
+ * Semantic search over the conversation transcripts Ọru stores in
  * Supermemory — the searchChatHistory tool's backend whenever memory is
  * active. Supermemory has shuffled its payloads between API versions, so
  * every response is parsed defensively: an unfamiliar shape reads as "no
@@ -16,7 +16,7 @@ const RESULT_LIMIT = 8;
 const MAX_EXCERPT_CHARS = 500;
 
 export type SupermemoryChatHit = {
-  /** The Oso-Ahia thread the transcript came from, as the raw metadata string. */
+  /** The Ọru thread the transcript came from, as the raw metadata string. */
   threadId: string;
   /** When the turn happened; null when the document doesn't carry a date. */
   sentAt: number | null;

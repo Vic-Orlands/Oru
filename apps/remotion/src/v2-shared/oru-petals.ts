@@ -1,11 +1,11 @@
-/* The twelve petals of the animated Whirl mark, lifted from
-   apps/web/public/whirl-animate.svg.
+/* The twelve petals of the animated Ọru mark, lifted from
+   apps/web/public/oru-animate.svg.
 
    Inlined rather than loaded as an <img>, because that SVG animates itself
    with CSS keyframes — and a self-animating image is exactly what a frame
    renderer cannot use. Remotion draws each frame by seeking, not by letting
    time run, so the mark would paint at its 0% pose in every single frame.
-   Given the geometry and the timing, WhirlAnimatedMark can drive the same
+   Given the geometry and the timing, OruAnimatedMark can drive the same
    motion from the current frame instead.
 
    `angle` is the SVG's per-petal `--a`: the axis each petal flips across,

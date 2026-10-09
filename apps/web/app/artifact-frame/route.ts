@@ -44,7 +44,7 @@ const CSP = [
 
 /* Utilities are generated at runtime from the classes actually present, so the
    frame ships no stylesheet of its own — only the theme bridge (the app's
-   --whirl-* tokens, set by the host) and a class-driven dark variant, since
+   --oru-* tokens, set by the host) and a class-driven dark variant, since
    the sandbox must follow the app's theme rather than the OS's. */
 const SHELL = `<!doctype html>
 <html lang="en">
@@ -60,16 +60,16 @@ const SHELL = `<!doctype html>
   html, body { margin: 0; padding: 0; }
   html.fill, html.fill body, html.fill #root { height: 100%; }
   body {
-    font-family: var(--whirl-font-sans);
-    color: var(--whirl-fg);
+    font-family: var(--oru-font-sans);
+    color: var(--oru-fg);
     background: transparent;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overflow-wrap: anywhere;
   }
-  html.fill body { background: var(--whirl-bg); overflow-y: auto; }
+  html.fill body { background: var(--oru-bg); overflow-y: auto; }
   img, svg, canvas, video { max-width: 100%; height: auto; }
-  :focus-visible { outline: 2px solid var(--whirl-accent); outline-offset: 2px; }
+  :focus-visible { outline: 2px solid var(--oru-accent); outline-offset: 2px; }
 </style>
 </head>
 <body>

@@ -106,7 +106,7 @@ function IntegrationFormPage({ initial }: { initial?: Integration }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const claimsWhirl = author.trim().toLowerCase() === "whirl";
+  const claimsOru = author.trim().toLowerCase() === "oru";
 
   const validate = (): string | null => {
     if (!name.trim()) return "Give the integration a name.";
@@ -219,7 +219,7 @@ function IntegrationFormPage({ initial }: { initial?: Integration }) {
         <p className="mt-1 text-[13px] text-neutral-500 dark:text-neutral-400">
           {editing
             ? "Change anything you like — saving sends it back through review."
-            : "Register an MCP server for the Oso-Ahia integration store. It goes live once an admin approves it."}
+            : "Register an MCP server for the Ọru integration store. It goes live once an admin approves it."}
         </p>
       </div>
 
@@ -257,7 +257,7 @@ function IntegrationFormPage({ initial }: { initial?: Integration }) {
                 maxLength={60}
                 className={inputClass}
               />
-              {claimsWhirl &&
+              {claimsOru &&
                 (isAdmin ? (
                   <span className="flex items-center gap-1 text-[11.5px] text-[#0c82f2]">
                     <VerifiedBadge size={13} />
@@ -265,7 +265,7 @@ function IntegrationFormPage({ initial }: { initial?: Integration }) {
                   </span>
                 ) : (
                   <span className="text-[11.5px] text-neutral-400 dark:text-neutral-500">
-                    Heads up: only Oso-Ahia team accounts get the verified badge.
+                    Heads up: only Ọru team accounts get the verified badge.
                   </span>
                 ))}
             </label>
@@ -334,7 +334,7 @@ function IntegrationFormPage({ initial }: { initial?: Integration }) {
         <FormSection
           title="Tools"
           subtitle={
-            'Scan the server, then give every tool an action phrase — it shows up in the chat while Oso-Ahia runs the tool, like "Searching your Linear issues".'
+            'Scan the server, then give every tool an action phrase — it shows up in the chat while Ọru runs the tool, like "Searching your Linear issues".'
           }
         >
           <ToolScanSection

@@ -2,7 +2,7 @@
 
 import { useUser } from "@/lib/auth/session";
 import { useMutation } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 import {
   IconDeviceDesktopFilled,
   IconMoonFilled,
@@ -55,7 +55,7 @@ export function GeneralSection() {
     <>
       <SettingsHeader
         title="General"
-        description="Make Oso-Ahia feel like home."
+        description="Make Ọru feel like home."
       />
       <div className="flex flex-col gap-4">
         <SettingsCard>
@@ -120,7 +120,7 @@ export function GeneralSection() {
         </SettingsCard>
 
         {/* Memory itself now has its own tab; this is the hand-written half
-            of "what Oso-Ahia knows about me", so it stays here. */}
+            of "what Ọru knows about me", so it stays here. */}
         <SettingsCard>
           <PreferencesField />
         </SettingsCard>

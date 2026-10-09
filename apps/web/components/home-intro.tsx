@@ -12,7 +12,7 @@ import { pickIncognitoTagline, useIncognitoState } from "@/lib/incognito";
 import { EASE_OUT, pinRasterPath, rise, SHED_BLUR } from "@/lib/motion";
 import { useCachedName } from "@/lib/name-cache";
 import { SuggestionCards } from "./suggestion-cards";
-import { WhirlLogo } from "./whirl-logo";
+import { OruLogo } from "./oru-logo";
 
 /* The greeting steps down below md because the longest lines in lib/greetings.ts
    ("Long time no see, {name}") plus a real first name do not fit across a
@@ -101,7 +101,7 @@ export function HomeGreeting() {
                     <IconGhost2Filled size={30} />
                   </motion.span>
                 ) : (
-                  <WhirlLogo size={32} />
+                  <OruLogo size={32} />
                 )}
               </motion.span>
             </AnimatePresence>

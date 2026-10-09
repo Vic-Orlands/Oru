@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useQuery } from "convex/react";
 import { IconArchiveFilled, IconDatabaseFilled } from "@tabler/icons-react";
 
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 import { useComposerModels } from "@/lib/model-catalog";
 import { isCustomModelKey } from "@/lib/models";
 import type { ComposerModel } from "@/lib/models";

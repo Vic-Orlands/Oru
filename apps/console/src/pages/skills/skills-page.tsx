@@ -46,7 +46,7 @@ export function SkillsPage() {
             My Skills
           </h1>
           <p className="mt-1 text-[13px] text-neutral-500 dark:text-neutral-400">
-            Instruction packs you've written for the Oso-Ahia store — Oso-Ahia learns
+            Instruction packs you've written for the Ọru store — Ọru learns
             them mid-chat, right when the task calls for them.
           </p>
         </div>

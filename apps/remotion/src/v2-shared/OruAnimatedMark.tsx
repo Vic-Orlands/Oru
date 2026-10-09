@@ -5,10 +5,10 @@ import {
   PETAL_CASCADE_SECONDS,
   PETAL_VIEWBOX,
   PETALS,
-} from "./whirl-petals";
+} from "./oru-petals";
 
-/* The Whirl mark's flip, ripped from the keyframes inside
-   apps/web/public/whirl-animate.svg and re-expressed as a function of the
+/* The Ọru mark's flip, ripped from the keyframes inside
+   apps/web/public/oru-animate.svg and re-expressed as a function of the
    current frame. Each petal squashes flat, reopens mirrored on the other
    side and flips back, growing a touch and drifting outward mid-flip,
    with a 0.04s cascade running round the mark.
@@ -28,7 +28,7 @@ const DRIFT = 9;
 /** How much a petal grows at full flip. */
 const GROW = 1.2;
 
-export function WhirlAnimatedMark({
+export function OruAnimatedMark({
   size,
   start,
   frames,

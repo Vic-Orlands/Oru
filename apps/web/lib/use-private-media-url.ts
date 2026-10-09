@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAction } from "convex/react";
 
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 const REFRESH_AFTER_MS = 4 * 60 * 1_000;
 

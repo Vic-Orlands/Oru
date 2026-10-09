@@ -7,7 +7,7 @@ import {
 } from "remotion";
 
 /** Starter composition: the wordmark twirls in, because of course it does. */
-export function HelloWhirl() {
+export function HelloOru() {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -39,7 +39,7 @@ export function HelloWhirl() {
           transform: `rotate(${rotate}deg) scale(${scale})`,
         }}
       >
-        whirl
+        oru
       </h1>
     </AbsoluteFill>
   );

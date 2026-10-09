@@ -33,7 +33,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { clampThinking } from "@/lib/composer-gates";
 import { useModelAccess } from "@/lib/model-access";
-import type { LockedModelPolicy } from "@whirl/backend/convex/lockedPolicy";
+import type { LockedModelPolicy } from "@oru/backend/convex/lockedPolicy";
 import { filterLockedModels } from "@/lib/locked/locked-models";
 import { useComposerModels } from "@/lib/model-catalog";
 import { useModelFavorites } from "@/lib/model-favorites";
@@ -54,7 +54,7 @@ import { ModelGlyph } from "./model-glyph";
 import { ScrollFade, useScrollFades } from "./scroll-fade";
 import { SteppedSlider } from "./stepped-slider";
 import { ToggleSwitch } from "./toggle-switch";
-import { WhirlRings } from "./whirl-rings";
+import { OruRings } from "./oru-rings";
 
 const SMALL_WIDTH = 232;
 const BIG_WIDTH = 320;
@@ -125,7 +125,7 @@ function CapabilityIcon({
   );
 }
 
-/* The whirl-mark badge on white-labeled tiers: no words, just the rings —
+/* The oru-mark badge on white-labeled tiers: no words, just the rings —
    hover for the point. */
 function MoreUsageBadge() {
   return (
@@ -136,7 +136,7 @@ function MoreUsageBadge() {
         }
       >
         <span className="relative block size-3">
-          <WhirlRings layers={[{ className: "bg-current" }]} />
+          <OruRings layers={[{ className: "bg-current" }]} />
         </span>
       </TooltipTrigger>
       <TooltipContent>You get extra usage on this model.</TooltipContent>
@@ -145,7 +145,7 @@ function MoreUsageBadge() {
 }
 
 /* The capability strip under a model's name: one pill of tiny marks
-   (vision, files, thinking, image output), plus the whirl badge on our
+   (vision, files, thinking, image output), plus the oru badge on our
    white-labeled tiers. A model old enough to earn no marks gets no pill —
    an empty one reads as a rendering glitch. */
 function ModelTags({ model }: { model: ComposerModel }) {

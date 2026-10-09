@@ -25,7 +25,7 @@ import { DEFAULT_MODEL_KEY, FREE_MODEL_KEY } from "@/lib/models";
 
 const KEY = "composer-model";
 const EXPLICIT_KEY = "composer-model-explicit";
-const CHANGE_EVENT = "whirl:composer-model";
+const CHANGE_EVENT = "oru:composer-model";
 
 /** How a write got here — a pick in the picker, or the app arranging
  *  things on the user's behalf. Only the former sticks. */

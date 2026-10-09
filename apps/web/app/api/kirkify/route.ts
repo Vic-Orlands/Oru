@@ -1,7 +1,7 @@
-/** Kirkify is a Oso-Ahia toy and is not part of Oso-Ahia. */
+/** Kirkify is a Ọru toy and is not part of Ọru. */
 export function POST() {
   return Response.json(
-    { error: "Kirkify is not available in Oso-Ahia." },
+    { error: "Kirkify is not available in Ọru." },
     { status: 404 },
   );
 }

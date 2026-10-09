@@ -40,7 +40,7 @@ import { SyncIndicator } from "./sync-indicator";
 import { SquishButton } from "./squish-button";
 import { ThreadList } from "./thread-list";
 import { UserButton } from "./user-button";
-import { WhirlLogo } from "./whirl-logo";
+import { OruLogo } from "./oru-logo";
 import { AgentSwitcher } from "./agent-switcher";
 import { openSupport, useSupportAvailable } from "@/lib/support";
 
@@ -161,7 +161,7 @@ export function Sidebar() {
           logo on the rail, gliding on the width curve instead of the old
           instant justify-center jump. */}
       <div className="sidebar-glide relative flex h-7 items-center px-1.5 transition-[padding] sidebar-collapsed:pl-2.5">
-        <WhirlLogo
+        <OruLogo
           size={20}
           className="transition-opacity duration-150 sidebar-collapsed:group-hover/sidebar:opacity-0"
         />

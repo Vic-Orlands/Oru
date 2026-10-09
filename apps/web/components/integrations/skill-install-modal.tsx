@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAction } from "convex/react";
 import { IconBulbFilled } from "@tabler/icons-react";
 
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { errorText } from "@/lib/integrations-data";
 import { useModelAccess } from "@/lib/model-access";
@@ -115,7 +115,7 @@ export function SkillInstallModal({
             chips={
               <ListingChip>
                 <IconBulbFilled size={12} />
-                Skill — instructions Oso-Ahia picks up mid-chat
+                Skill — instructions Ọru picks up mid-chat
               </ListingChip>
             }
           />
@@ -146,17 +146,17 @@ export function SkillInstallModal({
               <StepHint>Skills are part of the paid plan.</StepHint>
             ) : listing.installed ? (
               <StepHint>
-                Oso-Ahia studies up whenever a chat calls for it.
+                Ọru studies up whenever a chat calls for it.
               </StepHint>
             ) : (
-              <StepHint>No setup — one click and Oso-Ahia knows it.</StepHint>
+              <StepHint>No setup — one click and Ọru knows it.</StepHint>
             )}
           </div>
         </div>
       ) : (
         <SuccessStep
           title={`${listing.name} is in!`}
-          body="Oso-Ahia will study up whenever a chat calls for it. Manage it anytime from the Installed tab."
+          body="Ọru will study up whenever a chat calls for it. Manage it anytime from the Installed tab."
           onDone={onClose}
         />
       )}

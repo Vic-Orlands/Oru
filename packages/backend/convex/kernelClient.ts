@@ -18,7 +18,7 @@ function configuredKernel() {
   }
   return {
     apiKey,
-    appName: env.KERNEL_JOB_APP_NAME?.trim() || "oso-ahia-job-agent",
+    appName: env.KERNEL_JOB_APP_NAME?.trim() || "oru-job-agent",
     version: env.KERNEL_JOB_APP_VERSION?.trim() || "latest",
   };
 }

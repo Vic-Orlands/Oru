@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 
 /**
- * Shared find/replace machinery for whirl's editable artifacts (documents and
+ * Shared find/replace machinery for oru's editable artifacts (documents and
  * HTML pages). Each edit replaces one exact, unique snippet with another; the
  * model is handed the artifact's CURRENT text in its prompt, so it can copy
  * anchors verbatim. The tolerant fallback below absorbs the substitutions models

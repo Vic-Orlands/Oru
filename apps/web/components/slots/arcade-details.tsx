@@ -1,5 +1,5 @@
 import { IconHistory, IconInfoCircle } from "@tabler/icons-react";
-import type { Doc } from "@whirl/backend/convex/_generated/dataModel";
+import type { Doc } from "@oru/backend/convex/_generated/dataModel";
 import { SlotSymbol } from "./slot-symbol";
 import { playLabel } from "./play-label";
 

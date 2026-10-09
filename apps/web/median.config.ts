@@ -1,4 +1,4 @@
-/* What the Median support agent may do on Oso-Ahia's behalf.
+/* What the Median support agent may do on Ọru's behalf.
  *
  * Every lookup is keyed on the visitor the widget already proved, never on
  * something typed into the chat. The one thing a customer does type is a
@@ -8,7 +8,7 @@
  * usage went, why an integration stopped, what happened to one reply. Plans and prices live in the knowledge base instead, so there is
  * one copy of them to keep true.
  *
- * One tool writes: whirlRefundReply gives back the allowance a single reply
+ * One tool writes: oruRefundReply gives back the allowance a single reply
  * used. It is high risk, so it waits for a teammate's approval in the inbox
  * before anything is credited.
  *
@@ -17,7 +17,7 @@
  * convex/deployment.ts sends after every production deploy. */
 
 import { defineConfig, navigation, p } from "@mediansh/agent-tools";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { SIGNED_OUT, supportBackend, verifiedCustomer } from "@/lib/median-backend";
 
@@ -57,7 +57,7 @@ export default defineConfig({
   }),
 
   tools: {
-    whirlAccount: {
+    oruAccount: {
       description:
         "The signed-in customer's plan and allowance: which plan, whether it's active, trialing, past due or set to cancel, when the period ends, how much allowance is left (free plans count messages, paid plans a percentage), when it refills, any extra-usage balance in USD, and whether memory is switched on. Call it before answering anything about their plan, their limits, running out, or memory not working.",
       risk: "low",
@@ -94,7 +94,7 @@ export default defineConfig({
       },
     },
 
-    whirlReplyProblems: {
+    oruReplyProblems: {
       description:
         "The customer's replies from the last 14 days that failed, were blocked by their plan, or were cut short, newest first. Each one says which thread, which model, what went wrong in plain words, whether it was billed, and whether a later reply in that thread worked. Call it whenever someone says a reply errored, stopped, never came, or asks what went wrong, before suggesting anything. Pass on the explanation; don't guess past it.",
       risk: "low",
@@ -111,9 +111,9 @@ export default defineConfig({
       },
     },
 
-    whirlUsageBreakdown: {
+    oruUsageBreakdown: {
       description:
-        "Where the customer's allowance went over recent days, as shares: by model, how much went to thinking mode and web search, the threads that used the most, and the single heaviest replies. Shares only, never prices. Call it when someone asks why they ran out so fast or what is using up their plan, then call whirlAccount if they also need to know what's left.",
+        "Where the customer's allowance went over recent days, as shares: by model, how much went to thinking mode and web search, the threads that used the most, and the single heaviest replies. Shares only, never prices. Call it when someone asks why they ran out so fast or what is using up their plan, then call oruAccount if they also need to know what's left.",
       risk: "low",
       input: {
         days: p
@@ -133,7 +133,7 @@ export default defineConfig({
       },
     },
 
-    whirlIntegrations: {
+    oruIntegrations: {
       description:
         "Every integration the customer has installed and its state: working, needs reconnecting, credentials rejected, erroring, never finished connecting, or paused, with the fix for each and when it broke. Call it when someone says Gmail, Calendar, Notion, GitHub or any other connected app stopped working or isn't being used.",
       risk: "low",
@@ -150,7 +150,7 @@ export default defineConfig({
       },
     },
 
-    whirlThreadReplies: {
+    oruThreadReplies: {
       description:
         "The newest 20 replies in one of the customer's threads: when, how the question and reply started, model, whether it failed or was cut short, billed, refunded, and each reply's messageId. Customers can't see message ids, so to look into or refund one reply, ask them to open that thread and copy the link from the address bar, then pass it here as-is. Match what they describe against askedAbout and replyStart, and check with them if more than one fits.",
       risk: "low",
@@ -172,16 +172,16 @@ export default defineConfig({
       },
     },
 
-    whirlRefundReply: {
+    oruRefundReply: {
       description:
-        "Gives back the allowance one reply used: its free message, plan usage, or extra-usage dollars. Never a subscription or card payment. Use it when a reply was clearly broken, cut short, or wrong through no fault of the customer's. Never ask for a message id; get the thread link from them and the messageId from whirlThreadReplies (whirlReplyProblems carries both too). A teammate approves every call first, so don't promise the refund. Say you've asked the team to credit it back.",
+        "Gives back the allowance one reply used: its free message, plan usage, or extra-usage dollars. Never a subscription or card payment. Use it when a reply was clearly broken, cut short, or wrong through no fault of the customer's. Never ask for a message id; get the thread link from them and the messageId from oruThreadReplies (oruReplyProblems carries both too). A teammate approves every call first, so don't promise the refund. Say you've asked the team to credit it back.",
       risk: "high",
       input: {
         threadId: p.string(
           "The thread the reply is in: the link or id the customer pasted, or the threadId another tool returned.",
         ),
         messageId: p.string(
-          "The reply's messageId, exactly as whirlThreadReplies (or another tool) returned it. Never ask the customer for this.",
+          "The reply's messageId, exactly as oruThreadReplies (or another tool) returned it. Never ask the customer for this.",
         ),
         reason: p.string("One sentence on what went wrong with the reply, for the teammate approving it."),
       },

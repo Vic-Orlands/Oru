@@ -17,7 +17,7 @@ import {
 } from "@tabler/icons-react";
 import { useConvexAuth, useQuery } from "convex/react";
 import { motion } from "motion/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useFolders } from "@/lib/folders";

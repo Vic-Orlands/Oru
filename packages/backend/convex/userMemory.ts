@@ -34,7 +34,7 @@ import {
  * the UI hides itself for free users, but that's decoration, not a gate.
  */
 
-/** A source document, joined with the Oso-Ahia thread it was built from. */
+/** A source document, joined with the Ọru thread it was built from. */
 export type MemorySourceView = {
   id: string;
   title: string;
@@ -180,7 +180,7 @@ export const forgetMemory = action({
   },
 });
 
-/** One page of the chats Oso-Ahia has fed into memory. */
+/** One page of the chats Ọru has fed into memory. */
 export const listSources = action({
   args: { page: v.optional(v.number()) },
   handler: async (

@@ -20,7 +20,7 @@ import { VoiceWaveform } from "./voice-waveform";
    between a tall permission prompt and a single listening row.
 
    Everything here is monochrome on purpose — a recording indicator is the one
-   place a red dot would be conventional, and whirl doesn't do accent hues. */
+   place a red dot would be conventional, and oru doesn't do accent hues. */
 
 /* Same crossfade the composer uses between its own faces. */
 const SWAP = {
@@ -218,7 +218,7 @@ export function VoiceFace({ voice }: { voice: VoiceInput }) {
               <p className="text-sm text-muted-foreground">
                 {status === "requesting"
                   ? "Allow microphone access to keep going."
-                  : "Oso-Ahia needs your microphone to hear you."}
+                  : "Ọru needs your microphone to hear you."}
               </p>
             </div>
             {status !== "requesting" && (

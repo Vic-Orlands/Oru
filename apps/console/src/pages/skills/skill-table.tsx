@@ -295,7 +295,7 @@ export function SkillsEmptyState({ onCreate }: { onCreate: () => void }) {
           No skills yet
         </h3>
         <p className="mx-auto max-w-sm text-[13px] leading-relaxed text-neutral-500 dark:text-neutral-400">
-          Write a set of instructions Oso-Ahia can learn mid-chat and publish it
+          Write a set of instructions Ọru can learn mid-chat and publish it
           to the store's Skills tab.
         </p>
       </div>

@@ -1,11 +1,11 @@
 /**
- * Providers Oso-Ahia calls with deployment-owned credentials. They are part
+ * Providers Ọru calls with deployment-owned credentials. They are part
  * of the product runtime, not apps an end user should install through
  * Composio. Keep aliases here so catalog search and admin provisioning share
  * one boundary even when a provider spells its toolkit slug differently.
  *
  * Google apps are intentionally absent: GOOGLE_CLIENT_* authenticates users
- * into Oso-Ahia, while Gmail/Calendar/Drive integrations require each user's
+ * into Ọru, while Gmail/Calendar/Drive integrations require each user's
  * separate consent and data scopes.
  */
 const PLATFORM_MANAGED_TOOLKIT_SLUGS = new Set([

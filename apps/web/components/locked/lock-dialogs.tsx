@@ -71,7 +71,7 @@ export function LockDialogs() {
         open={dialog?.kind === "remove"}
         onOpenChange={(open) => !open && closeLockDialog()}
         title="Remove the lock?"
-        message="Oso-Ahia decrypts this chat and stores it as a usual chat. No password is necessary to open it. The messages do not change."
+        message="Ọru decrypts this chat and stores it as a usual chat. No password is necessary to open it. The messages do not change."
         confirmLabel="Remove lock"
         destructive
         onConfirm={() => {
@@ -79,7 +79,7 @@ export function LockDialogs() {
           void actions
             .unlock(dialog.threadId)
             .catch(() =>
-              showToast("Oso-Ahia cannot remove the lock. Try again."),
+              showToast("Ọru cannot remove the lock. Try again."),
             );
         }}
       />

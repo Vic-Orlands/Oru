@@ -1,7 +1,7 @@
 "use client";
 
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 import { AutumnProvider } from "autumn-js/react";
 import {
   ConvexReactClient,

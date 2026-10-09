@@ -1,9 +1,9 @@
-/* Oso-Ahia's service worker.
+/* Ọru's service worker.
  *
  * It does two things and refuses to do a third:
  *
  *   1. Answers a navigation that the network couldn't with an offline page,
- *      so a tunnel or a dead connection gets Oso-Ahia's own face instead of the
+ *      so a tunnel or a dead connection gets Ọru's own face instead of the
  *      browser's dinosaur.
  *   2. Serves the fonts and icons from cache, because they never change
  *      within a build and they are what the first frame waits on.
@@ -20,7 +20,7 @@
  * it on every navigation.
  */
 
-const CACHE = "whirl-shell-v1";
+const CACHE = "oru-shell-v1";
 const OFFLINE_URL = "/offline.html";
 
 /* Small, and every one of them outlives a deploy: the font is content-stable
@@ -63,7 +63,7 @@ self.addEventListener("activate", (event) => {
       const names = await caches.keys();
       await Promise.all(
         names
-          .filter((name) => name.startsWith("whirl-") && name !== CACHE)
+          .filter((name) => name.startsWith("oru-") && name !== CACHE)
           .map((name) => caches.delete(name)),
       );
       await self.clients.claim();

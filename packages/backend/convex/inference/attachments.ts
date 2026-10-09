@@ -219,15 +219,15 @@ export type HistoryEventOptions = {
 };
 
 /**
- * What whirl's tools did during one assistant turn, as plain lines.
+ * What oru's tools did during one assistant turn, as plain lines.
  *
  * These never go back into the assistant message they describe. An
  * image-only or artifact-only turn has no prose, so the note WOULD BE the
  * whole assistant message — and a model reading its own last reply as
- * `[whirl painted an image here: <url>]` writes exactly that on the next
+ * `[oru painted an image here: <url>]` writes exactly that on the next
  * turn, inventing a storage URL to fill the slot. getRequestForStream folds
  * these into a labelled system-log block on the following user turn instead,
- * where there is nothing in whirl's voice to copy.
+ * where there is nothing in oru's voice to copy.
  */
 export function assistantHistoryEvents(
   message: {
@@ -258,7 +258,7 @@ export function assistantHistoryEvents(
       )
       .join(", ");
     events.push(
-      `Oso-Ahia generated ${
+      `Ọru generated ${
         generatedImages.length === 1
           ? "an image"
           : `${generatedImages.length} images`
@@ -273,14 +273,14 @@ export function assistantHistoryEvents(
     if (phase.kind === "document" && phase.documentId) {
       const link = options?.shareLinks?.documents[phase.documentId];
       events.push(
-        `Oso-Ahia ${phase.op === "edit" ? "revised" : "wrote"} a document: "${
+        `Ọru ${phase.op === "edit" ? "revised" : "wrote"} a document: "${
           phase.title || "Untitled"
         }" (id: ${phase.documentId}${link ? `, public link: ${link}` : ""})`,
       );
     } else if (phase.kind === "html" && phase.htmlId) {
       const link = options?.shareLinks?.html[phase.htmlId];
       events.push(
-        `Oso-Ahia ${phase.op === "edit" ? "revised" : "built"} an HTML artifact: "${
+        `Ọru ${phase.op === "edit" ? "revised" : "built"} an HTML artifact: "${
           phase.title || "Untitled"
         }" (id: ${phase.htmlId}${link ? `, public link: ${link}` : ""})`,
       );
@@ -292,7 +292,7 @@ export function assistantHistoryEvents(
   for (const phase of message.phases ?? []) {
     if (phase.kind !== "image" || !phase.images?.length) continue;
     events.push(
-      `Oso-Ahia painted an image${
+      `Ọru painted an image${
         phase.prompt ? ` (prompt: ${phase.prompt})` : ""
       }; it is already on screen. Stored at: ${phase.images.join(", ")}`,
     );
@@ -308,8 +308,8 @@ export function assistantHistoryEvents(
       .join(" · ");
     events.push(
       phase.answered
-        ? `Oso-Ahia asked the user with an interactive form: ${asked} — they answered via the form in their next message.`
-        : `Oso-Ahia asked the user with an interactive form: ${asked} — they replied in their own words instead of the form.`,
+        ? `Ọru asked the user with an interactive form: ${asked} — they answered via the form in their next message.`
+        : `Ọru asked the user with an interactive form: ${asked} — they replied in their own words instead of the form.`,
     );
   }
   // Tool results are not replayed as provider tool messages on later turns,
@@ -332,14 +332,14 @@ export function assistantHistoryEvents(
 // storage URL is the failure that actually reached users — that a link only
 // exists if it is written out here.
 const HISTORY_EVENTS_PREAMBLE =
-  "System-generated record of what Oso-Ahia's tools did in the conversation above. It is not a message, not part of any reply, and not something to respond to. Read it as context only: never quote, restate, reformat, or imitate these lines, and never write a link, id, or file URL that does not appear verbatim inside one of them.";
+  "System-generated record of what Ọru's tools did in the conversation above. It is not a message, not part of any reply, and not something to respond to. Read it as context only: never quote, restate, reformat, or imitate these lines, and never write a link, id, or file URL that does not appear verbatim inside one of them.";
 
 export function historyEventsBlock(events: string[]) {
   return [
-    "<whirl_system_log>",
+    "<oru_system_log>",
     HISTORY_EVENTS_PREAMBLE,
     ...events.map((event) => `- ${event}`),
-    "</whirl_system_log>",
+    "</oru_system_log>",
   ].join("\n");
 }
 

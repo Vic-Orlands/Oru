@@ -27,12 +27,12 @@ vi.mock("autumn-js", () => ({
 }));
 const identity = {
   subject: "alice",
-  issuer: "https://test.whirl.chat",
-  tokenIdentifier: "https://test.whirl.chat|alice",
+  issuer: "https://oru.test",
+  tokenIdentifier: "https://oru.test|alice",
 };
 const guestKey = "a".repeat(64);
 const owner = guestOwner(guestKey);
-const code = "WHIRL-1234-5678-ABCD-EF01-2345-6789";
+const code = "ORU-1234-5678-ABCD-EF01-2345-6789";
 
 function testDb() {
   return convexTest(schema, modules);
@@ -494,14 +494,14 @@ describe("guest prize codes", () => {
 
   test("codes have 96 random bits and tolerate spaces, case and hyphens", () => {
     const generated = newRedemptionCode();
-    expect(generated).toMatch(/^WHIRL(?:-[A-F0-9]{4}){6}$/);
+    expect(generated).toMatch(/^ORU(?:-[A-F0-9]{4}){6}$/);
     expect(
       normalizeRedemptionCode(
         `  ${generated.toLowerCase().replaceAll("-", " ")} `,
       ),
     ).toBe(generated);
     expect(() => guestOwner("guessable")).toThrow();
-    expect(() => normalizeRedemptionCode("WHIRL-NOPE")).toThrow();
+    expect(() => normalizeRedemptionCode("ORU-NOPE")).toThrow();
   });
 
   test("unregistered users can play without billing and receive a redeemable code", async () => {
@@ -515,7 +515,7 @@ describe("guest prize codes", () => {
     });
     expect(result.balance).toBe(40);
     const prizes = await t.query(api.slotCodes.guestPrizes, { guestKey });
-    expect(prizes[0].redemptionCode).toMatch(/^WHIRL(?:-[A-F0-9]{4}){6}$/);
+    expect(prizes[0].redemptionCode).toMatch(/^ORU(?:-[A-F0-9]{4}){6}$/);
   });
 
   test("guest wallet capabilities isolate private balances and codes", async () => {
@@ -586,7 +586,7 @@ describe("guest prize codes", () => {
     expect(
       (
         await signedIn.action(api.slotCodes.redeem, {
-          code: "WHIRL-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA",
+          code: "ORU-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA",
         })
       ).ok,
     ).toBe(false);

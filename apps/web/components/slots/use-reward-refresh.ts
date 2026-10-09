@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Doc } from "@whirl/backend/convex/_generated/dataModel";
+import type { Doc } from "@oru/backend/convex/_generated/dataModel";
 
 /** Compare receipt identities/statuses: a capped count stops changing at 100. */
 export function useRewardRefresh(

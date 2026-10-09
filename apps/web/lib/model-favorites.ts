@@ -3,7 +3,7 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 import { CHAT_MODELS, isCustomModelKey } from "@/lib/models";
 import { showToast } from "@/lib/toasts";
 
@@ -18,7 +18,7 @@ import { showToast } from "@/lib/toasts";
    toggle the same frame. */
 
 const CACHE_KEY = "model-favorites";
-const CHANGE_EVENT = "whirl:model-favorites";
+const CHANGE_EVENT = "oru:model-favorites";
 
 const DEFAULT_KEYS = CHAT_MODELS.map((model) => model.key as string);
 const DEFAULT_SET: ReadonlySet<string> = new Set(DEFAULT_KEYS);

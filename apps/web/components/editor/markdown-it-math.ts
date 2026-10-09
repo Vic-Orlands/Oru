@@ -109,9 +109,9 @@ function mathBlock(
  * tokenizer rules plus renderers that emit LaTeX-carrying placeholder elements.
  */
 export function registerMathParsing(md: MarkdownItLike): void {
-  const flagged = md as MarkdownItLike & { __whirlMath?: boolean };
-  if (flagged.__whirlMath) return;
-  flagged.__whirlMath = true;
+  const flagged = md as MarkdownItLike & { __oruMath?: boolean };
+  if (flagged.__oruMath) return;
+  flagged.__oruMath = true;
 
   md.inline.ruler.after("escape", "math_inline", mathInline);
   md.block.ruler.after("blockquote", "math_block", mathBlock, {

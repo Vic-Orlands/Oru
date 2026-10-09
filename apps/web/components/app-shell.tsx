@@ -189,18 +189,18 @@ export function AppShell({ children }: { children?: React.ReactNode }) {
       ? deskPage.charAt(0).toUpperCase() + deskPage.slice(1)
       : null;
     document.title = settingsOpen
-      ? `${SECTION_TITLES[section]} · Oso-Ahia`
+      ? `${SECTION_TITLES[section]} · Ọru`
       : integrationsOpen
-        ? "Integrations · Oso-Ahia"
+        ? "Integrations · Ọru"
         : historyOpen
-          ? "Chats · Oso-Ahia"
+          ? "Chats · Ọru"
           : deskTitle
-            ? `${deskTitle} · Oso-Ahia`
+            ? `${deskTitle} · Ọru`
           : activeThread
-            ? `${activeThread.title} · Oso-Ahia`
+            ? `${activeThread.title} · Ọru`
             : incognito
-              ? "Incognito · Oso-Ahia"
-              : "Oso-Ahia";
+              ? "Incognito · Ọru"
+              : "Ọru";
   }, [
     settingsOpen,
     integrationsOpen,

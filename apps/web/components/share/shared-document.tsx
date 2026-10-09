@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { MarkdownEditor } from "@/components/editor/markdown-editor";
 import { CodeDocumentEditor } from "@/components/editor/code-document-editor";

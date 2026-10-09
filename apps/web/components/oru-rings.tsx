@@ -17,8 +17,8 @@ import { pinRasterPath } from "@/lib/motion";
    as one piece, clockwise. Rotation is driven from here (not baked into
    an svg) so a spin always starts from — and lands on — the rest pose,
    staying perfectly in sync with the static mark. */
-const OUTER_MASK: CSSProperties = maskStyle("/whirl-ring-outer.svg");
-const INNER_MASK: CSSProperties = maskStyle("/whirl-ring-inner.svg");
+const OUTER_MASK: CSSProperties = maskStyle("/oru-ring-outer.svg");
+const INNER_MASK: CSSProperties = maskStyle("/oru-ring-inner.svg");
 
 /* The breathing rhythm: one full eased revolution, a beat of stillness at
    the rest pose, then again. */
@@ -100,15 +100,15 @@ export function useTwirl() {
 const ANIMATED_MARK_WIDTH_PCT = (240 / 182) * 100;
 const ANIMATED_MARK_HEIGHT_PCT = (242 / 182) * 100;
 
-/** The supplied animated Oso-Ahia mark, shared by every interactive logo. */
-export function WhirlAnimatedMark({
+/** The supplied animated Ọru mark, shared by every interactive logo. */
+export function OruAnimatedMark({
   className = "",
 }: {
   className?: string;
 }) {
   return (
     <motion.img
-      src="/whirl-animate.svg"
+      src="/oru-animate.svg"
       alt=""
       aria-hidden
       draggable={false}
@@ -129,7 +129,7 @@ export function WhirlAnimatedMark({
 }
 
 /** Crossfade between the resting mask and a complete animated SVG cycle. */
-export function WhirlHoverMark({
+export function OruHoverMark({
   twirling,
   layers,
 }: {
@@ -138,21 +138,21 @@ export function WhirlHoverMark({
 }) {
   return (
     <>
-      <WhirlRings
+      <OruRings
         layers={layers}
         className={`transition-opacity duration-150 ease-out ${
           twirling ? "opacity-0" : "opacity-100"
         }`}
       />
       <AnimatePresence>
-        {twirling && <WhirlAnimatedMark key="animated-whirl" />}
+        {twirling && <OruAnimatedMark key="animated-oru" />}
       </AnimatePresence>
     </>
   );
 }
 
 /**
- * The Oso-Ahia mark as two counter-rotating rings, colored by masked `layers`
+ * The Ọru mark as two counter-rotating rings, colored by masked `layers`
  * (stack several to crossfade fills). While `spin` is true the rings breathe:
  * an eased full turn, a brief rest, repeat. When it flips off they ease
  * forward to the next full turn so they always land exactly on the static
@@ -166,7 +166,7 @@ export function WhirlHoverMark({
  * can only change as smoothly as the rotation itself, and both arrive at the
  * rest pose together — including through the wind-down.
  */
-export function WhirlRings({
+export function OruRings({
   spin = false,
   breathe = false,
   layers,

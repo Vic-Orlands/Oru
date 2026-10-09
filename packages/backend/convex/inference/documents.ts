@@ -152,12 +152,12 @@ export function extractCompleteField(
 }
 
 /**
- * Lets whirl spin up a markdown document — a standalone artifact the user can
+ * Lets oru spin up a markdown document — a standalone artifact the user can
  * open, read, and keep editing in the document panel — instead of dumping a long
  * piece of writing into the chat. The body streams live into a card + side panel
- * as whirl writes it; `finalize` closes out the row the stream loop opened (and
+ * as oru writes it; `finalize` closes out the row the stream loop opened (and
  * is the one place a row is created if the provider didn't stream the input).
- * The returned `documentId` is how whirl targets the doc for later edits.
+ * The returned `documentId` is how oru targets the doc for later edits.
  */
 export function createDocumentTool({
   finalize,
@@ -301,7 +301,7 @@ export function createCodeDocumentTool({
 }
 
 /**
- * Lets whirl revise an existing document with targeted find/replace edits, so
+ * Lets oru revise an existing document with targeted find/replace edits, so
  * only the changed regions update and untouched text is preserved exactly. Each
  * `find` must match the current document text exactly and appear only once. The
  * model is given the document's current content in its prompt, so it can copy

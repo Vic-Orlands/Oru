@@ -11,7 +11,7 @@ import {
   type SidebarGroup,
 } from "./ThreadList";
 import { UserButton, type SidebarUser } from "./UserButton";
-import { WhirlLogo } from "./WhirlLogo";
+import { OruLogo } from "./OruLogo";
 
 /* Ripped from apps/web/components/sidebar.tsx — the expanded desktop rail,
    dark mode, at rest. Structure and spacing are v2's to the pixel: an even
@@ -69,7 +69,7 @@ export function Sidebar({
       {/* Fixed height so the row never shifts between toggle states. */}
       <div style={logo}>
         <div className="relative flex h-7 items-center px-1.5">
-          <WhirlLogo size={20} />
+          <OruLogo size={20} />
         </div>
       </div>
 

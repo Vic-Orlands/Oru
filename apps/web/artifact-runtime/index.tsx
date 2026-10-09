@@ -8,7 +8,7 @@
  * What it does:
  *  - hands the compiled module a tiny `require` over a fixed set of packages,
  *  - mounts its default export under an error boundary,
- *  - answers useWhirlData() by asking the HOST to run a declared binding —
+ *  - answers useOruData() by asking the HOST to run a declared binding —
  *    this frame has no credentials and no way to reach an integration itself,
  *  - reports its height up so an inline card can size to it, and
  *  - swaps light/dark in place instead of reloading the document.
@@ -54,7 +54,7 @@ function requestBinding(
     try {
       HOST.postMessage(
         {
-          type: "whirl-artifact-data-request",
+          type: "oru-artifact-data-request",
           requestId,
           bindingId,
           extraArgs: extraArgs ? JSON.stringify(extraArgs) : undefined,
@@ -84,7 +84,7 @@ function requestBinding(
  * which tool it maps to was fixed when the artifact was written, and lives on
  * the host. `refetch` re-runs the same binding with extra arguments merged in.
  */
-function useWhirlData(
+function useOruData(
   bindingId: string,
   initialArgs?: Record<string, unknown>,
 ): {
@@ -168,14 +168,14 @@ const MODULES: Record<string, unknown> = {
   "react/jsx-runtime": JsxRuntime,
   "react/jsx-dev-runtime": JsxRuntime,
   recharts: Recharts,
-  "@whirl/data": { useWhirlData },
+  "@oru/data": { useOruData },
 };
 
 function requireModule(name: string): unknown {
   const found = MODULES[name];
   if (!found) {
     throw new Error(
-      `This artifact tried to import "${name}", which isn't available here. Only react, recharts, and @whirl/data can be imported.`,
+      `This artifact tried to import "${name}", which isn't available here. Only react, recharts, and @oru/data can be imported.`,
     );
   }
   return found;
@@ -220,14 +220,14 @@ function FrameError({ title, detail }: { title: string; detail: string }) {
       { className: "max-w-md text-center" },
       React.createElement(
         "div",
-        { className: "text-[13.5px] font-medium text-[var(--whirl-fg)]" },
+        { className: "text-[13.5px] font-medium text-[var(--oru-fg)]" },
         title,
       ),
       React.createElement(
         "div",
         {
           className:
-            "mt-1 text-[12.5px] leading-5 text-[var(--whirl-muted)] break-words",
+            "mt-1 text-[12.5px] leading-5 text-[var(--oru-muted)] break-words",
         },
         detail,
       ),
@@ -237,7 +237,7 @@ function FrameError({ title, detail }: { title: string; detail: string }) {
 
 function report(phase: "compile" | "render", message: string) {
   try {
-    HOST.postMessage({ type: "whirl-artifact-error", phase, message }, "*");
+    HOST.postMessage({ type: "oru-artifact-error", phase, message }, "*");
   } catch {
     /* The host went away; nothing to report to. */
   }
@@ -301,13 +301,13 @@ function reportHeight() {
   if (height === lastHeight) return;
   lastHeight = height;
   try {
-    HOST.postMessage({ type: "whirl-artifact-height", height }, "*");
+    HOST.postMessage({ type: "oru-artifact-height", height }, "*");
   } catch {
     /* no host to tell */
   }
 }
 
-/* The host owns the --whirl-* palette (lib/html-frame.ts) and posts it down
+/* The host owns the --oru-* palette (lib/html-frame.ts) and posts it down
    with each theme change, so the two never drift and a light/dark swap is a
    style write instead of a document reload. */
 function applyTheme(dark: boolean, tokens?: Record<string, string>) {
@@ -337,17 +337,17 @@ window.addEventListener("message", (event: MessageEvent) => {
   if (!data?.type) return;
 
   switch (data.type) {
-    case "whirl-artifact-code":
+    case "oru-artifact-code":
       if (typeof data.code === "string") mount(data.code);
       break;
-    case "whirl-artifact-theme":
+    case "oru-artifact-theme":
       applyTheme(Boolean(data.dark), data.tokens);
       break;
-    case "whirl-artifact-mode":
+    case "oru-artifact-mode":
       fill = Boolean(data.fill);
       document.documentElement.classList.toggle("fill", fill);
       break;
-    case "whirl-artifact-data-result": {
+    case "oru-artifact-data-result": {
       const waiting =
         typeof data.requestId === "number"
           ? pending.get(data.requestId)
@@ -376,7 +376,7 @@ window.addEventListener("load", reportHeight);
    only flips a boolean. */
 function announceReady() {
   try {
-    HOST.postMessage({ type: "whirl-artifact-ready" }, "*");
+    HOST.postMessage({ type: "oru-artifact-ready" }, "*");
   } catch {
     /* No host — a standalone copy of this file. Nothing to announce to. */
   }

@@ -16,8 +16,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { shareId } = await params;
   return publicPageMetadata({
-    title: "Shared on Oso-Ahia",
-    description: "A conversation shared from Oso-Ahia.",
+    title: "Shared on Ọru",
+    description: "A conversation shared from Ọru.",
     path: `/share/${shareId}`,
   });
 }

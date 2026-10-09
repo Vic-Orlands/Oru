@@ -56,7 +56,7 @@ const SITE_URL = siteUrl();
 const CHECKOUT_SUCCESS_URL = `${SITE_URL}/platinum`;
 // Mail clients can't resolve a relative src, so the mark ships as an absolute
 // URL into the same public asset the site serves.
-const EMAIL_LOGO_URL = `${SITE_URL}/whirl-mark.png`;
+const EMAIL_LOGO_URL = `${SITE_URL}/oru-mark.png`;
 
 function planName(plan: string): string {
   return PLATINUM_PLAN_NAMES[plan as PlatinumPlan] ?? "Platinum";

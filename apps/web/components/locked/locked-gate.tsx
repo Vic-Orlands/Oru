@@ -42,7 +42,7 @@ export function LockedGate({ threadId }: { threadId: string }) {
           This chat is locked
         </h2>
         <p className="mt-1.5 text-[13px]/[1.55] text-muted-foreground">
-          Enter your password to read this chat. Oso-Ahia does not keep a copy of
+          Enter your password to read this chat. Ọru does not keep a copy of
           your password.
         </p>
         <Button

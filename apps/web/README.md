@@ -1,6 +1,6 @@
-# Oso-Ahia web app
+# Ọru web app
 
-The production Oso-Ahia Next.js app. It talks to the Convex backend in
+The production Ọru Next.js app. It talks to the Convex backend in
 [`packages/backend`](../../packages/backend) and signs people in with Better Auth.
 
 ## Running it

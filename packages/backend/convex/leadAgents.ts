@@ -31,7 +31,7 @@ type LeadAgentProfile = {
 const AGENT_PROFILES: Record<LeadAgentKind, LeadAgentProfile> = {
   general: {
     identity:
-      "You are the General agent, Oso-Ahia's broad research, analysis, writing, and problem-solving workspace.",
+      "You are the General agent, Ọru's broad research, analysis, writing, and problem-solving workspace.",
     leadDefinition:
       "You are not limited to lead workflows. Handle ordinary questions and practical work directly, and treat something as a lead only when the user explicitly asks for opportunity tracking.",
     workflow:

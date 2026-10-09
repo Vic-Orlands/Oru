@@ -1,6 +1,6 @@
 /* The browser's half of the acquisition funnel (W-155).
 
-   Oso-Ahia's funnel runs visitor → signup → first chat → free limit → paywall →
+   Ọru's funnel runs visitor → signup → first chat → free limit → paywall →
    paid. The steps a person *sees* are captured here; the ones only the server
    can vouch for (the chat that landed, the gate that denied, the plan Autumn
    confirmed) come from packages/backend/convex/funnel.ts. Both halves report

@@ -10,7 +10,7 @@ import Animated, {
   type SharedValue,
 } from "react-native-reanimated";
 
-import { WhirlMark } from "@/components/whirl-mark";
+import { OruMark } from "@/components/oru-mark";
 import { SwapIcon } from "@/components/ui/swap-icon";
 import { duration, ease, spring } from "@/lib/motion";
 import { REPLACE_IN, REPLACE_OUT } from "@/lib/replace";
@@ -77,7 +77,7 @@ export function GreetingPage({ name, incognito, lift }: GreetingPageProps) {
           Going incognito replaces it the same way the toolbar button changes. */}
       <Animated.View style={[styles.markBox, markStyle]}>
         <SwapIcon
-          icon={incognito ? IconSpy : WhirlMark}
+          icon={incognito ? IconSpy : OruMark}
           name={incognito ? "incognito" : "mark"}
           size={MARK_SIZE}
           color={colors.foreground}

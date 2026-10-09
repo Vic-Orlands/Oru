@@ -13,10 +13,10 @@ import { decryptSecret } from "./inference/crypto";
 import { mcpListTools, type McpHeader } from "./inference/mcp";
 import { assertSafeFetchUrl } from "./inference/urlSafety";
 
-// Backend for the Oso-Ahia Console (apps/console). An integration is an MCP
+// Backend for the Ọru Console (apps/console). An integration is an MCP
 // server registered for the store: branding, endpoint, auth recipe, and
 // developer-written tool descriptions. Every function here is scoped to the
-// signed-in developer — the console shares Oso-Ahia's Clerk instance, so
+// signed-in developer — the console shares Ọru's Clerk instance, so
 // `identity.subject` lines up with the userId used across the rest of the app.
 
 const MAX_NAME_LENGTH = 60;
@@ -34,7 +34,7 @@ const MAX_REVIEW_NOTE_LENGTH = 500;
 const MAX_PENDING_REQUESTS = 200;
 
 /** Store authors whose admin-submitted integrations get the blue checkmark. */
-const VERIFIED_AUTHOR = "whirl";
+const VERIFIED_AUTHOR = "oru";
 
 const authModeValidator = v.union(
   v.literal("none"),
@@ -142,7 +142,7 @@ function normalizeMcpUrl(raw: string): string {
   if (!url) throw new Error("Give the MCP server a URL.");
   if (url.length > MAX_URL_LENGTH) throw new Error("That URL is too long.");
   // Requires https and rejects internal hosts — we fetch this server-side
-  // when scanning tools, and Oso-Ahia connects to it at runtime.
+  // when scanning tools, and Ọru connects to it at runtime.
   assertSafeFetchUrl(url);
   return url;
 }
@@ -330,8 +330,8 @@ export const scanTools = action({
 /**
  * Register an integration for the store. Starts "pending" in the admin
  * approvals queue. `verified` (the blue checkmark) is granted only when an
- * admin account submits under the "Oso-Ahia" author name — anyone else can type
- * "Oso-Ahia", it just won't verify.
+ * admin account submits under the "Ọru" author name — anyone else can type
+ * "Ọru", it just won't verify.
  */
 export const create = mutation({
   args: {

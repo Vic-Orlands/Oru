@@ -4,10 +4,10 @@ import { SITE_NAME } from "@/lib/site";
 
 export { SITE_NAME, SITE_URL } from "@/lib/site";
 export const DEFAULT_TITLE =
-  "Oso-Ahia — The AI sales desk that waits for your yes";
+  "Ọru — The AI sales desk that waits for your yes";
 export const DEFAULT_DESCRIPTION =
   "Find prospects, qualify them, write the sequence, and send only what you approve. A chat-first lead desk for people who still want to read the email.";
-export const OG_IMAGE_PATH = "/whirl-og.png";
+export const OG_IMAGE_PATH = "/oru-og.png";
 
 export type SocialImage = {
   url: string;

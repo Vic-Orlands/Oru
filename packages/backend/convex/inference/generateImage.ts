@@ -3,7 +3,7 @@ import { jsonSchema, tool } from "ai";
 const MAX_PROMPT_LENGTH = 4_000;
 
 /**
- * Lets whirl paint a picture mid-reply without holding the reply open: each
+ * Lets oru paint a picture mid-reply without holding the reply open: each
  * call schedules a background paint (see imageWorker.ts) and returns
  * immediately. The picture lands on the message's `image` phase when the
  * worker finishes, and the chat renders that phase as an inline picture card

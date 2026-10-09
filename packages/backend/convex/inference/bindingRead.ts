@@ -3,7 +3,7 @@ import { findMcpServer } from "./mcpResolve";
 
 /**
  * Running one *declared* integration read — the thing behind a react
- * artifact's `useWhirlData` and a live chart's data source.
+ * artifact's `useOruData` and a live chart's data source.
  *
  * Both live surfaces name a binding by id and nothing else; the integration
  * and tool were fixed when the model wrote the thing. This module is the part

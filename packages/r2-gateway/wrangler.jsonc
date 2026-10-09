@@ -1,12 +1,12 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "oso-ahia-private-media",
+  "name": "oru-private-media",
   "main": "src/index.ts",
   "compatibility_date": "2026-10-08",
   "r2_buckets": [
     {
       "binding": "MEDIA",
-      "bucket_name": "oso-ahia"
+      "bucket_name": "oru"
     }
   ]
 }

@@ -51,7 +51,7 @@ export function PricingPage() {
             className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <IconArrowLeft size={14} stroke={2.2} />
-            Back to Oso-Ahia
+            Back to Ọru
           </Link>
         </motion.div>
 
@@ -61,7 +61,7 @@ export function PricingPage() {
           </h1>
           <p className="mt-2 max-w-xl text-[14px]/6 text-muted-foreground">
             Start free, upgrade when you need more room. Every plan is the same
-            Oso-Ahia, just with a bigger engine behind it.
+            Ọru, just with a bigger engine behind it.
           </p>
         </motion.header>
 

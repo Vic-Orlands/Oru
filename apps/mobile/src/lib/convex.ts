@@ -10,7 +10,7 @@ import type { ThreadSummary } from "@/lib/threads";
 /**
  * The app's slice of the Convex API.
  *
- * The web apps import the generated bindings from `@whirl/backend`, which
+ * The web apps import the generated bindings from `@oru/backend`, which
  * carries the whole backend's types with it. Metro is deliberately pointed at
  * this app's own root plus the hoisted `node_modules` and nothing else (see
  * metro.config.js — widening the crawl ran the bundler out of file handles),
@@ -72,9 +72,9 @@ export const api = {
   },
 } as const;
 
-/** Where whirl is served — the origin every share link is built against.
+/** Where oru is served — the origin every share link is built against.
  *  Set EXPO_PUBLIC_SITE_URL to your web app's public address. */
-export const WHIRL_ORIGIN = (
+export const ORU_ORIGIN = (
   process.env.EXPO_PUBLIC_SITE_URL || "http://localhost:3000"
 ).replace(/\/+$/, "");
 

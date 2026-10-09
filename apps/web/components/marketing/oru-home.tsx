@@ -10,7 +10,7 @@ import {
 } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
 
-import { OsoLogo } from "@/components/oso-logo";
+import { OruBrandLogo } from "@/components/oru-brand-logo";
 import { useIsDark, useTheme } from "@/lib/theme";
 
 const LOGOS = [
@@ -178,7 +178,7 @@ function StagePanel({
   );
 }
 
-export function OsoHome() {
+export function OruHome() {
   const { setTheme } = useTheme();
   const dark = useIsDark();
   const [stage, setStage] = useState(0);
@@ -206,8 +206,8 @@ export function OsoHome() {
 
         <header className="relative mx-auto flex max-w-6xl items-center gap-4 px-5 py-4 text-white">
           <Link href="/" className="flex items-center gap-2 text-[14px] font-medium">
-            <OsoLogo size={18} className="text-white" />
-            Oso-Ahia
+            <OruBrandLogo size={18} className="text-white" />
+            Ọru
           </Link>
           <nav className="ml-6 hidden items-center gap-5 text-[13px] text-white/75 md:flex">
             <a href="#how">How it works</a>
@@ -484,7 +484,7 @@ export function OsoHome() {
             href="/app"
             className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[13.5px] font-medium text-primary-foreground"
           >
-            Open Oso-Ahia
+            Open Ọru
             <IconArrowRight size={15} />
           </Link>
         </div>
@@ -492,14 +492,8 @@ export function OsoHome() {
 
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-6 text-[12px] text-muted-foreground md:flex-row md:justify-between">
-          <span>Oso-Ahia</span>
-          <span>
-            Built on{" "}
-            <a className="underline" href="https://github.com/whirlchat/whirl">
-              Oso-Ahia
-            </a>{" "}
-            by Anterra, MIT licensed.
-          </span>
+          <span>Ọru</span>
+          <span>Opportunity intelligence, without the busywork.</span>
         </div>
       </footer>
     </div>

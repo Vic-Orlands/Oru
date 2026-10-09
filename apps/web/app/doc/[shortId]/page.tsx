@@ -14,8 +14,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { shortId } = await params;
   return publicPageMetadata({
-    title: "Made with Oso-Ahia",
-    description: "A document written with Oso-Ahia.",
+    title: "Made with Ọru",
+    description: "A document written with Ọru.",
     path: `/doc/${shortId}`,
   });
 }

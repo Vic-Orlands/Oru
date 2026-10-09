@@ -19,7 +19,7 @@ restock or stock reset.
 
 Signed-in wallet ownership uses the authenticated token identifier. Existing
 Autumn billing customers continue to use the Clerk subject, matching the rest of
-Oso-Ahia. Guests get a 256-bit browser capability stored in localStorage. Clearing
+Ọru. Guests get a 256-bit browser capability stored in localStorage. Clearing
 browser storage loses that guest wallet; saved perk codes remain usable. Guest
 wallets are browser identities, not verified people, so a new browser identity
 can receive a new starter balance. Guest perks use free-tier eligibility.

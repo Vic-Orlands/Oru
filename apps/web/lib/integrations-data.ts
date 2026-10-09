@@ -4,8 +4,8 @@ import { useEffect, useMemo, useRef } from "react";
 import { useAction, useConvexAuth, useQuery } from "convex/react";
 import { ConvexError } from "convex/values";
 
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 import { useCachedList } from "./cached-list";
 
 /* Client bindings for the /integrations store. Rows follow the app-wide

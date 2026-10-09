@@ -102,7 +102,7 @@ export const getSharedArtifact = query({
 });
 
 /**
- * Open a brand-new HTML artifact (inline viz or full page) for whirl to stream
+ * Open a brand-new HTML artifact (inline viz or full page) for oru to stream
  * into. Inserted empty and "streaming" on tool-input-start, before a token of
  * the body arrives, so the card/panel can latch onto the live row and watch it
  * fill in. {@link finalizeStreamingHtml} closes it out.
@@ -219,7 +219,7 @@ export const failStreamingHtml = internalMutation({
 });
 
 /**
- * Apply whirl's targeted find/replace edits to an artifact (inline or full).
+ * Apply oru's targeted find/replace edits to an artifact (inline or full).
  * Each `find` must match the current content exactly and appear once — the model
  * is handed the artifact's current HTML in its prompt, so it copies anchors
  * verbatim. Ambiguous/missing snippets are skipped and reported back, with the

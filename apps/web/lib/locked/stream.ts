@@ -123,7 +123,7 @@ export function lockedStreamUrl(): string {
 
   const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
   if (!convexUrl?.endsWith(".convex.cloud")) {
-    throw new Error("Oso-Ahia cannot connect to the server.");
+    throw new Error("Ọru cannot connect to the server.");
   }
   return `${convexUrl.replace(/\.convex\.cloud$/, ".convex.site")}/locked-stream`;
 }
@@ -269,7 +269,7 @@ export async function runLockedTurn(
       error =
         cause instanceof Error
           ? cause.message
-          : "Oso-Ahia cannot generate this reply. Try again.";
+          : "Ọru cannot generate this reply. Try again.";
     }
   } finally {
     clearTimeout(silent);

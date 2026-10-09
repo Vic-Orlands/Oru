@@ -154,7 +154,7 @@ export function ToolScanSection({
       });
       const popup = window.open(
         authorizationUrl,
-        "whirl-scan-oauth",
+        "oru-scan-oauth",
         "width=520,height=680",
       );
       if (!popup) {
@@ -173,7 +173,7 @@ export function ToolScanSection({
   const exportJsonc = () => {
     if (!tools) return;
     downloadTextFile(
-      "whirl-tools.jsonc",
+      "oru-tools.jsonc",
       toolsToJsonc(tools),
       "application/json",
     );

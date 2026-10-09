@@ -16,9 +16,9 @@ import { displayHost, SITE_LINKS } from "@/lib/site";
 const CONSOLE_URL = SITE_LINKS.console;
 
 export const metadata: Metadata = publicPageMetadata({
-  title: "Developers · Oso-Ahia",
+  title: "Developers · Ọru",
   description:
-    "Bring your app to Oso-Ahia over MCP and make it available in every conversation.",
+    "Bring your app to Ọru over MCP and make it available in every conversation.",
   path: "/about/developers",
 });
 
@@ -27,37 +27,41 @@ export default function DevelopersPage() {
     <article>
       <PageTitle>Developers</PageTitle>
       <Lede>
-        Oso-Ahia is a surface for your software too. If your product speaks MCP, it
-        can sit inside every Oso-Ahia conversation.
+        Ọru is a surface for your software too. If your product speaks MCP, it
+        can sit inside every Ọru conversation.
       </Lede>
       <div className="mt-8 flex flex-wrap gap-3">
-        <CtaLink href={CONSOLE_URL} primary>
-          Open the Console
-        </CtaLink>
-        <CtaLink href="/about/features">See what Oso-Ahia does</CtaLink>
+        {CONSOLE_URL && (
+          <CtaLink href={CONSOLE_URL} primary>
+            Open the Console
+          </CtaLink>
+        )}
+        <CtaLink href="/about/features">See what Ọru does</CtaLink>
       </div>
       <SplitSection
         title="Integrate your app over MCP"
-        body="Expose your product as tools on a Model Context Protocol server and Oso-Ahia can call them mid-conversation. Once approved, your integration appears in the store."
+        body="Expose your product as tools on a Model Context Protocol server and Ọru can call them mid-conversation. Once approved, your integration appears in the store."
         visual={<McpVisual />}
       />
       <SplitSection
         reverse
-        title="Ship it from the Oso-Ahia Console"
+        title="Ship it from the Ọru Console"
         body="Register integrations, publish skills, write the tool descriptions users see, and track each submission through review."
         visual={<ConsoleVisual />}
       />
-      <p className="mt-16 text-[15px] leading-relaxed text-neutral-600 dark:text-neutral-400">
-        Ready when you are:{" "}
-        <a
-          href={CONSOLE_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="font-medium text-[#0c82f2] hover:underline"
-        >
-          {displayHost(CONSOLE_URL)}
-        </a>
-      </p>
+      {CONSOLE_URL && (
+        <p className="mt-16 text-[15px] leading-relaxed text-neutral-600 dark:text-neutral-400">
+          Ready when you are:{" "}
+          <a
+            href={CONSOLE_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-[#0c82f2] hover:underline"
+          >
+            {displayHost(CONSOLE_URL)}
+          </a>
+        </p>
+      )}
     </article>
   );
 }

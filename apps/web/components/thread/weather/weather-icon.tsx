@@ -79,7 +79,7 @@ export function weatherIconFor(code: number, isDay: boolean): WeatherGlyph {
   }
 }
 
-/** Human label for a WMO code (Title-free, lowercase to match Oso-Ahia's voice). */
+/** Human label for a WMO code (Title-free, lowercase to match Ọru's voice). */
 export function weatherLabel(code: number): string {
   switch (code) {
     case 0:

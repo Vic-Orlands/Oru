@@ -2,8 +2,8 @@
 
 import { memo, useCallback, useEffect } from "react";
 import { useMutation } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 import { ThreadView } from "@/components/thread/thread-view";
 import { useIsThreadOpen } from "@/lib/locked/keyring";
@@ -56,7 +56,7 @@ export const LockedThread = memo(function LockedThread({
         .retry(threadId, message, messages ?? [])
         .catch((error: unknown) =>
           showToast(
-            error instanceof Error ? error.message : "Oso-Ahia cannot retry.",
+            error instanceof Error ? error.message : "Ọru cannot retry.",
           ),
         );
     },
@@ -71,7 +71,7 @@ export const LockedThread = memo(function LockedThread({
           showToast(
             error instanceof Error
               ? error.message
-              : "Oso-Ahia cannot save the change.",
+              : "Ọru cannot save the change.",
           ),
         );
     },
@@ -84,7 +84,7 @@ export const LockedThread = memo(function LockedThread({
         threadId: threadId as Id<"threads">,
         messageId: message.id as Id<"messages">,
       }).catch(() =>
-        showToast("Oso-Ahia cannot delete the messages. Try again."),
+        showToast("Ọru cannot delete the messages. Try again."),
       );
     },
     [rollback, threadId],

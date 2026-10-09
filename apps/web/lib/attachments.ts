@@ -1,6 +1,6 @@
 import type { FunctionReturnType } from "convex/server";
 
-import type { api } from "@whirl/backend/convex/_generated/api";
+import type { api } from "@oru/backend/convex/_generated/api";
 import {
   DOCUMENT_MIME_TYPES_BY_EXTENSION,
   isExtractableDocument,
@@ -364,7 +364,7 @@ function readAsDataUrl(file: File): Promise<string> {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result));
     reader.onerror = () =>
-      reject(new Error(`Oso-Ahia cannot read ${file.name}. Attach it again.`));
+      reject(new Error(`Ọru cannot read ${file.name}. Attach it again.`));
     reader.readAsDataURL(file);
   });
 }
@@ -410,7 +410,7 @@ export async function prepareAttachment({
             console.error("Document conversion failed.", error);
             return {
               kind: "skipped",
-              reason: "Oso-Ahia couldn't read this document just now.",
+              reason: "Ọru couldn't read this document just now.",
             };
           },
         )

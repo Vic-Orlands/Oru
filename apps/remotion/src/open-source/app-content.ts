@@ -17,7 +17,7 @@ export const GROUPS: SidebarGroup[] = [
   {
     label: "Pinned",
     threads: [
-      { title: "Self-hosting Whirl on a Pi", pinned: true },
+      { title: "Self-hosting Ọru on a Pi", pinned: true },
       { title: "Weekly meal plan", pinned: true },
     ],
   },

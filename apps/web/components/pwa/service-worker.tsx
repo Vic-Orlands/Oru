@@ -36,7 +36,7 @@ export function ServiceWorker() {
         /* Nothing on screen breaks without it — the app is online-first and
            the worker only ever adds a fallback. Worth a line in the console
            so a missing offline page is explainable rather than mysterious. */
-        console.warn("Oso-Ahia: offline support is unavailable —", error);
+        console.warn("Ọru: offline support is unavailable —", error);
       });
     };
 

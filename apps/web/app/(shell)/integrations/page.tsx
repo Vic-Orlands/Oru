@@ -7,7 +7,7 @@ import { publicPageMetadata } from "@/lib/seo";
    or ?s=<skill> — the client face reads and strips them on mount. */
 
 export const metadata: Metadata = publicPageMetadata({
-  title: "Integrations · Oso-Ahia",
+  title: "Integrations · Ọru",
   description:
     "Browse and install the tools the desk sells with — CRM, mail, calendar, and enrichment.",
   path: "/integrations",

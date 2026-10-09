@@ -30,7 +30,7 @@ function reply(text: string, provider: string) {
 function repairWith(model: MockLanguageModelV4) {
   return repairFinalReply({
     model,
-    systemPrompt: "You are whirl.",
+    systemPrompt: "You are oru.",
     messages: [{ role: "user", content: "which file holds the theme tokens?" }],
     toolNames: ["mcp_call_tool", "mcp_call_tool", "fetchUrl"],
     trace: TRACE,

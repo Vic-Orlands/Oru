@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 import {
   IconExternalLink,
   IconThumbDown,

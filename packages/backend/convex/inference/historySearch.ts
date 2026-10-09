@@ -80,7 +80,7 @@ export function createChatHistorySearchTool({
         matches: matches.map((match) => ({
           chatTitle: match.threadTitle,
           ...(match.role !== undefined
-            ? { from: match.role === "user" ? "the user" : "you (Oso-Ahia)" }
+            ? { from: match.role === "user" ? "the user" : "you (Ọru)" }
             : {}),
           ...(match.sentAt !== undefined
             ? { date: formatSentAt(match.sentAt) }

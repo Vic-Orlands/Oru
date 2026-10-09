@@ -17,7 +17,7 @@ import { errorText } from "@/lib/integrations-data";
 import { showToast } from "@/lib/toasts";
 import { MemoryTextarea } from "./memory-textarea";
 
-/* Write a memory by hand instead of waiting for Oso-Ahia to notice it.
+/* Write a memory by hand instead of waiting for Ọru to notice it.
    "Always remember" marks the fact as a permanent trait, which pins it to
    the top of the list and stops Supermemory ageing it out. */
 export function AddMemoryDialog({
@@ -69,7 +69,7 @@ export function AddMemoryDialog({
         <DialogHeader>
           <DialogTitle>Add a memory</DialogTitle>
           <DialogDescription>
-            Oso-Ahia will carry this into every chat, same as anything it picks
+            Ọru will carry this into every chat, same as anything it picks
             up on its own.
           </DialogDescription>
         </DialogHeader>

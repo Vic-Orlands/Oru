@@ -5,7 +5,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 
-import { WhirlLogo } from "./WhirlLogo";
+import { OruLogo } from "./OruLogo";
 
 /* The home face's dressing around the composer, ripped from
    apps/web/components/home-intro.tsx, suggestion-cards.tsx and
@@ -21,7 +21,7 @@ export function HomeGreeting({ text }: { text: string }) {
             otherwise pick up baseline space and ride a few px high. */}
         <span className="relative size-8 shrink-0">
           <span className="absolute inset-0 flex items-center justify-center">
-            <WhirlLogo size={32} />
+            <OruLogo size={32} />
           </span>
         </span>
         <h1 className="min-w-0 truncate text-[28px]/9 font-medium tracking-tight">

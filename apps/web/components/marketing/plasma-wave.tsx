@@ -17,7 +17,7 @@ type PlasmaWaveProps = {
   className?: string;
 };
 
-const WHIRL_BLUES: [string, string] = ["#0C82F2", "#38BDF8"];
+const ORU_BLUES: [string, string] = ["#0C82F2", "#38BDF8"];
 
 const VERTEX_SHADER = /* glsl */ `
 attribute vec2 position;
@@ -135,7 +135,7 @@ export function PlasmaWave({
   dir2 = 1,
   bend1 = 1,
   bend2 = 0.5,
-  colors = WHIRL_BLUES,
+  colors = ORU_BLUES,
   className = "",
 }: PlasmaWaveProps) {
   const containerRef = useRef<HTMLDivElement>(null);

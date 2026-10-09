@@ -140,7 +140,7 @@ const REFUSALS: Record<Exclude<Claim["status"], "claimed">, (claim: Claim) => st
   thread_not_found: () =>
     "No thread of this customer's matches that. Ask them to copy the link from the address bar while the thread is open.",
   not_found: () =>
-    "That reply isn't in this thread. Look the thread up again with whirlThreadReplies and use a messageId from there.",
+    "That reply isn't in this thread. Look the thread up again with oruThreadReplies and use a messageId from there.",
   nothing_charged: () =>
     "Nothing was charged for that reply (failed and blocked replies aren't billed), or its receipt is older than 30 days.",
   still_settling: () =>

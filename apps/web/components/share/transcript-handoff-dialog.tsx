@@ -34,7 +34,7 @@ const AGENTS: Array<{
 /* Single line, no double quotes or `!` — it must survive verbatim inside
    the shell quoting above. */
 function resumePrompt(rawUrl: string): string {
-  return `You are resuming a conversation from Oso-Ahia. Fetch the raw markdown transcript at ${rawUrl}, read it fully, then continue the conversation from where it left off.`;
+  return `You are resuming a conversation from Ọru. Fetch the raw markdown transcript at ${rawUrl}, read it fully, then continue the conversation from where it left off.`;
 }
 
 export function TranscriptHandoffDialog({

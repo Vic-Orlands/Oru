@@ -103,16 +103,20 @@ export function HomeFooter() {
     SITE_LINKS.contactEmail && (
       <CopyEmailButton key="email" email={SITE_LINKS.contactEmail} />
     ),
-    <span key="social" className="flex items-center gap-2">
-      <ExternalLink href={SITE_LINKS.repo} label="Source code on GitHub">
-        <IconBrandGithubFilled size={13} />
-      </ExternalLink>
+    (SITE_LINKS.repo || SITE_LINKS.discord) && (
+      <span key="social" className="flex items-center gap-2">
+      {SITE_LINKS.repo && (
+        <ExternalLink href={SITE_LINKS.repo} label="Source code on GitHub">
+          <IconBrandGithubFilled size={13} />
+        </ExternalLink>
+      )}
       {SITE_LINKS.discord && (
         <ExternalLink href={SITE_LINKS.discord} label="Discord">
           <IconBrandDiscord size={13} stroke={2} />
         </ExternalLink>
       )}
-    </span>,
+      </span>
+    ),
   ].filter(Boolean);
 
   return (

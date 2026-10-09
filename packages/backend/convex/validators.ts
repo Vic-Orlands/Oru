@@ -25,7 +25,7 @@ export const attachmentValidator = v.object({
  * a string round-trips everywhere.
  */
 export const artifactBindingValidator = v.object({
-  /** The handle the artifact's code passes to useWhirlData. */
+  /** The handle the artifact's code passes to useOruData. */
   id: v.string(),
   /** Exact connected-integration name, resolved the same way the gateway does. */
   integration: v.string(),
@@ -314,7 +314,7 @@ export const phaseValidator = v.union(
     contentOffset: v.optional(v.number()),
     pending: v.optional(v.boolean()),
   }),
-  // Store listings whirl surfaced via the suggestIntegrations tool, rendered
+  // Store listings oru surfaced via the suggestIntegrations tool, rendered
   // inline as install cards. Only the listing id + a name snapshot are stored;
   // the card hydrates live branding + install state reactively (so installing
   // flips the card without touching the message). Opened pending on
@@ -346,7 +346,7 @@ export const phaseValidator = v.union(
     resumeInstruction: v.optional(v.string()),
     resolvedAt: v.optional(v.number()),
   }),
-  // A markdown or code document whirl authored or revised via the document
+  // A markdown or code document oru authored or revised via the document
   // tools,
   // shown inline as a card. Opened pending on tool-input-start (carrying the
   // `documentId` so the card can open + stream the live row); finalized once
@@ -363,7 +363,7 @@ export const phaseValidator = v.union(
     contentOffset: v.optional(v.number()),
     pending: v.optional(v.boolean()),
   }),
-  // An HTML artifact whirl authored or revised via the HTML tools (paid-only),
+  // An HTML artifact oru authored or revised via the HTML tools (paid-only),
   // shown inline as a card. `mode` is "inline" (a viz rendered straight in the
   // chat) or "full" (a standalone page that opens in the HTML side panel);
   // both stream live like a document. Opened pending on tool-input-start;
@@ -382,7 +382,7 @@ export const phaseValidator = v.union(
     contentOffset: v.optional(v.number()),
     pending: v.optional(v.boolean()),
   }),
-  // A chart whirl drew via the createChart tool, rendered inline as a card.
+  // A chart oru drew via the createChart tool, rendered inline as a card.
   // The model writes a spec, never the pixels — so the palette, light/dark
   // steps, and hover behaviour stay the app's. Opened pending on
   // tool-input-start; finalized with the validated spec once the call lands.
@@ -395,7 +395,7 @@ export const phaseValidator = v.union(
     contentOffset: v.optional(v.number()),
     pending: v.optional(v.boolean()),
   }),
-  // An image whirl painted mid-reply via the generateImage tool, rendered as
+  // An image oru painted mid-reply via the generateImage tool, rendered as
   // an inline picture card. Generation runs in a background worker (see
   // imageWorker.ts) so slow paints can't stall or time out the reply stream:
   // the phase opens pending on tool-input-start, gets its `prompt` stamped
@@ -414,7 +414,7 @@ export const phaseValidator = v.union(
     contentOffset: v.optional(v.number()),
     pending: v.optional(v.boolean()),
   }),
-  // An interactive form whirl raised via the askUserQuestion tool. The
+  // An interactive form oru raised via the askUserQuestion tool. The
   // composer morphs into the steps while this is the thread's latest message;
   // answerQuestionPhase stamps `answers` + `answered` when the user submits,
   // and the serialized answers ride in as their next user message either way.
@@ -582,7 +582,7 @@ export const homeSuggestionValidator = v.object({
 });
 
 // --- Usage ledger ------------------------------------------------------------
-// Every charge Oso-Ahia reports to Autumn is written down before it's sent (see
+// Every charge Ọru reports to Autumn is written down before it's sent (see
 // convex/usageLedger.ts), so a slow or failing Autumn round trip postpones a
 // charge instead of losing it.
 

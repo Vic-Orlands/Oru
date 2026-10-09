@@ -127,7 +127,7 @@ async function handshake(
       params: {
         protocolVersion: PROTOCOL_VERSION,
         capabilities: {},
-        clientInfo: { name: "whirl", version: "1.0.0" },
+        clientInfo: { name: "oru", version: "1.0.0" },
       },
     }),
   });

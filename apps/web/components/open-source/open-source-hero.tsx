@@ -10,10 +10,10 @@ import {
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 
-import { WhirlRings } from "@/components/whirl-rings";
+import { OruRings } from "@/components/oru-rings";
 import { EASE_OUT, pinRasterPath } from "@/lib/motion";
 
-/* The open-source announcement's hero: the Oso-Ahia mark as a small sun, with
+/* The open-source announcement's hero: the Ọru mark as a small sun, with
    the things a public repo brings drifting around it on two dotted orbits.
    The orbits counter-rotate, the same way the mark's own two rings do.
 
@@ -125,7 +125,7 @@ export function OpenSourceHero() {
           className="flex size-20 items-center justify-center rounded-full bg-popover ring-1 ring-border"
         >
           <span className="relative size-10">
-            <WhirlRings
+            <OruRings
               spin={introSpin || hovered}
               breathe
               layers={[{ className: "bg-foreground" }]}

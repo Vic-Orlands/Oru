@@ -1197,7 +1197,7 @@ export async function runAssistantTurn(
       };
 
       // Open the streaming row + pending `document` phase for a createDocument
-      // call keyed by its tool-call id. Called the moment whirl starts the call
+      // call keyed by its tool-call id. Called the moment oru starts the call
       // (tool-input-start) so the card's progress bar shows while it writes;
       // also called on tool-call for providers that never stream the input, so
       // those don't skip the progress bar entirely. Idempotent per id.
@@ -1281,7 +1281,7 @@ export async function runAssistantTurn(
           event:
             payload.op === "create"
               ? "document_created"
-              : "document_edited_by_whirl",
+              : "document_edited_by_oru",
           distinctId: customerId,
           properties: {
             document_id: payload.documentId,
@@ -1543,7 +1543,7 @@ export async function runAssistantTurn(
         await captureServerEvent({
           event:
             payload.op === "edit"
-              ? "html_edited_by_whirl"
+              ? "html_edited_by_oru"
               : payload.mode === "full"
                 ? "full_html_requested"
                 : "inline_html_created",
@@ -1651,7 +1651,7 @@ export async function runAssistantTurn(
         if (openStream.runtime === "react") {
           await runMutation(internal.html.failStreamingHtml, {
             htmlId: openStream.htmlId,
-            error: "Oso-Ahia stopped before this app was finished.",
+            error: "Ọru stopped before this app was finished.",
           });
           await runMutation(internal.inference.dropPendingHtmlPhase, {
             assistantId: requestInfo.assistantId,
@@ -2240,7 +2240,7 @@ export async function runAssistantTurn(
       const scheduleFinalize = async (latencyMs: number) => {
         const usage = meter.snapshot();
         // Custom catalog models bill a premium over the provider's reported
-        // cost (whirl's own tiers keep their negotiated rates) — except on
+        // cost (oru's own tiers keep their negotiated rates) — except on
         // Platinum, which pays the provider's own rate. Marked up BEFORE
         // finalize, same as the Image tier, so the deduction, the persisted
         // usageCost and the LLM analytics all agree on one number.

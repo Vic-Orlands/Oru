@@ -21,7 +21,7 @@ async function draw(code: string, dark: boolean) {
   });
   const valid = await mermaid.parse(code, { suppressErrors: true }).catch(() => false);
   if (!valid) return null;
-  const id = `whirl-v2-mermaid-${renderId++}`;
+  const id = `oru-v2-mermaid-${renderId++}`;
   try {
     return (await mermaid.render(id, code)).svg;
   } catch {

@@ -14,7 +14,7 @@ import { ListPager } from "../list-pager";
 import { SettingsCard, SettingsGroupHeader } from "../settings-rows";
 import { MemorySyncRow } from "./memory-sync-row";
 
-/* The raw material behind the memories: every chat Oso-Ahia has handed to
+/* The raw material behind the memories: every chat Ọru has handed to
    Supermemory. Removing one takes the transcript out of the index — the
    facts already extracted from it live on in the list above. */
 
@@ -66,8 +66,8 @@ export function SourcesCard({
         title="Synced chats"
         description={
           totalItems > 0
-            ? `${totalItems} ${totalItems === 1 ? "conversation" : "conversations"} Oso-Ahia reads memories out of.`
-            : "The conversations Oso-Ahia reads memories out of."
+            ? `${totalItems} ${totalItems === 1 ? "conversation" : "conversations"} Ọru reads memories out of.`
+            : "The conversations Ọru reads memories out of."
         }
       />
       <SettingsCard>
@@ -84,7 +84,7 @@ export function SourcesCard({
           </div>
         ) : data.sources.length === 0 ? (
           <p className="p-4 text-sm text-muted-foreground">
-            Nothing synced yet. Chats land here once Oso-Ahia has stored them.
+            Nothing synced yet. Chats land here once Ọru has stored them.
           </p>
         ) : (
           <ul className="flex flex-col divide-y divide-border">

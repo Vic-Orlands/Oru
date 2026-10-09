@@ -1,5 +1,5 @@
 {
-  "name": "oso-ahia",
+  "name": "oru",
   "private": true,
   "workspaces": [
     "apps/*",

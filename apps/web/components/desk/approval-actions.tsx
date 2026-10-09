@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useAction, useMutation } from "convex/react";
 import { IconCircleCheckFilled, IconPlayerPauseFilled } from "@tabler/icons-react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 import { Button } from "@/components/ui/button";
 import { showToast } from "@/lib/toasts";

@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * Oso-Ahia mark: a market stall roof over a rising path.
+ * Ọru mark: a market stall roof over a rising path.
  * Drawn to read at 16px in the rail and at hero size on the marketing site.
  */
-export function OsoLogo({
+export function OruBrandLogo({
   size = 20,
   className = "",
 }: {

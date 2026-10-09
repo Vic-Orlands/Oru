@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { IconCheck, IconCloudOff, IconMapPin } from "@tabler/icons-react";
 import { useMutation } from "convex/react";
 import { motion } from "motion/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import type { MessagePhase, WeatherDay, WeatherHour } from "@/lib/messages";
 import { rise } from "@/lib/motion";

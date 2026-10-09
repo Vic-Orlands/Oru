@@ -4,11 +4,11 @@ import { MarketingShell } from "@/components/marketing/marketing-shell";
 
 export const metadata: Metadata = {
   title: {
-    default: "Oso-Ahia · A thinking partner that actually cares",
-    template: "%s · Oso-Ahia",
+    default: "Ọru · A thinking partner that actually cares",
+    template: "%s · Ọru",
   },
   description:
-    "Oso-Ahia is an AI chat app with real memory, the best models, living documents, visualizations, and integrations.",
+    "Ọru is an AI chat app with real memory, the best models, living documents, visualizations, and integrations.",
 };
 
 export default function AboutLayout({

@@ -15,7 +15,7 @@ import {
 
 import { ThemeToggle } from "~/components/theme-toggle";
 import { UserMenu } from "~/components/user-menu";
-import { WhirlMark } from "~/components/whirl-mark";
+import { OruMark } from "~/components/oru-mark";
 import { api } from "~/lib/backend";
 import { useIsAdmin } from "~/lib/use-admin";
 
@@ -49,9 +49,9 @@ export function ConsoleShell() {
     <div className="flex h-dvh flex-col overflow-hidden bg-[#F3F3F3] text-[13px] text-neutral-900 dark:bg-[#141414] dark:text-neutral-100">
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-black/[0.06] px-4 dark:border-white/[0.06]">
         <div className="flex items-center gap-2.5">
-          <WhirlMark size={20} />
+          <OruMark size={20} />
           <span className="text-[14px] font-semibold tracking-tight">
-            Oso-Ahia
+            Ọru
           </span>
           <span className="rounded-full border border-black/[0.1] px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:border-white/[0.14] dark:text-neutral-400">
             Console
@@ -64,7 +64,7 @@ export function ConsoleShell() {
             rel="noreferrer"
             className="flex h-9 items-center gap-1.5 rounded-xl px-3 text-[12.5px] font-medium text-neutral-500 transition-colors hover:bg-[#E0E0E0] hover:text-neutral-700 dark:text-neutral-400 dark:hover:bg-[#1E1E1E] dark:hover:text-neutral-200"
           >
-            Open Oso-Ahia
+            Open Ọru
             <IconExternalLink size={13} stroke={2} />
           </a>
           <ThemeToggle />

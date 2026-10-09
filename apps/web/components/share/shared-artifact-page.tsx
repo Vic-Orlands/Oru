@@ -8,7 +8,7 @@ import {
 } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
-import { WhirlLogo } from "@/components/whirl-logo";
+import { OruLogo } from "@/components/oru-logo";
 
 /* The shared chrome for a public artifact page (/visual/{shortId} and
    /doc/{shortId}) — the same frame as the shared-conversation page: the
@@ -35,7 +35,7 @@ export function SharedArtifactPage({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    if (title) document.title = `${title} · Oso-Ahia`;
+    if (title) document.title = `${title} · Ọru`;
   }, [title]);
 
   return (
@@ -84,18 +84,18 @@ function SharedArtifactHeader({
     <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-4">
       <a
         href="/"
-        aria-label="Oso-Ahia home"
+        aria-label="Ọru home"
         className="flex shrink-0 items-center gap-2"
       >
-        <WhirlLogo size={18} />
-        <span className="text-[14px]/4 font-semibold max-sm:hidden">Oso-Ahia</span>
+        <OruLogo size={18} />
+        <span className="text-[14px]/4 font-semibold max-sm:hidden">Ọru</span>
       </a>
       <span className="h-4 w-px shrink-0 bg-border" />
       <span className="min-w-0 flex-1 truncate text-[13.5px]/4 font-medium">
         {title}
       </span>
       <span className="shrink-0 text-[12px]/4 font-medium text-muted-foreground max-md:hidden">
-        Made with Oso-Ahia
+        Made with Ọru
       </span>
       {actions}
       <Button variant="ghost" size="sm" onClick={copyLink}>
@@ -116,7 +116,7 @@ function SharedArtifactHeader({
 function NotAvailable({ headline }: { headline: string }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
-      <WhirlLogo size={32} />
+      <OruLogo size={32} />
       <div>
         <div className="text-[15px]/5 font-medium">{headline}</div>
         <div className="mt-1 text-[13px]/5 text-muted-foreground">
@@ -124,7 +124,7 @@ function NotAvailable({ headline }: { headline: string }) {
         </div>
       </div>
       <Button nativeButton={false} render={<a href="/" />}>
-        Make your own with Oso-Ahia
+        Make your own with Ọru
       </Button>
     </div>
   );

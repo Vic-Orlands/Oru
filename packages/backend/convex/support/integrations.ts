@@ -41,7 +41,7 @@ function stateOf(server: Doc<"mcpServers">): {
   if (server.lastError) {
     return {
       state: "erroring",
-      fix: "Oso-Ahia reached it but it answered with an error. Retrying later, or removing and re-adding it, usually clears it.",
+      fix: "Ọru reached it but it answered with an error. Retrying later, or removing and re-adding it, usually clears it.",
     };
   }
   const oauthPending = server.authMode === "oauth" && !server.oauth?.connected;

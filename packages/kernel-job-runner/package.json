@@ -1,5 +1,5 @@
 {
-  "name": "@oso-ahia/kernel-job-runner",
+  "name": "@oru/kernel-job-runner",
   "private": true,
   "type": "module",
   "scripts": {

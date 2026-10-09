@@ -86,7 +86,7 @@ export function UnlockModal({
       setError(
         cause instanceof Error
           ? cause.message
-          : "Oso-Ahia cannot open the chat. Try again.",
+          : "Ọru cannot open the chat. Try again.",
       );
     } finally {
       setBusy(false);

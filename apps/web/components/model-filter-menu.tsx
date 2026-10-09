@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { ComposerModel } from "@/lib/models";
 import { ModelGlyph } from "./model-glyph";
-import { WhirlRings } from "./whirl-rings";
+import { OruRings } from "./oru-rings";
 
 /* The model filter, shared by the composer's picker and the Models
    settings page: a round button opening a context menu — a Provider
@@ -26,13 +26,13 @@ import { WhirlRings } from "./whirl-rings";
    engaged. */
 
 /** The first-party shelf in the provider filter: every white-labeled tier
- *  files under Oso-Ahia, wearing the rings instead of a maker's mark. */
-export const WHIRL_PROVIDER = "Oso-Ahia";
+ *  files under Ọru, wearing the rings instead of a maker's mark. */
+export const ORU_PROVIDER = "Ọru";
 
 /** Which provider a model files under: the white-labeled tiers are ours —
- *  they group as "Oso-Ahia" — and catalog models go by their maker. */
+ *  they group as "Ọru" — and catalog models go by their maker. */
 export function providerOf(model: ComposerModel): string | undefined {
-  return model.whiteLabel ? WHIRL_PROVIDER : model.company;
+  return model.whiteLabel ? ORU_PROVIDER : model.company;
 }
 
 /** The capability filters — each active one keeps only models that clear
@@ -83,12 +83,12 @@ export function ModelFilterMenu({
   onCapabilitiesChange: (capabilities: ReadonlySet<string>) => void;
 }) {
   /* The maker list, each remembering the first model glyph seen wearing it
-     so the menu can show the maker's mark. Oso-Ahia renders its own rings and
+     so the menu can show the maker's mark. Ọru renders its own rings and
      always leads. */
   const providerLogos = new Map<string, string | undefined>();
   for (const model of models) {
     const name = providerOf(model);
-    if (!name || name === WHIRL_PROVIDER) continue;
+    if (!name || name === ORU_PROVIDER) continue;
     if (!providerLogos.get(name)) {
       providerLogos.set(name, model.iconSvg);
     }
@@ -135,11 +135,11 @@ export function ModelFilterMenu({
               <DropdownMenuRadioItem value="">
                 All providers
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value={WHIRL_PROVIDER}>
+              <DropdownMenuRadioItem value={ORU_PROVIDER}>
                 <span className="relative block size-3.5 shrink-0 text-muted-foreground">
-                  <WhirlRings layers={[{ className: "bg-current" }]} />
+                  <OruRings layers={[{ className: "bg-current" }]} />
                 </span>
-                {WHIRL_PROVIDER}
+                {ORU_PROVIDER}
               </DropdownMenuRadioItem>
               {providers.map((name) => (
                 <DropdownMenuRadioItem key={name} value={name}>

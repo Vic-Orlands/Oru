@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { IconGhost2, IconGhost2Filled } from "@tabler/icons-react";
 import { useConvexAuth } from "convex/react";
 import { useMutation } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 import { AnimatePresence, motion } from "motion/react";
 
 import { useIncognitoActions, useIncognitoState } from "@/lib/incognito";

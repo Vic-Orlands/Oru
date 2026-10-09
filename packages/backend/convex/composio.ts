@@ -156,7 +156,7 @@ function toCatalogToolkit(
 
 // --- Tool status phrases -------------------------------------------------------
 
-// Oso-Ahia tool descriptions are the status lines chat shows while a tool runs
+// Ọru tool descriptions are the status lines chat shows while a tool runs
 // ("Searching your issues") and after it finishes ("Searched your issues").
 // Composio hands us imperative labels ("Search issues"), so we conjugate the
 // leading verb when we recognize it and leave the label alone when we don't —
@@ -566,7 +566,7 @@ export const searchCatalog = action({
 /**
  * Which of our allowed tools an MCP-server-creation error rejected by name.
  * Composio's message reads like `Invalid tools provided for MCP server
- * "whirl gmail": GMAIL_REMOVE_LABEL. These tools do not belong to ...` — we
+ * "oru gmail": GMAIL_REMOVE_LABEL. These tools do not belong to ...` — we
  * pull every SCREAMING_SNAKE token out of it and keep only ones we actually
  * sent, so unrelated words in the message can't eject legitimate tools.
  */
@@ -582,11 +582,11 @@ function rejectedToolSlugs(error: unknown, allowed: string[]): Set<string> {
 /** Composio MCP server names allow 4-30 chars: alphanumeric, space, hyphen. */
 function composioServerName(slug: string): string {
   if (slug === "fuseai") return "oso fuseai sales";
-  const cleaned = `whirl ${slug}`
+  const cleaned = `oru ${slug}`
     .replace(/[^a-zA-Z0-9 -]/g, "-")
     .slice(0, 30)
     .trim();
-  return cleaned.length >= 4 ? cleaned : `whirl srv`;
+  return cleaned.length >= 4 ? cleaned : `oru srv`;
 }
 
 /**
@@ -623,7 +623,7 @@ async function provisionToolkit(
   if (!slug) throw new Error("Pick a toolkit first.");
   if (isPlatformManagedToolkit(slug)) {
     throw new Error(
-      "That provider is built into Oso-Ahia and cannot be added as a Composio integration.",
+      "That provider is built into Ọru and cannot be added as a Composio integration.",
     );
   }
 
@@ -650,7 +650,7 @@ async function provisionToolkit(
   const category = toolkitShelf(slug, toolkitCategories(toolkit));
 
   // The toolkit's tools become the listing's status phrases, and cap what
-  // the MCP server may expose (Oso-Ahia's runtime reads at most 40 anyway).
+  // the MCP server may expose (Ọru's runtime reads at most 40 anyway).
   const toolsJson = await composioFetch(
     `/api/v3/tools?toolkit_slug=${encodeURIComponent(slug)}&limit=${slug === "fuseai" ? 200 : MAX_TOOLS_PER_EXTENSION}`,
   );
@@ -922,7 +922,7 @@ export const initializeCuratedToolkits = internalAction({
       try {
         await provisionToolkit(ctx, slug, {
           id: "system:composio-catalog",
-          name: "Oso-Ahia",
+          name: "Ọru",
         });
         added.push(slug);
         existing.add(slug);

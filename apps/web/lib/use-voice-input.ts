@@ -8,7 +8,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { useAction } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { createLevelReader, SPEECH_PEAK_FLOOR } from "./audio-level";
 

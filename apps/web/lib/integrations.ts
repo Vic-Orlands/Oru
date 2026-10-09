@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useConvexAuth, useQuery } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 /* Client bindings for the integration store. Installs are the whole gate;
    plan limits are the backend's job. */

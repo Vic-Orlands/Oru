@@ -9,7 +9,7 @@ import { formatRecoveryCode, normalizeRecoveryCode } from "./crypto";
    preamble is there so that finding this file in a downloads folder two
    years from now tells you what it is and what to do with it. */
 
-const FILE_HEADER = "Oso-Ahia locked chat — recovery key";
+const FILE_HEADER = "Ọru locked chat — recovery key";
 
 /** The file's contents for one thread's recovery key. */
 export function recoveryFileContents({
@@ -34,7 +34,7 @@ export function recoveryFileContents({
     "",
     "Use this key if you forget the password.",
     "",
-    "Oso-Ahia stores this chat encrypted. Oso-Ahia has no copy of the password and",
+    "Ọru stores this chat encrypted. Ọru has no copy of the password and",
     "no copy of this key. If you lose both, you cannot read the chat again.",
     "",
     "Keep this file in a safe place. Any person with this key can read the",
@@ -52,7 +52,7 @@ export function recoveryFileName(threadName: string, createdAt: Date): string {
       .replace(/^-+|-+$/g, "")
       .slice(0, 40) || "locked-chat";
   const stamp = createdAt.toISOString().slice(0, 10);
-  return `whirl-recovery-key-${slug}-${stamp}.txt`;
+  return `oru-recovery-key-${slug}-${stamp}.txt`;
 }
 
 /** Hand the file to the browser. The object URL is revoked on the next

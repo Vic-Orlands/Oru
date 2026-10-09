@@ -401,7 +401,7 @@ export const deleteThread = mutationGeneric({
 /**
  * Hard-delete one thread and everything hanging off it: its messages (plus any
  * uploaded attachment blobs and persisted stream chunks), the documents and
- * HTML artifacts whirl authored in it, and finally the thread row itself. Used
+ * HTML artifacts oru authored in it, and finally the thread row itself. Used
  * to scrub incognito threads so nothing survives the session.
  */
 async function purgeThreadCompletely(ctx: any, threadId: string) {
@@ -632,7 +632,7 @@ function forkArtifactPhases(
 /**
  * Copy a public shared thread into a fresh thread the current user owns, so a
  * visitor can keep the conversation going ("fork this chat"). Mirrors exactly
- * what the share exposes: message text + the documents and visualizations whirl
+ * what the share exposes: message text + the documents and visualizations oru
  * authored — deep-copied into new owned rows, with phase references remapped and
  * fresh public tokens minted. Reasoning, search sources, tool calls, attachments
  * and stream state are all dropped. Returns the new thread id; the caller seeds
@@ -1062,7 +1062,7 @@ export const rollbackToMessage = mutationGeneric({
 });
 
 /**
- * Everything whirl authored in a thread — its documents and visualizations —
+ * Everything oru authored in a thread — its documents and visualizations —
  * for the thread toolbar's artifact menu. Auth-scoped: a user only ever sees
  * their own thread's artifacts. Attachments live on the messages themselves, so
  * the client collects those from the loaded message list rather than here.
@@ -1158,7 +1158,7 @@ function publicArtifactPhases(phases: any[] | undefined) {
  * {site}/share/{shareId}. The token is the gate: anyone with the link sees a
  * live, read-only view of the conversation (it tracks the real thread). Returns
  * a deliberately trimmed payload — message text + the documents/visualizations
- * whirl authored — and never attachments, reasoning, sources, or tool details.
+ * oru authored — and never attachments, reasoning, sources, or tool details.
  */
 export const getSharedThread = queryGeneric({
   args: {
@@ -1258,7 +1258,7 @@ export const getSharedThread = queryGeneric({
       };
     }
 
-    /* Oso-Ahia-generated pictures ride two ways: the paint tool's image
+    /* Ọru-generated pictures ride two ways: the paint tool's image
        phase (already absolute public storage URLs) and the Image tier's
        assistant attachments (hydrated here). User attachments stay
        private — only assistant rows are read. */

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 import type { ComposerModel, ThinkingLevel } from "@/lib/models";
 import { showToast } from "@/lib/toasts";
 
@@ -22,7 +22,7 @@ import { showToast } from "@/lib/toasts";
 
 const SEARCH_KEY = "composer-search";
 const THINKING_KEY = "composer-thinking";
-const CHANGE_EVENT = "whirl:composer-gates";
+const CHANGE_EVENT = "oru:composer-gates";
 
 export type ComposerGates = { search: boolean; thinking: ThinkingLevel };
 

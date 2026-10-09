@@ -11,8 +11,8 @@ import {
   perkPrice,
   type Perk,
   type SlotPlan,
-} from "@whirl/backend/convex/slots/catalog";
-import type { Doc } from "@whirl/backend/convex/_generated/dataModel";
+} from "@oru/backend/convex/slots/catalog";
+import type { Doc } from "@oru/backend/convex/_generated/dataModel";
 import { PlanBadge } from "@/components/plan-badge";
 
 export function PerkIcon({ perk }: { perk: Perk }) {

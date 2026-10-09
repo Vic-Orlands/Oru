@@ -22,7 +22,7 @@ import {
 import { SvgPreviewBody, isSvgDocument } from "./svg-preview";
 
 /**
- * The inline chat card for a markdown document whirl authored or revised.
+ * The inline chat card for a markdown document oru authored or revised.
  * One persistent shell whose interior hard-swaps working → complete:
  * while the model streams the body it rotates whimsical labels over an
  * indeterminate bar (and a fresh create auto-pops the side panel so the

@@ -38,7 +38,7 @@ import {
   phaseNarrationTarget,
   useSteadyPhaseNarration,
 } from "@/lib/use-phase-narration";
-import { PhaseIcon, PhaseLabel, WhirlActivityIcon } from "./phase-motion";
+import { PhaseIcon, PhaseLabel, OruActivityIcon } from "./phase-motion";
 import { PhaseDetailContent, PhaseRow, phaseDisclosure } from "./phase-row";
 
 function ActivityGlyph({
@@ -175,7 +175,7 @@ export const PhaseActivity = memo(
       current?.kind ??
       (narratedStatus === "searching" ? "search" : undefined);
     const glyphSize = final ? 15 : 17;
-    const whirl =
+    const oru =
       !final && !brandedIcon && !GLYPH_KINDS.has(activityKind ?? "");
     const visible = narration.mode !== "hidden";
 
@@ -183,8 +183,8 @@ export const PhaseActivity = memo(
       ? "complete"
       : brandedIcon
         ? `integration-${mcp?.server ?? ""}`
-        : whirl
-          ? "whirl"
+        : oru
+          ? "oru"
           : `phase-${current?.kind ?? narratedStatus ?? "waiting"}`;
 
     return (
@@ -254,12 +254,12 @@ export const PhaseActivity = memo(
               <PhaseIcon iconKey={iconKey}>
                 {brandedIcon ? (
                   <IntegrationIcon iconSvg={brandedIcon} size={glyphSize} />
-                ) : whirl ? (
-                  <WhirlActivityIcon />
+                ) : oru ? (
+                  <OruActivityIcon />
                 ) : grouped ? (
                   <IconStack2 size={glyphSize} stroke={2} />
                 ) : null}
-                {!brandedIcon && !whirl && !grouped && (
+                {!brandedIcon && !oru && !grouped && (
                   <ActivityGlyph kind={activityKind} size={glyphSize} />
                 )}
               </PhaseIcon>

@@ -1,5 +1,5 @@
 {
-  "name": "@oso-ahia/r2-gateway",
+  "name": "@oru/r2-gateway",
   "private": true,
   "type": "module",
   "scripts": {

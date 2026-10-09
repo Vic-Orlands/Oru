@@ -50,7 +50,7 @@ export function IntegrationsPage() {
             My Integrations
           </h1>
           <p className="mt-1 text-[13px] text-neutral-500 dark:text-neutral-400">
-            MCP servers you've registered for the Oso-Ahia integration store.
+            MCP servers you've registered for the Ọru integration store.
           </p>
         </div>
         {integrations !== undefined && integrations.length > 0 && (

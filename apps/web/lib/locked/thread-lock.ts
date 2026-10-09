@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useConvex, useMutation, useQuery } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 import type { ChatMessage } from "../messages";
 import { clearThreadMessageCache } from "../message-cache";
@@ -65,7 +65,7 @@ async function openBody(key: CryptoKey, message: ChatMessage): Promise<string> {
   try {
     return await openEnvelope(key, message.content);
   } catch {
-    return "_Oso-Ahia cannot decrypt this message._";
+    return "_Ọru cannot decrypt this message._";
   }
 }
 

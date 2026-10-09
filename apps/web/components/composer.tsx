@@ -38,7 +38,7 @@ import {
   splitMentionSegments,
 } from "@/lib/mentions";
 import { useModelAccess } from "@/lib/model-access";
-import { defaultLockedModel } from "@whirl/backend/convex/lockedPolicy";
+import { defaultLockedModel } from "@oru/backend/convex/lockedPolicy";
 import {
   lockedSendRejection,
   useLockedModels,

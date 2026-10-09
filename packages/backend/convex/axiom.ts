@@ -39,7 +39,7 @@ export async function captureAxiomEvent({
             _time: new Date().toISOString(),
             event,
             distinct_id: distinctId,
-            service: "whirl-convex",
+            service: "oru-convex",
             source: "convex",
           },
         ]),

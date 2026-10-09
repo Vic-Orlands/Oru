@@ -12,7 +12,7 @@ export function HeroComposer() {
   const [value, setValue] = useState("");
   const [model, setModel] = useModelPref();
 
-  const enterWhirl = (prompt: string) => {
+  const enterOru = (prompt: string) => {
     if (prompt) stashComposerPrefill(prompt);
     router.push("/");
   };
@@ -23,7 +23,7 @@ export function HeroComposer() {
       onValueChange={setValue}
       model={model}
       onModelChange={setModel}
-      onSubmit={(prompt) => enterWhirl(prompt)}
+      onSubmit={(prompt) => enterOru(prompt)}
     />
   );
 }

@@ -3,12 +3,12 @@
    attribution all build on these, so a fork changes them in one place:
    `npx convex env set SITE_URL https://your-domain`. */
 
-export const APP_NAME = "Oso-Ahia";
+export const APP_NAME = "Ọru";
 
 /* Older deployments set the origin under one of these names, one per
    feature that needed it. They still work, in this order, so nothing has
    to be renamed in a hurry. */
-const LEGACY_SITE_URL_VARS = ["WHIRL_SITE_URL", "APP_ORIGIN", "CLIENT_ORIGIN"];
+const LEGACY_SITE_URL_VARS = ["ORU_SITE_URL", "APP_ORIGIN", "CLIENT_ORIGIN"];
 
 const LOCAL_SITE_URL = "http://localhost:3000";
 

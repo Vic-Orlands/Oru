@@ -1,6 +1,6 @@
 import { Composition } from "remotion";
 
-import { HelloWhirl } from "./HelloWhirl";
+import { HelloOru } from "./HelloOru";
 import { OpenSource } from "./open-source/OpenSource";
 import { DURATION, FPS, SIZE } from "./open-source/timeline";
 import {
@@ -13,8 +13,8 @@ export function RemotionRoot() {
   return (
     <>
       <Composition
-        id="HelloWhirl"
-        component={HelloWhirl}
+        id="HelloOru"
+        component={HelloOru}
         durationInFrames={90}
         fps={30}
         width={1920}

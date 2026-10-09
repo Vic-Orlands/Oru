@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const STORAGE_KEY = "whirl:arcade:guest-wallet";
+const STORAGE_KEY = "oru:arcade:guest-wallet";
 
 export function useGuestWallet() {
   const [key, setKey] = useState<string | null>(null);

@@ -3,8 +3,8 @@
 import { useCallback, useMemo } from "react";
 import { useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 import type { AttachmentUpload } from "./attachments";
 import { isCustomModelKey, type ThinkingLevel } from "./models";

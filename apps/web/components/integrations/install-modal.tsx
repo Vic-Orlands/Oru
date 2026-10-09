@@ -5,8 +5,8 @@ import { useAction } from "convex/react";
 
 import { IconArrowLeft, IconKeyFilled, IconTool } from "@tabler/icons-react";
 
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 import { IntegrationLogo } from "@/components/integration-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

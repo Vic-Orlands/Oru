@@ -1,9 +1,9 @@
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 // The console shares the main app's Convex deployment — this is the one place
 // that imports the generated bindings, so every other file imports from
 // `~/lib/backend` instead.
-export { api } from "@whirl/backend/convex/_generated/api";
+export { api } from "@oru/backend/convex/_generated/api";
 export type { Id };
 
 export type IntegrationStatus = "pending" | "approved" | "denied";

@@ -14,7 +14,7 @@ export const VERB_LINES = ["Clone it.", "Fork it.", "Improve it."];
 /** When each line lands, relative to the scene. The first one rises in. */
 export const VERB_AT = [0, 62, 124];
 
-/** "Whirl is now open source." */
+/** "Ọru is now open source." */
 export const STATEMENT = { from: 486, frames: 136 };
 
 /** The mark, fluttering once and holding to the end. */

@@ -1,6 +1,6 @@
 # Architecture
 
-A tour of how Whirl fits together, for anyone about to change it.
+A tour of how Ọru fits together, for anyone about to change it.
 
 ## The pieces
 
@@ -22,7 +22,7 @@ A tour of how Whirl fits together, for anyone about to change it.
   Convex queries, so every open tab updates the moment the backend does.
 - **`packages/backend`** holds the Convex schema (`convex/schema.ts`) and
   every query, mutation, action, HTTP route, and cron. The apps import its
-  generated bindings from `@whirl/backend/convex/_generated/api`.
+  generated bindings from `@oru/backend/convex/_generated/api`.
 - **`apps/console`** is the admin console, talking to the same deployment.
   Admin-only functions check the Clerk `role` claim (`convex/admin.ts`).
 

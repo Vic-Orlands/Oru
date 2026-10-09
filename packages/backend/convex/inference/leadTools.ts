@@ -428,7 +428,7 @@ export function createLeadTools(opts: {
     }),
     createDeskTask: tool({
       description:
-        "Schedule real future agent work. At the due time Oso-Ahia opens a dedicated thread, runs these instructions with live web search enabled, and repeats when requested.",
+        "Schedule real future agent work. At the due time Ọru opens a dedicated thread, runs these instructions with live web search enabled, and repeats when requested.",
       inputSchema: jsonSchema<{
         title: string;
         instructions: string;

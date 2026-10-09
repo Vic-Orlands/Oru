@@ -1,8 +1,8 @@
-# Oso-Ahia
+# Ọru
 
-A chat-first AI sales desk. You describe who to reach. Oso-Ahia finds and scores prospects, writes a sequence, and queues email until you approve it.
+A chat-first AI sales desk. You describe who to reach. Ọru finds and scores prospects, writes a sequence, and queues email until you approve it.
 
-The chat, streaming, artifacts, and motion come from [Whirl](https://github.com/whirlchat/whirl) by [Anterra](https://whirl.chat), published under the MIT license. This repository keeps that license. The product on top — prospects, approvals, sequences, pipeline, and the desk — is Oso-Ahia.
+Ọru combines chat, streaming, living artifacts, research, integrations, and specialist agents in one opportunity-intelligence workspace. The repository retains the licenses of its open-source foundations.
 
 ## Run it
 
@@ -63,4 +63,4 @@ bun run --cwd apps/web build
 
 ## Required services
 
-Google OAuth, `BETTER_AUTH_SECRET`, Convex, OpenRouter, and Composio must be configured. Legacy, mobile, and console apps from the Whirl tree are not the product and still mention Clerk; `apps/web` does not.
+Google OAuth, `BETTER_AUTH_SECRET`, Convex, OpenRouter, and Composio must be configured. `apps/web` is the production application.

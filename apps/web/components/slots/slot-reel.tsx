@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import {
   SYMBOLS,
   type SlotSymbol as SymbolName,
-} from "@whirl/backend/convex/slots/catalog";
+} from "@oru/backend/convex/slots/catalog";
 import { SlotSymbol } from "./slot-symbol";
 
 const CELLS = 32;

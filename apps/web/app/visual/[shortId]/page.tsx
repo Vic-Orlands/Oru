@@ -16,8 +16,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { shortId } = await params;
   return publicPageMetadata({
-    title: "Made with Oso-Ahia",
-    description: "An interactive visualization made with Oso-Ahia.",
+    title: "Made with Ọru",
+    description: "An interactive visualization made with Ọru.",
     path: `/visual/${shortId}`,
   });
 }

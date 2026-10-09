@@ -31,7 +31,7 @@ import { chargeUsage } from "./usageLedger";
 
 /* The turn handler for locked threads.
 
-   Every other reply in Oso-Ahia is generated server-side: a mutation schedules
+   Every other reply in Ọru is generated server-side: a mutation schedules
    the turn and it runs on the deployment, outliving whatever tab asked for
    it. A locked thread can't work that way, and the reason is the feature
    itself — the conversation is stored sealed, so the only plaintext copy of
@@ -215,7 +215,7 @@ export const streamLockedTurn = httpAction(async (ctx, request) => {
     });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Oso-Ahia cannot find this chat.";
+      error instanceof Error ? error.message : "Ọru cannot find this chat.";
     return withCors(
       new Response(line({ t: "error", message }), { status: 403 }),
     );
@@ -271,7 +271,7 @@ export const streamLockedTurn = httpAction(async (ctx, request) => {
     return fail(
       policy.known
         ? "This model cannot answer in a locked chat. Select a different model."
-        : "Oso-Ahia cannot confirm this model's data retention. Try again in a moment.",
+        : "Ọru cannot confirm this model's data retention. Try again in a moment.",
       403,
     );
   }
@@ -413,7 +413,7 @@ export const streamLockedTurn = httpAction(async (ctx, request) => {
       await emit({
         t: "error",
         message: abort.signal.aborted
-          ? "This reply took too much time. Oso-Ahia stopped it."
+          ? "This reply took too much time. Ọru stopped it."
           : error instanceof Error
             ? error.message
             : "The model stopped.",

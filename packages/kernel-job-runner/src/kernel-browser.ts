@@ -29,7 +29,7 @@ export async function openApplicationBrowser(rawUrl: unknown, name: string) {
     kiosk_mode: true,
     start_url: url,
     timeout_seconds: 7_200,
-    tags: { product: "oso-ahia", workflow: "job-application" },
+    tags: { product: "oru", workflow: "job-application" },
   });
   const browser = await chromium.connectOverCDP(session.cdp_ws_url);
   const context = browser.contexts()[0] || (await browser.newContext());
@@ -46,7 +46,7 @@ export async function openInspectionBrowser(rawUrl: unknown) {
     kiosk_mode: true,
     start_url: url,
     timeout_seconds: 300,
-    tags: { product: "oso-ahia", workflow: "page-inspection" },
+    tags: { product: "oru", workflow: "page-inspection" },
   });
   const browser = await chromium.connectOverCDP(session.cdp_ws_url);
   const context = browser.contexts()[0] || (await browser.newContext());

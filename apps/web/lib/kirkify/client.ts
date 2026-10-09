@@ -27,9 +27,9 @@ export class KirkifyError extends Error {
 }
 
 const OFFLINE_MESSAGE =
-  "Couldn't reach Oso-Ahia. Check your connection and try again.";
+  "Couldn't reach Ọru. Check your connection and try again.";
 const GARBLED_MESSAGE =
-  "Oso-Ahia answered with something unexpected. Try again in a moment.";
+  "Ọru answered with something unexpected. Try again in a moment.";
 const TOO_LARGE_MESSAGE = "That photo is too big to send. Try a smaller one.";
 
 async function readJson(response: Response): Promise<unknown> {

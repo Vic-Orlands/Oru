@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAction } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { errorText } from "./integrations-data";
 
@@ -133,7 +133,7 @@ export type MemorySourcesPage = {
   totalItems: number;
 };
 
-/** One page at a time of the chats Oso-Ahia has fed into memory. */
+/** One page at a time of the chats Ọru has fed into memory. */
 export function useMemorySources(enabled: boolean) {
   const listSources = useAction(api.userMemory.listSources);
   const deleteSource = useAction(api.userMemory.deleteSource);

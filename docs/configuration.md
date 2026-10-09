@@ -1,6 +1,6 @@
 # Configuration
 
-Whirl reads its configuration from environment variables in two places:
+Ọru reads its configuration from environment variables in two places:
 
 - **The Convex deployment**, for everything the backend does. Set these with
   `bunx convex env set NAME value` from `packages/backend` (add `--prod` for
@@ -29,7 +29,7 @@ generation.
 
 ## Optional features
 
-Each of these switches on with its keys. Until then, Whirl hides the
+Each of these switches on with its keys. Until then, Ọru hides the
 controls it can't honor instead of letting them fail.
 
 | Feature              | Where  | Variables                                  | Without it                                                          |
@@ -45,7 +45,7 @@ controls it can't honor instead of letting them fail.
 
 ### Integrations
 
-`MCP_ENCRYPTION_KEY` encrypts the headers and OAuth tokens Whirl stores for
+`MCP_ENCRYPTION_KEY` encrypts the headers and OAuth tokens Ọru stores for
 each integration. It must decode to exactly 32 bytes:
 
 ```sh
@@ -95,14 +95,14 @@ All optional, all off by default.
 | PostHog      | Convex  | `POSTHOG_PROJECT_TOKEN`, `POSTHOG_HOST`, `POSTHOG_LLM_PRIVACY_MODE` |
 | Axiom        | Web app | `AXIOM_TOKEN`, `AXIOM_DATASET`                                    |
 | Axiom        | Convex  | `AXIOM_TOKEN`, `AXIOM_DATASET`, `AXIOM_HOST`                      |
-| Braintrust   | Convex  | `BRAINTRUST_API_KEY`, plus `BRAINTRUST_PROJECT_ID` or `BRAINTRUST_PROJECT_NAME` (default `Whirl`) |
+| Braintrust   | Convex  | `BRAINTRUST_API_KEY`, plus `BRAINTRUST_PROJECT_ID` or `BRAINTRUST_PROJECT_NAME` (default `Ọru`) |
 
 Set `POSTHOG_LLM_PRIVACY_MODE=true` to keep prompt and reply text out of
 PostHog's LLM analytics events.
 
 ### The free-tier overload throttle
 
-When billing is on, Whirl can tighten free users' daily message cap while
+When billing is on, Ọru can tighten free users' daily message cap while
 free traffic is expensive. It reads today's free-tier spend from a saved
 PostHog endpoint:
 
@@ -118,7 +118,7 @@ Leave either unset and the throttle never engages.
 | Variable               | Where  | What it's for                                                        |
 | ---------------------- | ------ | -------------------------------------------------------------------- |
 | `RESEND_API_KEY`       | Convex | Sending through [Resend](https://resend.com)                         |
-| `RESEND_FROM_EMAIL`    | Convex | The sender, on a domain verified in Resend, like `Whirl <hello@your-domain>` |
+| `RESEND_FROM_EMAIL`    | Convex | The sender, on a domain verified in Resend, like `Ọru <hello@your-domain>` |
 | `RESEND_AUDIENCE_ID`   | Convex | The audience new sign-ups are added to                               |
 | `CLERK_WEBHOOK_SECRET` | Convex | Verifies Clerk's webhook at `https://<name>.convex.site/api/clerk-webhook` |
 
@@ -130,7 +130,7 @@ Leave either unset and the throttle never engages.
 | `GIT_COMMIT_SHA`         | Web app | The build's version, for that same prompt. Vercel provides its own              |
 | `DEV_ALLOWED_ORIGINS`    | Web app, console | Extra hosts allowed to reach the dev server, comma-separated            |
 
-Older deployments may still set the site origin as `WHIRL_SITE_URL`,
+Older deployments may still set the site origin as `ORU_SITE_URL`,
 `APP_ORIGIN`, or `CLIENT_ORIGIN`. Those keep working, but `SITE_URL` wins
 when it's set.
 
@@ -142,7 +142,7 @@ when it's set.
 | ---------------------------- | ------------------------------------------ |
 | `VITE_CONVEX_URL`            | Same deployment as the web app             |
 | `VITE_CLERK_PUBLISHABLE_KEY` | Same Clerk instance as the web app         |
-| `VITE_APP_URL`               | The web app's address, for "Open Whirl"    |
+| `VITE_APP_URL`               | The web app's address, for "Open Ọru"    |
 | `VITE_POSTHOG_PROJECT_TOKEN`, `VITE_POSTHOG_HOST` | Optional analytics    |
 
 **Mobile** (`apps/mobile/.env.local`)

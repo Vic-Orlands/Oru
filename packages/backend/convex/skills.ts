@@ -9,10 +9,10 @@ import {
 import type { Doc, Id } from "./_generated/dataModel";
 import { isAdminIdentity, requireAdmin } from "./admin";
 
-// Backend for the Oso-Ahia Console (apps/console). A skill is a pasted block of
+// Backend for the Ọru Console (apps/console). A skill is a pasted block of
 // instructions destined for the store's Skills tab: branding plus the text
 // itself, no server or auth recipe. Every function here is scoped to the
-// signed-in developer — the console shares Oso-Ahia's Clerk instance, so
+// signed-in developer — the console shares Ọru's Clerk instance, so
 // `identity.subject` lines up with the userId used across the rest of the app.
 
 const MAX_NAME_LENGTH = 60;
@@ -27,7 +27,7 @@ const MAX_PENDING_REQUESTS = 200;
 const MAX_LISTED_SKILLS = 200;
 
 /** Store authors whose admin-submitted skills get the blue checkmark. */
-const VERIFIED_AUTHOR = "whirl";
+const VERIFIED_AUTHOR = "oru";
 
 type SkillStatus = "pending" | "approved" | "denied";
 
@@ -147,7 +147,7 @@ export const listMine = query({
 /**
  * Register a skill for the store. Starts "pending" in the admin approvals
  * queue (shared with integrations). `verified` is granted only when an admin
- * account submits under the "Oso-Ahia" author name. Unlike integrations, there
+ * account submits under the "Ọru" author name. Unlike integrations, there
  * is no cap on how many skills a developer can register.
  */
 export const create = mutation({

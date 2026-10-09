@@ -13,8 +13,8 @@ import {
   IconLayoutDashboard,
   IconLoader2,
 } from "@tabler/icons-react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 /* The two editors are the heaviest thing this app can render — TipTap,
    ProseMirror and KaTeX between them — and this panel is mounted by the
@@ -62,7 +62,7 @@ import { LeadPanelBody } from "@/components/desk/lead-panel";
 import { HtmlExportButtons } from "./html-export-buttons";
 import { BrowserPanel } from "./browser-panel";
 
-/* The artifact side panel: whirl-authored documents in a full TipTap
+/* The artifact side panel: oru-authored documents in a full TipTap
    markdown editor (mirroring the body live while it streams, editable with
    debounced save-back once complete), and full HTML pages in a sandboxed
    iframe with export controls. The resizable/fullscreen shell lives in
@@ -163,10 +163,10 @@ function PanelLoading() {
 const SAVE_DEBOUNCE_MS = 600;
 
 /**
- * The panel contents for a whirl-authored document. Reads a live
- * `documents` row: while whirl is writing it the editor mirrors the body
+ * The panel contents for a oru-authored document. Reads a live
+ * `documents` row: while oru is writing it the editor mirrors the body
  * as it fills in and stays read-only; once complete the user can edit it
- * (debounced save-back), and a later whirl revision swaps the text in with
+ * (debounced save-back), and a later oru revision swaps the text in with
  * a soft highlight sweep so the change is seen.
  */
 function DocumentPanelBody({
@@ -196,12 +196,12 @@ function DocumentPanelBody({
   }, [readOnlySnapshot, doc, streaming, documentId, ensureShareId]);
 
   /* The text the editor renders. Swapped on initial load, on every
-     streaming tick, and on a whirl edit — but never on the user's own save
+     streaming tick, and on a oru edit — but never on the user's own save
      echo, so a live query update can't yank text out from under someone
      mid-edit. */
   const [displayValue, setDisplayValue] = useState<string | null>(null);
   /* Tells the editor to flash the changed region on the *next* swap. On
-     only for genuine whirl revisions — never during streaming or the swap
+     only for genuine oru revisions — never during streaming or the swap
      that lands the final body. */
   const [highlightEdits, setHighlightEdits] = useState(false);
   const prevContentRef = useRef("");
@@ -231,7 +231,7 @@ function DocumentPanelBody({
       setHighlightEdits(false);
       setDisplayValue(content);
     } else if (!isLocalEcho) {
-      /* Oso-Ahia revised the doc out from under us — show it and flash the
+      /* Ọru revised the doc out from under us — show it and flash the
          changed region, unless this swap is just the stream settling. */
       setHighlightEdits(!justFinishedStreaming);
       setDisplayValue(content);
@@ -343,7 +343,7 @@ function DocumentPanelBody({
   );
 }
 
-/** The panel contents for a whirl-built full page — HTML or React. */
+/** The panel contents for a oru-built full page — HTML or React. */
 function HtmlPanelBody({
   htmlId,
   fullscreen,

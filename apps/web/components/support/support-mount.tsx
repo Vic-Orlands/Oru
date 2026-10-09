@@ -13,7 +13,7 @@ import { setSupportAvailable, useSupportState } from "@/lib/support";
 
    We hide the launcher, so there is no button to delay. What is left to defer
    is ~93KB of JavaScript, ~12KB of CSS and a second Convex socket, opened for
-   the life of every tab whether or not anyone asks a question. Oso-Ahia tabs stay
+   the life of every tab whether or not anyone asks a question. Ọru tabs stay
    open for hours, so that socket is the reason this gate is still here. */
 const importPanel = () => import("./support-panel");
 

@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useConvex } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 import type { ChartSeries } from "./chart-spec";
 
@@ -84,7 +84,7 @@ export function useChartBinding({
         }
       } catch {
         if (aliveRef.current) {
-          setError("Couldn't reach Oso-Ahia to refresh this.");
+          setError("Couldn't reach Ọru to refresh this.");
         }
       } finally {
         if (aliveRef.current) setRefreshing(false);

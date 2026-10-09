@@ -42,7 +42,7 @@ export type ReactPhasePayload = {
  */
 export const REACT_RUNTIME_REFERENCE = `Module rules:
 - Write ONE complete ES module ending in \`export default function App() { ... }\`. No markdown fence, no <html>, no ReactDOM.render call — the host mounts App itself.
-- Imports resolve from a fixed set and nothing else: \`react\` (all hooks), \`recharts\`, and \`@whirl/data\` (see Data below). Any other import fails to render.
+- Imports resolve from a fixed set and nothing else: \`react\` (all hooks), \`recharts\`, and \`@oru/data\` (see Data below). Any other import fails to render.
 - Style with Tailwind utility classes (v4 syntax, including arbitrary values like \`w-[38ch]\`). No CSS files, no \`style\` blocks, no config. Dark mode: write \`dark:\` variants — the host sets the class from the user's theme, so both modes must read well.
 - TypeScript syntax is allowed and stripped; types are not checked.
 - No network of any kind: no fetch, XHR, websockets, external images, fonts, or CDNs. Inline SVG and CSS gradients are your image layer. An https image URL that already appears in this conversation is the one exception.
@@ -72,7 +72,7 @@ export function buildBindingReference(
 - Declare every read up front in \`bindings\`. Each is { id, integration, tool, args, label }: \`integration\` is an exact name from the list below, \`tool\` is one of its tools, \`args\` is a JSON-encoded arguments object, \`label\` is a short human phrase like "Open issues".
 - Run \`mcp_list_tools\` first if you are not certain of a tool's name and schema. Every binding you declare is executed here before the artifact renders, and a binding that fails takes the whole call back with the reason — so a wrong tool name costs you a retry, not the user a broken page.
 - Ask for what fits: pass limits, page sizes, and filters in \`args\`. One read carries about 100,000 characters, and a response bigger than that fails the call.
-- In the module, read a binding with \`import { useWhirlData } from "@whirl/data"\` then \`const { data, error, loading, refetch } = useWhirlData("<id>")\`. \`data\` is the parsed response (an object or array when the integration returns JSON, otherwise a string). Always render a loading state and an error state; never assume data is present on the first frame.
+- In the module, read a binding with \`import { useOruData } from "@oru/data"\` then \`const { data, error, loading, refetch } = useOruData("<id>")\`. \`data\` is the parsed response (an object or array when the integration returns JSON, otherwise a string). Always render a loading state and an error state; never assume data is present on the first frame.
 - Write defensively against the response: optional chaining, \`Array.isArray\` before mapping, a fallback for a missing field. You are writing against a shape you have seen once.
 - \`refetch(extraArgs)\` re-runs the binding live with extra arguments merged in — that is how filters and refresh buttons work. Never call it in a bare effect that reruns every render.
 - Reads only. Bindings cannot send, create, delete, or modify anything; declare one and the artifact stops being publicly shareable.
@@ -286,7 +286,7 @@ export function createReactArtifactTool({
                     id: {
                       type: "string",
                       description:
-                        "Identifier the component passes to useWhirlData.",
+                        "Identifier the component passes to useOruData.",
                     },
                     integration: {
                       type: "string",

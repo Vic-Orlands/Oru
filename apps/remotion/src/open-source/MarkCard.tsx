@@ -7,10 +7,10 @@ import {
   useVideoConfig,
 } from "remotion";
 
-import { WhirlAnimatedMark } from "../v2-shared/WhirlAnimatedMark";
+import { OruAnimatedMark } from "../v2-shared/OruAnimatedMark";
 
 /* The sign-off: the mark comes up out of black and flutters once — the
-   petal flip from apps/web/public/whirl-animate.svg, driven by frame — then
+   petal flip from apps/web/public/oru-animate.svg, driven by frame — then
    holds to the end. */
 
 const MARK_SIZE = 340;
@@ -44,7 +44,7 @@ export function MarkCard() {
           transform: `scale(${0.92 + grown * 0.08})`,
         }}
       >
-        <WhirlAnimatedMark
+        <OruAnimatedMark
           size={MARK_SIZE}
           start={FLIP_START}
           frames={Math.round(FLIP_SECONDS * fps)}

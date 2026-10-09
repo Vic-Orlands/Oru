@@ -9,13 +9,15 @@ export function MarketingGithubButton({
 }: {
   className?: string;
 }) {
+  if (!SITE_LINKS.repo) return null;
+
   return (
     <a
       href={SITE_LINKS.repo}
       target="_blank"
       rel="noreferrer"
-      aria-label="Oso-Ahia on GitHub"
-      title="Oso-Ahia on GitHub"
+      aria-label="Ọru on GitHub"
+      title="Ọru on GitHub"
       className={`${ROUND_ICON_BUTTON} ${className}`}
     >
       <IconBrandGithubFilled size={15} />

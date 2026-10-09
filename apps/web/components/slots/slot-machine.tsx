@@ -13,8 +13,8 @@ import {
   IconVolume,
   IconVolumeOff,
 } from "@tabler/icons-react";
-import type { Doc } from "@whirl/backend/convex/_generated/dataModel";
-import type { SlotSymbol } from "@whirl/backend/convex/slots/catalog";
+import type { Doc } from "@oru/backend/convex/_generated/dataModel";
+import type { SlotSymbol } from "@oru/backend/convex/slots/catalog";
 import { SlotReel } from "./slot-reel";
 import { RollingNumber } from "./rolling-number";
 import { useSlotSound } from "./use-slot-sound";
@@ -95,7 +95,7 @@ export function SlotMachine({
           ))}
         </div>
         <div className="slot-marquee-title">
-          <span aria-hidden="true">✦</span> Lucky Oso-Ahia{" "}
+          <span aria-hidden="true">✦</span> Lucky Ọru{" "}
           <span aria-hidden="true">✦</span>
         </div>
       </div>

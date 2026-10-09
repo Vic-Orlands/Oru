@@ -1,8 +1,8 @@
 import { Svg, Path } from "react-native-svg";
 
 /**
- * The Whirl mark: twelve petals swirling around a center. Path data is lifted
- * verbatim from apps/web/public/whirl-ring-outer.svg, so the mark stays
+ * The Ọru mark: twelve petals swirling around a center. Path data is lifted
+ * verbatim from apps/web/public/oru-ring-outer.svg, so the mark stays
  * pixel-identical to the web app — regenerate from that file rather than
  * hand-editing these numbers.
  */
@@ -24,7 +24,7 @@ const PETALS = [
   "M130.542 10.7281C121.349 10.7281 108.295 22.5655 108.111 37.1772C108.111 45.5004 111.972 50.4942 118.591 50.4942C127.784 50.4942 141.206 40.1366 141.206 23.6752C141.206 15.907 136.977 10.7281 130.542 10.7281Z",
 ];
 
-export function WhirlMark({ size = 96, color }: { size?: number; color: string }) {
+export function OruMark({ size = 96, color }: { size?: number; color: string }) {
   return (
     <Svg
       width={size}

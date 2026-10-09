@@ -4,14 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useCustomer } from "autumn-js/react";
 import { useAction, useConvexAuth, useQuery } from "convex/react";
 import { ConvexError } from "convex/values";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Doc } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Doc } from "@oru/backend/convex/_generated/dataModel";
 import {
   PERKS,
   currentSlotPlan,
   SPIN_COOLDOWN_MS,
   STARTING_TOKENS,
-} from "@whirl/backend/convex/slots/catalog";
+} from "@oru/backend/convex/slots/catalog";
 import { SlotMachine, type SlotSession } from "./slot-machine";
 import { PerkShop, PrizeTray } from "./perk-shop";
 import { ArcadeDetails } from "./arcade-details";

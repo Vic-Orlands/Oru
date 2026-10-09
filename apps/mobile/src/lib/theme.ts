@@ -1,7 +1,7 @@
 import { useColorScheme } from "react-native";
 
 /**
- * Whirl's palette, ported from apps/web's CSS tokens. The web app stores these
+ * Ọru's palette, ported from apps/web's CSS tokens. The web app stores these
  * as oklch; React Native has no oklch parser, so they're converted to hex here
  * and the oklch original is noted alongside each one.
  *

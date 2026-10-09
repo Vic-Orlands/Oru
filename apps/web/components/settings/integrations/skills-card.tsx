@@ -9,7 +9,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { useCustomSkills, type CustomSkill } from "@/lib/custom-skills";
@@ -92,7 +92,7 @@ export function SkillsCard() {
       <section>
         <SettingsGroupHeader
           title="Skills"
-          description="Instruction packs Oso-Ahia pulls in mid-chat — installed from the store or written by you."
+          description="Instruction packs Ọru pulls in mid-chat — installed from the store or written by you."
           control={
             editing === "new" ? undefined : (
               <Button
@@ -219,8 +219,8 @@ export function SkillsCard() {
         title={`Remove ${confirming?.item.name ?? "this skill"}?`}
         message={
           confirming?.kind === "custom"
-            ? "Oso-Ahia forgets how to do this, and the instructions are gone for good."
-            : "Oso-Ahia forgets how to do this. You can always reinstall it from the store."
+            ? "Ọru forgets how to do this, and the instructions are gone for good."
+            : "Ọru forgets how to do this. You can always reinstall it from the store."
         }
         confirmLabel="Remove"
         destructive

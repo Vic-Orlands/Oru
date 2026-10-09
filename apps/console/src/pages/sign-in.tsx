@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { IconBrandGoogle, IconLoader2 } from "@tabler/icons-react";
 
-import { WhirlMark } from "~/components/whirl-mark";
+import { OruMark } from "~/components/oru-mark";
 import { signInWithGoogle } from "~/lib/auth/session";
 import { userErrorMessage } from "~/lib/errors";
 
 /**
  * Signed-out landing. Better Auth and Convex share the same session as apps/web,
- * so an existing Oso-Ahia account signs straight in.
+ * so an existing Ọru account signs straight in.
  */
 export function SignInPage() {
   const [busy, setBusy] = useState(false);
@@ -28,16 +28,16 @@ export function SignInPage() {
     <div className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-[#F3F3F3] px-4 py-12 dark:bg-[#141414]">
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="flex items-center gap-2.5">
-          <WhirlMark size={24} />
+          <OruMark size={24} />
           <span className="text-[18px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-            Oso-Ahia
+            Ọru
           </span>
           <span className="rounded-full border border-black/[0.1] px-2 py-0.5 text-[11px] font-medium text-neutral-500 dark:border-white/[0.14] dark:text-neutral-400">
             Console
           </span>
         </div>
         <p className="max-w-sm text-[13.5px] leading-relaxed text-neutral-500 dark:text-neutral-400">
-          Sign in with your Oso-Ahia account to manage your integrations and API
+          Sign in with your Ọru account to manage your integrations and API
           keys.
         </p>
       </div>

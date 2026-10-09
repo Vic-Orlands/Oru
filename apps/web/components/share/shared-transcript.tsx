@@ -9,11 +9,11 @@ import {
   IconLoader2,
 } from "@tabler/icons-react";
 import { useQuery } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/toaster";
-import { WhirlLogo } from "@/components/whirl-logo";
+import { OruLogo } from "@/components/oru-logo";
 import { downloadMarkdown } from "@/lib/document-export";
 import {
   buildThreadTranscript,
@@ -41,7 +41,7 @@ export function SharedTranscript({ shareId }: { shareId: string }) {
   );
 
   useEffect(() => {
-    if (thread) document.title = `${thread.title} · Transcript · Oso-Ahia`;
+    if (thread) document.title = `${thread.title} · Transcript · Ọru`;
   }, [thread]);
 
   const copyTranscript = () => {
@@ -66,12 +66,12 @@ export function SharedTranscript({ shareId }: { shareId: string }) {
             <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-4">
               <a
                 href="/"
-                aria-label="Oso-Ahia home"
+                aria-label="Ọru home"
                 className="flex shrink-0 items-center gap-2"
               >
-                <WhirlLogo size={18} />
+                <OruLogo size={18} />
                 <span className="text-[14px]/4 font-semibold max-sm:hidden">
-                  Oso-Ahia
+                  Ọru
                 </span>
               </a>
               <span className="h-4 w-px shrink-0 bg-border" />

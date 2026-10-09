@@ -2,7 +2,7 @@ import { query } from "./_generated/server";
 import { isSupermemoryConfigured } from "./supermemory";
 
 /* The optional services this deployment has configured, so the web app can
-   hide the controls it can't honor instead of letting them fail. Oso-Ahia only
+   hide the controls it can't honor instead of letting them fail. Ọru only
    needs Convex, Clerk and OpenRouter. Billing, web search, long-term memory
    and the support agent each switch on with their keys.
 

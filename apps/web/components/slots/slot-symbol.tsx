@@ -5,7 +5,7 @@ import {
   IconDiamondFilled,
   IconGiftFilled,
 } from "@tabler/icons-react";
-import type { SlotSymbol as SymbolName } from "@whirl/backend/convex/slots/catalog";
+import type { SlotSymbol as SymbolName } from "@oru/backend/convex/slots/catalog";
 
 const ICONS = {
   cherry: IconCherryFilled,

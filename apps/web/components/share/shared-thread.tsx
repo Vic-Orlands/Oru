@@ -10,14 +10,14 @@ import {
   IconMarkdown,
 } from "@tabler/icons-react";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { Button } from "@/components/ui/button";
 import { TranscriptHandoffDialog } from "@/components/share/transcript-handoff-dialog";
 import { ArtifactPanel } from "@/components/thread/artifacts/artifact-panel";
 import { ThreadView } from "@/components/thread/thread-view";
 import { Toaster } from "@/components/toaster";
-import { WhirlLogo } from "@/components/whirl-logo";
+import { OruLogo } from "@/components/oru-logo";
 import { closeArtifactPanel } from "@/lib/artifact-panel";
 import {
   ArtifactSnapshotProvider,
@@ -53,7 +53,7 @@ export function SharedThread({ shareId }: { shareId: string }) {
   }, []);
 
   useEffect(() => {
-    if (thread) document.title = `${thread.title} · Oso-Ahia`;
+    if (thread) document.title = `${thread.title} · Ọru`;
   }, [thread]);
 
   const view = useMemo(() => {
@@ -108,7 +108,7 @@ export function SharedThread({ shareId }: { shareId: string }) {
               ok: true,
             },
       );
-      /* Oso-Ahia-painted pictures ride the payload as plain URLs — an image
+      /* Ọru-painted pictures ride the payload as plain URLs — an image
          phase puts them through the same MorphingImage cards as a live
          thread. (?? guards a payload from a backend that predates the
          field.) */
@@ -190,12 +190,12 @@ function SharedThreadHeader({
     <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-4">
       <a
         href="/"
-        aria-label="Oso-Ahia home"
+        aria-label="Ọru home"
         className="flex shrink-0 items-center gap-2"
       >
-        <WhirlLogo size={18} />
+        <OruLogo size={18} />
         <span className="text-[14px]/4 font-semibold max-sm:hidden">
-          Oso-Ahia
+          Ọru
         </span>
       </a>
       <span className="h-4 w-px shrink-0 bg-border" />
@@ -273,7 +273,7 @@ function ContinueButton({ shareId }: { shareId: string }) {
 export function NotAvailable() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
-      <WhirlLogo size={32} />
+      <OruLogo size={32} />
       <div>
         <div className="text-[15px]/5 font-medium">
           This conversation isn&apos;t available

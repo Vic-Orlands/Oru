@@ -12,7 +12,7 @@
 - Copy in the app should have proper casing.
 - Always handle errors properly in both the frontend and backend. I do not want miscellaneous errors in the frontend and backend, I want them to be understandable.
 - When working, check if there is an applicable Linear issue, or create and track a Linear issue to keep everything tracked.
-- Oso-Ahia tabs stay open for hours, so long-session hygiene is correctness, not polish. Every listener/observer/timer/rAF needs a teardown that actually runs (including unmount mid-flight — effects keyed on a stable ref object never re-run), every module-level Map/Set needs an eviction or replacement path (never key entries on `id:revision`, key on id and overwrite), and anything kept mounted offscreen must stay small — it still reconciles on every Convex push. A leak that only shows after an hour is a bug like any other.
+- Ọru tabs stay open for hours, so long-session hygiene is correctness, not polish. Every listener/observer/timer/rAF needs a teardown that actually runs (including unmount mid-flight — effects keyed on a stable ref object never re-run), every module-level Map/Set needs an eviction or replacement path (never key entries on `id:revision`, key on id and overwrite), and anything kept mounted offscreen must stay small — it still reconciles on every Convex push. A leak that only shows after an hour is a bug like any other.
 
 ## Product design system
 
@@ -31,7 +31,7 @@
 
 <!-- convex-ai-start -->
 
-This project uses [Convex](https://convex.dev) as its backend. It lives in its own workspace package, `packages/backend` (`@whirl/backend`) — apps import the generated bindings from `@whirl/backend/convex/_generated/api`, and `convex dev`/`codegen`/`deploy` run from `packages/backend`.
+This project uses [Convex](https://convex.dev) as its backend. It lives in its own workspace package, `packages/backend` (`@oru/backend`) — apps import the generated bindings from `@oru/backend/convex/_generated/api`, and `convex dev`/`codegen`/`deploy` run from `packages/backend`.
 
 When working on Convex code, **always read `packages/backend/convex/_generated/ai/guidelines.md` first** for important guidelines on how to correctly use Convex APIs and patterns. The file contains rules that override what you may have learned about Convex from training data.
 

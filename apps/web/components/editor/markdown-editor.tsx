@@ -64,19 +64,19 @@ export function MarkdownEditor({
   /** Surfaces the editor instance (e.g. so a parent toolbar can export it). */
   onEditorReady?: (editor: Editor | null) => void;
   /**
-   * Keep the view pinned to the end as `value` grows — used while whirl
+   * Keep the view pinned to the end as `value` grows — used while oru
    * streams a document in, so the panel follows the text being written.
    */
   stickToBottom?: boolean;
   /**
-   * When true, an externally-driven `value` change (whirl revising a
+   * When true, an externally-driven `value` change (oru revising a
    * document) flashes a highlight over exactly the region that changed, so
    * the edit is seen as it lands rather than appearing out of nowhere.
    */
   highlightEdits?: boolean;
   /**
    * When provided, selecting text reveals a floating "add to chat" button
-   * that hands the selected markdown back so the user can ask whirl to
+   * that hands the selected markdown back so the user can ask oru to
    * revise it.
    */
   onAddSelectionToChat?: (selectedText: string) => void;
@@ -152,7 +152,7 @@ export function MarkdownEditor({
   });
 
   /* Swap in fresh content when the source changes underneath us (opening a
-     different doc, whirl streaming one in, or whirl revising it).
+     different doc, oru streaming one in, or oru revising it).
      emitUpdate stays off so this never loops back as an edit. */
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [sweepNonce, setSweepNonce] = useState(0);

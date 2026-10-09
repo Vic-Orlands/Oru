@@ -20,7 +20,7 @@ import { callbackHtml } from "./mcpOAuthFlow";
 // The user-facing side of the integration store: browsing approved
 // integrations, installing one, and managing the installs. Registration and
 // review live in convex/integrations.ts (the console backend); this file is
-// what the Oso-Ahia app's /integrations page talks to.
+// what the Ọru app's /integrations page talks to.
 //
 // An install is just an `mcpServers` row with `integrationId` pointing back at
 // the store listing — so installed integrations ride the exact same runtime

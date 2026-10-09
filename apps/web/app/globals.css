@@ -111,7 +111,7 @@
      adjacent-pair order — the ordering IS the colorblind-safety mechanism,
      so slots are assigned in sequence and never re-shuffled or cycled. The
      dark column is the same eight hues re-stepped for #181818, not a second
-     palette. Validated against both of whirl's surfaces: worst adjacent CVD
+     palette. Validated against both of oru's surfaces: worst adjacent CVD
      ΔE 9.1 light / 8.4 dark, normal-vision 19.6 / 19.3. Aqua, yellow, and
      magenta sit under 3:1 on white, so a chart always ships a legend and
      hover values (the relief rule) — see lib/chart-palette.ts. */
@@ -767,7 +767,7 @@ body {
 }
 
 /*
- * Transient highlight painted over a region whirl just edited (see
+ * Transient highlight painted over a region oru just edited (see
  * components/editor/edit-highlight.ts). A soft amber wash eases in, holds
  * for a beat, then fades out on its own — so the decoration only has to be
  * applied, not animated in JS.

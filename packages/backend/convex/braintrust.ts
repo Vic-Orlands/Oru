@@ -48,7 +48,7 @@ import {
    by name in that org. */
 const BRAINTRUST_PROJECT = process.env.BRAINTRUST_PROJECT_ID?.trim()
   ? { projectId: process.env.BRAINTRUST_PROJECT_ID.trim() }
-  : { projectName: process.env.BRAINTRUST_PROJECT_NAME?.trim() || "Oso-Ahia" };
+  : { projectName: process.env.BRAINTRUST_PROJECT_NAME?.trim() || "Ọru" };
 
 const BRAINTRUST_API_KEY = process.env.BRAINTRUST_API_KEY;
 
@@ -110,7 +110,7 @@ export type BraintrustSpanContext = {
   /** Clerk subject — the same id PostHog and Autumn bill against. */
   userId: string;
   /**
-   * Stable row id for this span. Every whirl call site passes a Convex id (the
+   * Stable row id for this span. Every oru call site passes a Convex id (the
    * assistant message, or the thread for turn-less helpers) so that a later
    * action running in a *different* isolate can still find the row: Braintrust
    * merges writes by id, which is what `updateBraintrustSpan` relies on.
@@ -159,7 +159,7 @@ const INERT_SPAN: BraintrustSpan = {
 
 function spanMetadata(context: BraintrustSpanContext) {
   return {
-    app: "whirl",
+    app: "oru",
     user_id: context.userId,
     ...(context.convoId ? { conversation_id: context.convoId } : {}),
     ...context.properties,

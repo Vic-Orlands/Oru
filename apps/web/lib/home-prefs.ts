@@ -8,7 +8,7 @@ import { useSyncExternalStore } from "react";
    external store instead of per-hook state. */
 
 const KEY = "home-suggestions";
-const CHANGE_EVENT = "whirl:home-suggestions";
+const CHANGE_EVENT = "oru:home-suggestions";
 
 let cached: boolean | null = null;
 

@@ -298,14 +298,14 @@ export async function finalizeAssistantTurn(
       "Supermemory conversation write",
       addSupermemoryDocument({
         containerTag: args.memoryContainerTag,
-        customId: `whirl-message-${args.assistantId}`,
+        customId: `oru-message-${args.assistantId}`,
         content: buildSupermemoryConversationDocument({
           user: args.latestUserText,
           assistant: args.text,
         }),
         metadata: {
           type: "conversation",
-          source: "whirl",
+          source: "oru",
           threadId: args.threadId,
           assistantId: args.assistantId,
           model: modelKey,

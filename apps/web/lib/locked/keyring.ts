@@ -10,7 +10,7 @@ import { useSyncExternalStore } from "react";
 
    The map is module-level (same shape as lib/toasts.ts and lib/incognito.ts)
    so a settings round trip or a thread hop can't drop a key the user just
-   typed a password for. Oso-Ahia tabs live for hours, so it evicts on three
+   typed a password for. Ọru tabs live for hours, so it evicts on three
    different clocks: idle threads time out, signing out empties it, and a
    deleted thread is forgotten on the spot. The sweep only runs while
    something is actually held. */

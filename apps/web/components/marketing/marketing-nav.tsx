@@ -104,10 +104,10 @@ export function MarketingSidebarNav({ kirkify }: { kirkify: boolean }) {
 
   return (
     <nav
-      aria-label="About Oso-Ahia"
+      aria-label="About Ọru"
       className="sticky top-10 hidden h-[calc(100dvh-5rem)] w-40 shrink-0 flex-col self-start md:flex"
     >
-      <Link href="/about" aria-label="Oso-Ahia home" className="w-fit">
+      <Link href="/about" aria-label="Ọru home" className="w-fit">
         <MarketingLogo />
       </Link>
       <div className="-ml-2.5 mt-7 flex flex-col gap-1">
@@ -130,7 +130,9 @@ export function MarketingSidebarNav({ kirkify }: { kirkify: boolean }) {
           </div>
         </details>
         <NavLink href="/about/about">About</NavLink>
-        <ExternalLink href={SITE_LINKS.repo}>GitHub</ExternalLink>
+        {SITE_LINKS.repo && (
+          <ExternalLink href={SITE_LINKS.repo}>GitHub</ExternalLink>
+        )}
       </div>
       <ChatLink className="mt-5" />
       <div className="mt-auto mb-1 flex items-center gap-2">
@@ -144,9 +146,9 @@ export function MarketingSidebarNav({ kirkify }: { kirkify: boolean }) {
 export function MarketingMobileNav({ kirkify }: { kirkify: boolean }) {
   const extras = extrasFor(kirkify);
   return (
-    <nav aria-label="About Oso-Ahia" className="flex flex-col gap-4 md:hidden">
+    <nav aria-label="About Ọru" className="flex flex-col gap-4 md:hidden">
       <div className="flex items-center justify-between">
-        <Link href="/about" aria-label="Oso-Ahia home">
+        <Link href="/about" aria-label="Ọru home">
           <MarketingLogo size={32} />
         </Link>
         <ChatLink />
@@ -158,7 +160,9 @@ export function MarketingMobileNav({ kirkify }: { kirkify: boolean }) {
           </NavLink>
         ))}
         <NavLink href="/about/about">About</NavLink>
-        <ExternalLink href={SITE_LINKS.repo}>GitHub</ExternalLink>
+        {SITE_LINKS.repo && (
+          <ExternalLink href={SITE_LINKS.repo}>GitHub</ExternalLink>
+        )}
         <ResourceLinks />
         {extras.map((item) => (
           <NavLink key={item.href} href={item.href}>

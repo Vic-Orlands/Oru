@@ -12,8 +12,8 @@ import {
   IconSend,
   IconX,
 } from "@tabler/icons-react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -149,7 +149,7 @@ export function JobApplicationDialog({
               ) : (
                 <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
                   <span className="grid size-11 place-items-center rounded-xl bg-muted"><IconBrowser size={22} /></span>
-                  <div><p className="text-sm font-medium">Open the employer form here</p><p className="mt-1 max-w-sm text-xs text-muted-foreground">Kernel keeps the browser private while Oso-Ahia scans the form. You stay in control of logins, uploads, captchas, and the final submit.</p></div>
+                  <div><p className="text-sm font-medium">Open the employer form here</p><p className="mt-1 max-w-sm text-xs text-muted-foreground">Kernel keeps the browser private while Ọru scans the form. You stay in control of logins, uploads, captchas, and the final submit.</p></div>
                   <Button disabled={!applicationId || busy !== null} onClick={() => applicationId && void run("starting", () => openBrowser({ applicationId }))}>
                     {busy === "starting" ? <IconLoader2 className="animate-spin" /> : <IconPlayerPlayFilled />}
                     Open application
@@ -184,7 +184,7 @@ export function JobApplicationDialog({
               {canSubmit && (
                 <div className="mt-5 rounded-xl bg-amber-500/8 p-3 ring-1 ring-amber-500/20">
                   <p className="text-xs font-semibold">Final submission</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Review the live form. Oso-Ahia will only mark this applied after the employer confirms receipt.</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Review the live form. Ọru will only mark this applied after the employer confirms receipt.</p>
                   {confirmSubmit ? (
                     <div className="mt-3 flex gap-2">
                       <Button size="sm" disabled={busy !== null} onClick={() => applicationId && void run("submitting", async () => { await submitApplication({ applicationId }); setConfirmSubmit(false); showToast("Application submitted and confirmed."); })}>

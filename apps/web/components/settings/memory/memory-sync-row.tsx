@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useAction, useConvexAuth, useQuery } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -11,7 +11,7 @@ import { formatRelative } from "@/lib/relative-time";
 import { showToast } from "@/lib/toasts";
 import { SettingsRow } from "../settings-rows";
 
-/* Backfill: walk the chats Oso-Ahia hasn't handed to memory yet and upload
+/* Backfill: walk the chats Ọru hasn't handed to memory yet and upload
    them. Capped to one run a day server-side, so the button spends most of
    its life explaining when the next one unlocks. The run row is a real
    Convex document, so progress ticks in live — no polling. */

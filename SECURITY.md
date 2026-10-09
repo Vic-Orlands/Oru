@@ -1,6 +1,6 @@
 # Security policy
 
-Thanks for helping keep Whirl and the people who use it safe.
+Thanks for helping keep Ọru and the people who use it safe.
 
 ## Reporting a vulnerability
 
@@ -27,11 +27,11 @@ In scope:
 
 - the code in this repository: the web app (`apps/web`), the Convex backend
   (`packages/backend`), and the other apps under `apps/`
-- the hosted service at [whirl.chat](https://whirl.chat)
+- the production deployment configured through `NEXT_PUBLIC_SITE_URL`
 
 Out of scope:
 
-- vulnerabilities in third-party services Whirl integrates with (report those
+- vulnerabilities in third-party services Ọru integrates with (report those
   to the vendor)
 - self-hosted deployments that are misconfigured, for example secrets exposed
   through `NEXT_PUBLIC_` variables
@@ -39,5 +39,5 @@ Out of scope:
 
 ## Supported versions
 
-Whirl ships continuously from `main`. Security fixes land there; there are no
+Ọru ships continuously from `main`. Security fixes land there; there are no
 separately maintained release branches.

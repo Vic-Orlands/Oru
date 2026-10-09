@@ -12,7 +12,7 @@
     "@convex-dev/better-auth": "0.12.5",
     "@posthog/react": "^1.10.3",
     "@tabler/icons-react": "^3.44.0",
-    "@whirl/backend": "workspace:*",
+    "@oru/backend": "workspace:*",
     "better-auth": "1.6.15",
     "convex": "^1.46.0",
     "motion": "^12.42.2",

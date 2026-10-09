@@ -7,8 +7,8 @@ import {
   eligible,
   PERKS,
   type SlotPlan,
-} from "@whirl/backend/convex/slots/catalog";
-import type { Doc } from "@whirl/backend/convex/_generated/dataModel";
+} from "@oru/backend/convex/slots/catalog";
+import type { Doc } from "@oru/backend/convex/_generated/dataModel";
 
 export function GuestPrizeCodes({
   prizes,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTwirl, WhirlHoverMark } from "@/components/whirl-rings";
+import { useTwirl, OruHoverMark } from "@/components/oru-rings";
 
 export function MarketingLogo({
   size = 36,
@@ -16,7 +16,7 @@ export function MarketingLogo({
       style={{ width: size, height: size }}
       className={`relative inline-block shrink-0 ${className}`}
     >
-      <WhirlHoverMark
+      <OruHoverMark
         twirling={twirling}
         layers={[{ style: { backgroundColor: "#0c82f2" } }]}
       />

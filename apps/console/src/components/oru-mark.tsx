@@ -1,5 +1,5 @@
-/** The Oso-Ahia logomark, inverted for dark mode like the main app. */
-export function WhirlMark({
+/** The Ọru logomark, inverted for dark mode like the main app. */
+export function OruMark({
   size = 20,
   className = "",
 }: {
@@ -13,7 +13,7 @@ export function WhirlMark({
       style={{ width: dim, height: dim }}
     >
       <img
-        src="/whirl.svg"
+        src="/oru.svg"
         alt=""
         aria-hidden
         style={{ width: dim, height: dim }}

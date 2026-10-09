@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { publicPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = publicPageMetadata({
-  title: "Desk · Oso-Ahia",
+  title: "Desk · Ọru",
   path: "/app",
 });
 

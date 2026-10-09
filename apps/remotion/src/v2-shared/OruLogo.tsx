@@ -1,7 +1,7 @@
 import { staticFile } from "remotion";
 import type { CSSProperties } from "react";
 
-/* Ripped from apps/web/components/whirl-logo.tsx + whirl-rings.tsx, at rest.
+/* Ripped from apps/web/components/oru-logo.tsx + oru-rings.tsx, at rest.
    The mark is a mask over a solid fill (never an <img>) so it inherits the
    chrome ink — `bg-foreground-soft`, exactly like the sidebar labels.
 
@@ -22,7 +22,7 @@ function maskStyle(url: string): CSSProperties {
   };
 }
 
-export function WhirlLogo({
+export function OruLogo({
   size = 20,
   className = "",
 }: {
@@ -39,7 +39,7 @@ export function WhirlLogo({
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0"
-        style={maskStyle(staticFile("whirl-ring-outer.svg"))}
+        style={maskStyle(staticFile("oru-ring-outer.svg"))}
       >
         <span className="absolute inset-0 bg-foreground-soft" />
       </span>

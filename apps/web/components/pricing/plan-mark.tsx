@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { PlanBadge, planBadgeSrc } from "@/components/plan-badge";
-import { WhirlLogo } from "@/components/whirl-logo";
+import { OruLogo } from "@/components/oru-logo";
 import type { PricingPlanId } from "./plan-catalog";
 
 export function PlanMark({
@@ -14,7 +14,7 @@ export function PlanMark({
   if (plan === "free") {
     return (
       <span className={large ? "size-10" : "size-8"}>
-        <WhirlLogo size={large ? 40 : 32} />
+        <OruLogo size={large ? 40 : 32} />
       </span>
     );
   }

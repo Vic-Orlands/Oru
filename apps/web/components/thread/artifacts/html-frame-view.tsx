@@ -10,7 +10,7 @@ const INLINE_MIN_HEIGHT = 80;
 const INLINE_MAX_HEIGHT = 800;
 /** Leaves chat chrome and nearby messages visible on short/narrow panes. */
 const INLINE_VIEWPORT_SHARE = 0.65;
-/** The fixed stage for app-style content (games, 3D) — see whirl-html-app. */
+/** The fixed stage for app-style content (games, 3D) — see oru-html-app. */
 const INLINE_APP_HEIGHT = 480;
 
 /**
@@ -21,7 +21,7 @@ const INLINE_APP_HEIGHT = 480;
  *
  * `fill` fills its container (the side panel). Otherwise it's an inline
  * card that sizes itself to the height the hosted doc posts up — unless
- * the doc's frame agent flags itself app-style ('whirl-html-app': games,
+ * the doc's frame agent flags itself app-style ('oru-html-app': games,
  * 3D, anything viewport-sized), in which case content height is a
  * feedback loop and the card pins a fixed stage instead.
  *
@@ -96,13 +96,13 @@ export function HtmlFrameView({
     const onMessage = (event: MessageEvent) => {
       if (event.source !== frameRef.current?.contentWindow) return;
       const data = event.data as { type?: string; height?: unknown } | null;
-      if (data?.type === "whirl-html-app") {
+      if (data?.type === "oru-html-app") {
         appModeRef.current = true;
         setContentHeight(INLINE_APP_HEIGHT);
         setReady(true);
         return;
       }
-      if (data?.type !== "whirl-html-height" || appModeRef.current) return;
+      if (data?.type !== "oru-html-height" || appModeRef.current) return;
       const reported = Number(data.height);
       if (!Number.isFinite(reported)) return;
       setContentHeight(Math.max(Math.ceil(reported), INLINE_MIN_HEIGHT));
@@ -140,7 +140,7 @@ export function HtmlFrameView({
     return (
       <iframe
         ref={frameRef}
-        title={title || "Oso-Ahia visualization"}
+        title={title || "Ọru visualization"}
         sandbox="allow-scripts allow-pointer-lock"
         srcDoc={srcDoc}
         onPointerEnter={grabFocus}
@@ -160,7 +160,7 @@ export function HtmlFrameView({
       {mounted && (
         <iframe
           ref={frameRef}
-          title={title || "Oso-Ahia visualization"}
+          title={title || "Ọru visualization"}
           sandbox="allow-scripts allow-pointer-lock"
           srcDoc={srcDoc}
           onPointerEnter={grabFocus}

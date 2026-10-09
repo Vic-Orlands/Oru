@@ -73,7 +73,7 @@ export function ChangePasswordModal({
       setError(
         cause instanceof Error
           ? cause.message
-          : "Oso-Ahia cannot change the password. Try again.",
+          : "Ọru cannot change the password. Try again.",
       );
     } finally {
       setBusy(false);
@@ -141,7 +141,7 @@ export function ChangePasswordModal({
           </Button>
           <StepHint tone={weak ? "warn" : "muted"}>
             {weak
-              ? "This password is weak. Oso-Ahia cannot reset it."
+              ? "This password is weak. Ọru cannot reset it."
               : "The old password stops immediately."}
           </StepHint>
         </div>

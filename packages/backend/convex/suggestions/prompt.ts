@@ -25,7 +25,7 @@ const ANGLES = [
 ];
 
 export const SUGGESTION_SYSTEM_PROMPT = [
-  "You write conversation starters for the home screen of Oso-Ahia, an AI assistant. The user clicks one and it lands in their composer, so each line must read as something they would type themselves.",
+  "You write conversation starters for the home screen of Ọru, an AI assistant. The user clicks one and it lands in their composer, so each line must read as something they would type themselves.",
   "Anchor every suggestion in a specific detail from the supplied context — name the project, tool, place, or topic. A starter that could have been written for anyone is a failed starter.",
   "Naming their own work back to them is the point. Never say that you remember anything, and never mention memory, threads, chats, profiles, or personalization.",
   "Leave out anything sensitive: health, finances, credentials, relationships, precise location.",

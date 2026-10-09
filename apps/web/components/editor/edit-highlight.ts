@@ -5,7 +5,7 @@ import { Decoration, DecorationSet } from "@tiptap/pm/view";
 
 /**
  * A tiny ProseMirror plugin that paints transient highlight decorations over
- * whatever ranges whirl just changed, so an incoming edit is *seen*, not missed.
+ * whatever ranges oru just changed, so an incoming edit is *seen*, not missed.
  * The decorations carry a CSS class (`edit-flash`) whose keyframes — defined in
  * app.css — fade the highlight out on their own; we just clear the set after.
  */

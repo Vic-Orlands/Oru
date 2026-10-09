@@ -1,5 +1,5 @@
 /**
- * Rasterize the Oso-Ahia mark into the home-screen icon set.
+ * Rasterize the Ọru mark into the home-screen icon set.
  *
  * Install prompts and app switchers want bitmaps at fixed sizes, so the
  * mark ships as PNGs: two plain icons for the manifest, one maskable (the
@@ -10,7 +10,7 @@
  * All four are opaque and dark — the mark reads on any wallpaper, and it
  * matches the black pill the app's primary action already wears.
  *
- * One-shot: run it again only if public/whirl.svg changes.
+ * One-shot: run it again only if public/oru.svg changes.
  *   node apps/web/scripts/render-app-icons.mjs
  *
  * node, not bun: Playwright drives the browser over a pipe transport that
@@ -41,7 +41,7 @@ const ICONS = [
   { out: "app/apple-icon.png", size: 180, scale: 0.6 },
 ];
 
-const svg = readFileSync(join(publicDir, "whirl.svg"), "utf8")
+const svg = readFileSync(join(publicDir, "oru.svg"), "utf8")
   .replace(/\s(width|height)="\d+"/g, "")
   .replaceAll('fill="black"', `fill="${MARK}"`);
 

@@ -22,7 +22,7 @@ export function supportBackend() {
 export const SIGNED_OUT = {
   known: false,
   reason:
-    "The visitor isn't signed in to Oso-Ahia here, so there's no account to look at. Ask them to sign in and reopen support.",
+    "The visitor isn't signed in to Ọru here, so there's no account to look at. Ask them to sign in and reopen support.",
 } as const;
 
 /* `externalId` only ever arrives alongside `verified: true`. Checking both

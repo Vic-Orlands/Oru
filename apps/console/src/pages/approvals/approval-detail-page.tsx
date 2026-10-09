@@ -171,7 +171,7 @@ function RequestDetail({ request }: { request: IntegrationRequest }) {
         </h2>
         <p className="mt-1 text-[12.5px] text-neutral-500 dark:text-neutral-400">
           Each description is shown in the chat, exactly like this, while
-          Oso-Ahia runs the tool — check they read as actions.
+          Ọru runs the tool — check they read as actions.
         </p>
         {request.tools.length === 0 ? (
           <p className="mt-2 text-[12.5px] text-neutral-400 dark:text-neutral-500">

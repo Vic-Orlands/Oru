@@ -49,7 +49,7 @@ export function LinkSafetyDialog({
         <DialogHeader>
           <DialogTitle>Open external link?</DialogTitle>
           <DialogDescription>
-            This link leads outside Oso-Ahia — check the address before you go.
+            This link leads outside Ọru — check the address before you go.
           </DialogDescription>
         </DialogHeader>
         <div className="mt-3 max-h-28 overflow-y-auto rounded-lg bg-well px-3 py-2 font-mono text-xs/5 break-all text-muted-foreground shadow-[inset_0_0_0_1px_var(--well-outline)]">

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useUser } from "@/lib/auth/session";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { showToast } from "@/lib/toasts";
 import { SettingsRow } from "./settings-rows";
@@ -50,7 +50,7 @@ export function PreferencesField() {
   return (
     <SettingsRow
       title="Your preferences"
-      description="Anything Oso-Ahia should know about you — tone, interests, how you like answers. Applied to every conversation."
+      description="Anything Ọru should know about you — tone, interests, how you like answers. Applied to every conversation."
     >
       <textarea
         value={text ?? ""}

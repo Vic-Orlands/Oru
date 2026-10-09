@@ -1,5 +1,5 @@
 {
-  "name": "@whirl/backend",
+  "name": "@oru/backend",
   "private": true,
   "type": "module",
   "scripts": {

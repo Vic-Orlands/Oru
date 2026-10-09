@@ -62,7 +62,7 @@ function buildExcerpt(
 
 /**
  * The searchChatHistory tool's backend: BM25 search over every message the
- * user has ever exchanged with whirl, hydrated with thread titles. The current
+ * user has ever exchanged with oru, hydrated with thread titles. The current
  * thread is excluded (the model already has it in context). Incognito threads
  * never surface — they're ephemeral by contract — and neither do locked ones:
  * their rows are ciphertext, so BM25 can't match them and an excerpt would be

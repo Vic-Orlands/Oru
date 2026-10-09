@@ -1,5 +1,5 @@
-import type { Doc } from "@whirl/backend/convex/_generated/dataModel";
-import { PERKS } from "@whirl/backend/convex/slots/catalog";
+import type { Doc } from "@oru/backend/convex/_generated/dataModel";
+import { PERKS } from "@oru/backend/convex/slots/catalog";
 
 export function playLabel(play: Doc<"slotPlays">) {
   if (play.sku)

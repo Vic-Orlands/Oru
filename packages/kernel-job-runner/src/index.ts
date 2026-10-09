@@ -16,7 +16,7 @@ import {
 } from "./kernel-browser";
 import { inspectRenderedPage, type InspectionFocus } from "./page-inspection";
 
-const app = kernel.app("oso-ahia-job-agent");
+const app = kernel.app("oru-job-agent");
 
 function objectPayload(payload: unknown): Record<string, unknown> {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {

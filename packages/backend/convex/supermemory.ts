@@ -3,7 +3,7 @@ const SUPERMEMORY_API_BASE = "https://api.supermemory.ai";
 const SETTINGS_BODY = {
   shouldLLMFilter: true,
   filterPrompt:
-    "Oso-Ahia is a personal AI chatbot/assistant. containerTag is the signed-in user id, so each user's memories are isolated. We store completed chat turns and historical thread transcripts. Extract durable user preferences, profile facts, ongoing projects, constraints, tastes, and useful context. Ignore one-off tasks, transient details, duplicate facts, and secrets or sensitive facts unless the user explicitly asks to remember them.",
+    "Ọru is a personal AI chatbot/assistant. containerTag is the signed-in user id, so each user's memories are isolated. We store completed chat turns and historical thread transcripts. Extract durable user preferences, profile facts, ongoing projects, constraints, tastes, and useful context. Ignore one-off tasks, transient details, duplicate facts, and secrets or sensitive facts unless the user explicitly asks to remember them.",
 } as const;
 
 const MAX_QUERY_CHARS = 2_000;

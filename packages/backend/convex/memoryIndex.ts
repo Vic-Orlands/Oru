@@ -345,11 +345,11 @@ export const processRun = internalAction({
           if (transcript.length > 0) {
             await addSupermemoryDocument({
               containerTag,
-              customId: `whirl-thread-${threadId}`,
-              content: `Oso-Ahia chat transcript\n\n${buildTranscript(transcript)}`,
+              customId: `oru-thread-${threadId}`,
+              content: `Ọru chat transcript\n\n${buildTranscript(transcript)}`,
               metadata: {
                 type: "thread_transcript",
-                source: "whirl",
+                source: "oru",
                 threadId,
                 syncedAt: Date.now(),
               },

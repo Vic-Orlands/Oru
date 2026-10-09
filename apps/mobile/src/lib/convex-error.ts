@@ -14,7 +14,7 @@ import { ConvexError } from "convex/values";
 const GENERIC = "Something went wrong on our end. Please try again in a moment.";
 
 const NETWORK =
-  "We couldn't reach whirl. Check your connection and try again.";
+  "We couldn't reach oru. Check your connection and try again.";
 
 /** Server-side messages we have better wording for. */
 const FRIENDLY: Array<[RegExp, string]> = [
@@ -38,7 +38,7 @@ export function describeConvexError(error: unknown): string {
   if (!error) return GENERIC;
 
   /* A `ConvexError` carries whatever the backend chose to send — a string for
-     every one whirl throws — so it needs no unwrapping. */
+     every one oru throws — so it needs no unwrapping. */
   if (error instanceof ConvexError) {
     const data = error.data;
     const message = typeof data === "string" ? data : firstLine(error.message);

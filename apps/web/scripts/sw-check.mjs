@@ -16,7 +16,7 @@ const CHROME =
   process.env.CHROME_PATH ??
   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 
-const profile = mkdtempSync(join(tmpdir(), "whirl-sw-"));
+const profile = mkdtempSync(join(tmpdir(), "oru-sw-"));
 const chrome = spawn(
   CHROME,
   [
@@ -108,7 +108,7 @@ console.log(
 await sleep(2500);
 console.log(
   "cached  →",
-  await evaluate(`caches.open("whirl-shell-v1")
+  await evaluate(`caches.open("oru-shell-v1")
     .then((c) => c.keys())
     .then((keys) => keys.map((r) => new URL(r.url).pathname).join(", "))`),
 );

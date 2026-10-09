@@ -1,7 +1,7 @@
 import { CONSOLE_EVENTS, captureEvent } from "~/lib/analytics";
 
 // Same localStorage key and semantics as the main app, so a developer who
-// prefers dark mode in Oso-Ahia gets it in the console too.
+// prefers dark mode in Ọru gets it in the console too.
 export type ThemePref = "system" | "light" | "dark";
 
 export function resolveDark(pref: ThemePref): boolean {

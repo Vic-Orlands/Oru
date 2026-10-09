@@ -5,7 +5,7 @@ import { IconMessageQuestion, IconPaperclip } from "@tabler/icons-react";
 import type { MessagePhase } from "@/lib/messages";
 import type { QuestionAnswer, QuestionSpec } from "@/lib/questions";
 
-/* The thread's record of an askUserQuestion form: what whirl asked, and —
+/* The thread's record of an askUserQuestion form: what oru asked, and —
    once the user hits Done in the composer's form face — what they chose.
    While unanswered the form itself lives in the composer, so this card
    stays a quiet summary rather than a second set of controls. */

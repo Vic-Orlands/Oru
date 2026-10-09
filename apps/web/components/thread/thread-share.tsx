@@ -11,7 +11,7 @@ import {
   IconShare2,
   IconWorld,
 } from "@tabler/icons-react";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { TranscriptHandoffDialog } from "@/components/share/transcript-handoff-dialog";

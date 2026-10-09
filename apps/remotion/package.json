@@ -1,5 +1,5 @@
 {
-  "name": "whirl-remotion",
+  "name": "oru-remotion",
   "private": true,
   "scripts": {
     "dev": "remotion studio",

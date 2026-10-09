@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { WhirlMark } from "@/components/whirl-mark";
+import { OruMark } from "@/components/oru-mark";
 import { FormError } from "@/components/ui/form-error";
 import { Screen } from "@/components/ui/screen";
 import { Stagger } from "@/components/ui/stagger";
@@ -56,7 +56,7 @@ export function AuthScreen({
     <Screen scrollable centered>
       <View style={styles.header}>
         <MarkEntrance>
-          <WhirlMark size={44} color={colors.foreground} />
+          <OruMark size={44} color={colors.foreground} />
         </MarkEntrance>
 
         <Stagger key={`words:${stepKey}`} delay={WORDS_DELAY} style={styles.words}>

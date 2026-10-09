@@ -13,7 +13,7 @@ export function KirkifyNotes() {
       <BentoCell
         icon={IconLockFilled}
         title="Nothing kept"
-        body="Your photo goes to the model and the result comes straight back. Oso-Ahia stores neither."
+        body="Your photo goes to the model and the result comes straight back. Ọru stores neither."
       />
     </BentoGrid>
   );

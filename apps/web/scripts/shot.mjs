@@ -52,7 +52,7 @@ const COARSE_POINTER =
   "primaryPointerType=2,availablePointerTypes=2";
 
 const PORT = 9334 + (Number(process.env.SHOT_PORT_OFFSET ?? 0) | 0);
-const profile = mkdtempSync(join(tmpdir(), "whirl-shot-"));
+const profile = mkdtempSync(join(tmpdir(), "oru-shot-"));
 const chrome = spawn(
   CHROME,
   [

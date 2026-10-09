@@ -1,5 +1,5 @@
-/* Builds the host document whirl's HTML artifacts render inside. The model
-   writes a self-contained body fragment styled with --whirl-* theme tokens
+/* Builds the host document oru's HTML artifacts render inside. The model
+   writes a self-contained body fragment styled with --oru-* theme tokens
    (convex/inference/htmlTheme.ts); here we define those tokens for the
    current light/dark theme, add a reset and a height reporter, and wrap
    the fragment. Keep the
@@ -8,51 +8,51 @@
 type ThemeVars = Record<string, string>;
 
 const LIGHT: ThemeVars = {
-  "--whirl-bg": "#ffffff",
-  "--whirl-surface": "#f5f5f4",
-  "--whirl-surface-2": "#ebebea",
-  "--whirl-fg": "#171717",
-  "--whirl-muted": "#737373",
-  "--whirl-border": "rgba(0,0,0,0.09)",
-  "--whirl-accent": "#0c82f2",
-  "--whirl-accent-soft": "rgba(12,130,242,0.12)",
-  "--whirl-accent-fg": "#ffffff",
-  "--whirl-success": "#16a34a",
-  "--whirl-warning": "#d97706",
-  "--whirl-danger": "#dc2626",
-  "--whirl-radius": "12px",
-  "--whirl-font-sans":
+  "--oru-bg": "#ffffff",
+  "--oru-surface": "#f5f5f4",
+  "--oru-surface-2": "#ebebea",
+  "--oru-fg": "#171717",
+  "--oru-muted": "#737373",
+  "--oru-border": "rgba(0,0,0,0.09)",
+  "--oru-accent": "#0c82f2",
+  "--oru-accent-soft": "rgba(12,130,242,0.12)",
+  "--oru-accent-fg": "#ffffff",
+  "--oru-success": "#16a34a",
+  "--oru-warning": "#d97706",
+  "--oru-danger": "#dc2626",
+  "--oru-radius": "12px",
+  "--oru-font-sans":
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-  "--whirl-font-mono":
+  "--oru-font-mono":
     'ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace',
-  "--whirl-shadow": "0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)",
+  "--oru-shadow": "0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)",
 };
 
 const DARK: ThemeVars = {
-  "--whirl-bg": "#181818",
-  "--whirl-surface": "rgba(255,255,255,0.045)",
-  "--whirl-surface-2": "rgba(255,255,255,0.08)",
-  "--whirl-fg": "#ededed",
-  "--whirl-muted": "#a3a3a3",
-  "--whirl-border": "rgba(255,255,255,0.1)",
-  "--whirl-accent": "#4d9bf6",
-  "--whirl-accent-soft": "rgba(77,155,246,0.18)",
-  "--whirl-accent-fg": "#0b0b0b",
-  "--whirl-success": "#4ade80",
-  "--whirl-warning": "#fbbf24",
-  "--whirl-danger": "#f87171",
-  "--whirl-radius": "12px",
-  "--whirl-font-sans":
+  "--oru-bg": "#181818",
+  "--oru-surface": "rgba(255,255,255,0.045)",
+  "--oru-surface-2": "rgba(255,255,255,0.08)",
+  "--oru-fg": "#ededed",
+  "--oru-muted": "#a3a3a3",
+  "--oru-border": "rgba(255,255,255,0.1)",
+  "--oru-accent": "#4d9bf6",
+  "--oru-accent-soft": "rgba(77,155,246,0.18)",
+  "--oru-accent-fg": "#0b0b0b",
+  "--oru-success": "#4ade80",
+  "--oru-warning": "#fbbf24",
+  "--oru-danger": "#f87171",
+  "--oru-radius": "12px",
+  "--oru-font-sans":
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-  "--whirl-font-mono":
+  "--oru-font-mono":
     'ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace',
-  "--whirl-shadow": "0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35)",
+  "--oru-shadow": "0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35)",
 };
 
 /** The same palette, posted into a React artifact's frame on every theme
  *  change — see components/thread/artifacts/react-frame-view.tsx. Shared so
  *  the two runtimes can never drift apart. */
-export function whirlThemeTokens(dark: boolean): ThemeVars {
+export function oruThemeTokens(dark: boolean): ThemeVars {
   return dark ? DARK : LIGHT;
 }
 
@@ -74,9 +74,9 @@ function baseResetCss(fill: boolean): string {
   return `*, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; ${fill ? "height: 100%;" : ""} }
 body {
-  font-family: var(--whirl-font-sans);
-  color: var(--whirl-fg);
-  background: ${fill ? "var(--whirl-bg)" : "transparent"};
+  font-family: var(--oru-font-sans);
+  color: var(--oru-fg);
+  background: ${fill ? "var(--oru-bg)" : "transparent"};
   font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -87,11 +87,11 @@ body {
   max-width: 100%;
   overflow-wrap: anywhere;
 }
-a { color: var(--whirl-accent); }
-:focus-visible { outline: 2px solid var(--whirl-accent); outline-offset: 2px; }
+a { color: var(--oru-accent); }
+:focus-visible { outline: 2px solid var(--oru-accent); outline-offset: 2px; }
 img, svg, canvas, video { max-width: 100%; height: auto; }
-code, pre { font-family: var(--whirl-font-mono); }
-::selection { background: var(--whirl-accent-soft); }`;
+code, pre { font-family: var(--oru-font-mono); }
+::selection { background: var(--oru-accent-soft); }`;
 }
 
 /* The in-frame agent. Reports the rendered height up to the parent so an
@@ -101,7 +101,7 @@ code, pre { font-family: var(--whirl-font-mono); }
    feedback loop for such documents: their height IS the viewport, so
    every height the parent applies becomes the next report. On detection
    it tells the parent to switch to a fixed stage instead
-   ('whirl-html-app') and pins html+body to that stage's height.
+   ('oru-html-app') and pins html+body to that stage's height.
 
    Detection: a <canvas> anywhere, viewport units / full-height styles on
    the document's own elements, or the loop's signature itself — reports
@@ -116,7 +116,7 @@ const FRAME_AGENT = `(function(){
     document.documentElement.style.height = '100%';
     document.body.style.height = '100%';
     document.body.style.padding = '0';
-    try { parent.postMessage({ type: 'whirl-html-app' }, '*'); } catch (e) {}
+    try { parent.postMessage({ type: 'oru-html-app' }, '*'); } catch (e) {}
   }
   function wantsViewport(){
     if (document.querySelector('canvas')) return true;
@@ -145,7 +145,7 @@ const FRAME_AGENT = `(function(){
       }
       lastDelta = d;
       lastVh = Math.max(lastVh, window.innerHeight);
-      parent.postMessage({ type: 'whirl-html-height', height: h }, '*');
+      parent.postMessage({ type: 'oru-html-height', height: h }, '*');
     } catch (e) {}
   }
   window.addEventListener('load', send);

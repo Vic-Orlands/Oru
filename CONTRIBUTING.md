@@ -1,13 +1,13 @@
-# Contributing to Whirl
+# Contributing to Ọru
 
-First off: thank you. Whirl is a small project that cares a lot about how
+First off: thank you. Ọru is a small project that cares a lot about how
 things feel, and contributions of every size are welcome, from typo fixes to
 whole features.
 
 ## Before you start
 
-- **Bugs:** search the [issues](https://github.com/whirlchat/whirl/issues)
-  first, then open one with steps to reproduce.
+- **Bugs:** search the repository's issues first, then open one with steps to
+  reproduce.
 - **Features and bigger changes:** open an issue or discussion before writing
   a lot of code, so we can agree on the shape of it together. It saves
   everyone a rewrite.
@@ -26,11 +26,11 @@ cp apps/web/.env.example apps/web/.env.local      # fill in Convex + Clerk
 bun run dev                                     # from the repo root
 ```
 
-You only need Convex, Clerk, and OpenRouter to work on Whirl. Billing,
+You only need Convex, Clerk, and OpenRouter to work on Ọru. Billing,
 search, memory, and the rest are optional, and the app hides what isn't
 configured.
 
-Whirl uses **[Bun](https://bun.sh)** for everything. Please don't use npm,
+Ọru uses **[Bun](https://bun.sh)** for everything. Please don't use npm,
 yarn, or pnpm. They don't understand the `workspace:*` links and will leave
 `node_modules` in a broken state.
 
@@ -102,7 +102,7 @@ cd packages/backend && bunx convex codegen
 
 ### Long-session hygiene
 
-Whirl tabs stay open for hours, so leaks are correctness bugs, not polish:
+Ọru tabs stay open for hours, so leaks are correctness bugs, not polish:
 
 - Every listener, observer, timer, and `requestAnimationFrame` needs a
   teardown that actually runs, including when a component unmounts

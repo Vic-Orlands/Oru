@@ -194,7 +194,7 @@ export const openStreamingDocument = internalMutation({
 });
 
 /**
- * Patch the partial title/content of a still-streaming document as whirl's tool
+ * Patch the partial title/content of a still-streaming document as oru's tool
  * input arrives. Throttled by the caller; a no-op once the row is gone.
  */
 export const patchStreamingContent = internalMutation({
@@ -262,7 +262,7 @@ export const finalizeDocument = internalMutation({
 });
 
 /**
- * Apply whirl's targeted find/replace edits to a document. Each `find` must
+ * Apply oru's targeted find/replace edits to a document. Each `find` must
  * match the current content EXACTLY and appear exactly once — no fuzzy matching,
  * because the model is handed the document's current text in its prompt, so it
  * can (and must) copy anchors verbatim. Ambiguous or missing snippets are

@@ -30,10 +30,10 @@ export type ApplyHtmlEditsResult = {
 };
 
 /**
- * Lets whirl render a small, self-contained HTML visualization straight into
+ * Lets oru render a small, self-contained HTML visualization straight into
  * the chat — a diagram, chart, timeline, interactive demo, anything that's
  * clearer shown than told. The body streams live into an inline card (inside a
- * sandboxed iframe) as whirl writes it, exactly like a document. `finalize`
+ * sandboxed iframe) as oru writes it, exactly like a document. `finalize`
  * closes out the row the stream loop opened. Paid-only; the stream loop only
  * wires this tool in for paid users.
  */
@@ -87,7 +87,7 @@ export function createInlineHtmlTool({
 }
 
 /**
- * Lets whirl write a full, standalone HTML page (e.g. a study guide, cheat
+ * Lets oru write a full, standalone HTML page (e.g. a study guide, cheat
  * sheet, interactive explainer) that opens in the side panel. Written directly
  * by the main agent, exactly like an inline visualization — the body streams
  * live into the artifact row as the tool input arrives, and `finalize` closes
@@ -141,7 +141,7 @@ export function createFullHtmlTool({
 }
 
 /**
- * Lets whirl revise an existing HTML artifact (inline or full) with targeted
+ * Lets oru revise an existing HTML artifact (inline or full) with targeted
  * find/replace edits, so only the changed regions update. Each `find` must match
  * the artifact's CURRENT html exactly and appear once — the current html of each
  * artifact in the thread is given to the model in its prompt, so it copies

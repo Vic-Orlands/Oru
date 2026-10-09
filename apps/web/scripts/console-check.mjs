@@ -14,7 +14,7 @@ const CHROME =
   process.env.CHROME_PATH ??
   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 
-const profile = mkdtempSync(join(tmpdir(), "whirl-console-"));
+const profile = mkdtempSync(join(tmpdir(), "oru-console-"));
 const chrome = spawn(
   CHROME,
   [

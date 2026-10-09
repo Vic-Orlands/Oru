@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { ComposerAttachments } from "./composer-attachments";
 import { SquishButton } from "./squish-button";
 
-/* The composer's question face: whirl asked something via askUserQuestion
+/* The composer's question face: oru asked something via askUserQuestion
    and the pill morphs into this stepper — one step per question, radio or
    checkbox rows for choices (with a "Something else…" free-text row),
    a short text field, or an attach zone. Done hands the answers back to
@@ -255,7 +255,7 @@ export function QuestionForm({
                     <input
                       autoFocus
                       value={draft.otherText}
-                      placeholder="Tell Oso-Ahia what you have in mind"
+                      placeholder="Tell Ọru what you have in mind"
                       onClick={(event) => event.stopPropagation()}
                       onChange={(event) =>
                         patchDraft(current.id, {

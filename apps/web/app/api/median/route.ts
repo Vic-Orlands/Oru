@@ -1,4 +1,4 @@
-/* Median's one door into Oso-Ahia.
+/* Median's one door into Ọru.
  *
  *   bearer   GET  connects this URL and syncs the manifest. Since 0.3 it
  *                 needs `Authorization: Bearer $MEDIAN_KEY`; a bare GET is 401

@@ -9,7 +9,7 @@ import { chargeUsage } from "./usageLedger";
 
 /**
  * Background painter for the generateImage chat tool. Scheduled by
- * beginImageGeneration the moment whirl calls the tool, so the reply stream
+ * beginImageGeneration the moment oru calls the tool, so the reply stream
  * never waits on the provider — slow paints used to hold the tool call open
  * long enough to time the whole turn out. Runs the generation, stores the
  * bytes, lands the public URLs on the message's pending `image` phase (which

@@ -41,7 +41,7 @@ describe("readRecoveryKeyFromFile", () => {
   test("finds a bare key pasted into a note", () => {
     expect(
       readRecoveryKeyFromFile(
-        `whirl key\n${formatRecoveryCode(CODE)}\n`,
+        `oru key\n${formatRecoveryCode(CODE)}\n`,
         RECOVERY_CODE_LENGTH,
       ),
     ).toBe(CODE);
@@ -76,7 +76,7 @@ describe("readRecoveryKeyFromFile", () => {
 describe("recoveryFileName", () => {
   test("slugs the chat name and stamps the day", () => {
     const name = recoveryFileName("Tax stuff!", new Date(1_800_000_000_000));
-    expect(name).toMatch(/^whirl-recovery-key-tax-stuff-\d{4}-\d{2}-\d{2}\.txt$/);
+    expect(name).toMatch(/^oru-recovery-key-tax-stuff-\d{4}-\d{2}-\d{2}\.txt$/);
   });
 
   test("falls back when the name slugs to nothing", () => {

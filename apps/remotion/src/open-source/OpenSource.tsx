@@ -13,7 +13,7 @@ import {
 } from "./timeline";
 import { TypeCard } from "./TypeCard";
 
-/* "Whirl is now open source." — square, dark, and quiet.
+/* "Ọru is now open source." — square, dark, and quiet.
    A camera drifts up the app's sidebar, the first word of "Clone it."
    rolls over to Fork and Improve, the line lands, and the mark flutters
    to close. */
@@ -33,7 +33,7 @@ export function OpenSource() {
       </Sequence>
       <Sequence from={STATEMENT.from} durationInFrames={STATEMENT.frames}>
         <TypeCard frames={STATEMENT.frames}>
-          Whirl is now
+          Ọru is now
           <br />
           open source.
         </TypeCard>

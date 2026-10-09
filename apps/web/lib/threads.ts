@@ -4,8 +4,8 @@ import { useMemo } from "react";
 import type { OptimisticLocalStore } from "convex/browser";
 import { useAction, useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 import { ANALYTICS_EVENTS, captureEvent } from "./posthog";
 import { requestDelete, usePendingDeleteIds } from "./toasts";

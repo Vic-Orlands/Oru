@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useMutation } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 import {
   IconEdit,
   IconPlayerPauseFilled,

@@ -2,8 +2,8 @@
 
 import { createContext, useContext, type ReactNode } from "react";
 import { useQuery } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 /* Live bodies for the artifacts a message phase points at. The cards and
    the side panel read the same reactive rows, so a streaming document

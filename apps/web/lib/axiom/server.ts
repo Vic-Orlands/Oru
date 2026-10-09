@@ -25,7 +25,7 @@ function createTransport(): Transport {
   return new AxiomJSTransport({
     axiom: new Axiom({ token }),
     dataset,
-    axiomClient: "whirl-v2",
+    axiomClient: "oru-v2",
   });
 }
 

@@ -163,7 +163,7 @@ export default function SignUpScreen() {
     <AuthScreen
       stepKey="details"
       title="Create your account"
-      subtitle="A minute now, and Whirl is yours."
+      subtitle="A minute now, and Ọru is yours."
       error={messageFor(feedback, null)}
       footer={
         <TextLink

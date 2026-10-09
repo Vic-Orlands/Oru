@@ -7,7 +7,7 @@
  * Intentionally NO style guidelines: the model has full creative freedom over
  * the look. We only state the hard rules the artifact must obey to render inside
  * the sandboxed iframe at all. The host document (see app/lib/html-frame.ts)
- * still injects --whirl-* theme tokens and a base reset, so an artifact can opt
+ * still injects --oru-* theme tokens and a base reset, so an artifact can opt
  * into matching the app, but nothing here requires it.
  */
 
@@ -19,6 +19,6 @@
 export const HTML_THEME_REFERENCE = `Sandbox rules:
 - Return a body fragment with inline style/script only; no doctype, html, head, or body.
 - No network access: no fetch/XHR, external scripts, stylesheets, fonts, CDNs, or nested iframes. Use HTML/CSS/SVG/canvas, vanilla JS, and data URIs.
-- Exception: <img> and CSS background-image MAY use an https image URL that appears in this conversation (a user attachment or a whirl-generated image). Never invent or hotlink any other external URL.
+- Exception: <img> and CSS background-image MAY use an https image URL that appears in this conversation (a user attachment or a oru-generated image). Never invent or hotlink any other external URL.
 - Do not set a fixed body height or assume a viewport.
 - JavaScript may only control local interactivity or animation.`;

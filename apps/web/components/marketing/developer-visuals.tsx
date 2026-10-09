@@ -40,7 +40,7 @@ export function ConsoleVisual() {
       <div className="flex items-center justify-between text-xs font-medium">
         Your submissions
         <span className="rounded-full bg-black/4 px-2 py-0.5 text-[10px] text-neutral-500 dark:bg-white/6">
-          {displayHost(SITE_LINKS.console)}
+          {SITE_LINKS.console ? displayHost(SITE_LINKS.console) : "Console"}
         </span>
       </div>
       <div className="mt-3 flex flex-col gap-1.5">

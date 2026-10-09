@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth/session";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 import { isTerminal, type ChatMessage } from "../messages";
 import { ANALYTICS_EVENTS, captureEvent } from "../posthog";
@@ -36,7 +36,7 @@ import { titleFromPrompt } from "./thread-lock";
        stream buffer (lib/locked/stream.ts), and gets merged onto its
        message row on the way past. */
 
-const UNREADABLE = "_Oso-Ahia cannot decrypt this message._";
+const UNREADABLE = "_Ọru cannot decrypt this message._";
 
 /**
  * The thread's messages, opened. `undefined` until the first pass finishes,
@@ -256,7 +256,7 @@ export function useLockedMessageActions() {
         failure =
           cause instanceof Error
             ? cause.message
-            : "Oso-Ahia cannot generate this reply. Try again.";
+            : "Ọru cannot generate this reply. Try again.";
       }
 
       const hasText = text.trim().length > 0;

@@ -39,13 +39,13 @@ export const metadata: Metadata = {
     "data visualization",
   ],
   authors: [
-    { name: "Oso-Ahia" },
+    { name: "Ọru" },
     { name: "Anterra", url: "https://anterra.sh" },
   ],
-  creator: "Oso-Ahia",
-  publisher: "Oso-Ahia",
+  creator: "Ọru",
+  publisher: "Ọru",
   category: "technology",
-  /* Installed on an iPhone, Oso-Ahia opens without Safari's chrome and titles
+  /* Installed on an iPhone, Ọru opens without Safari's chrome and titles
      its own home screen icon. The status bar is left on `default` so it
      takes its colour from the theme-color tag, which tracks the app's
      actual theme (components/pwa/theme-color.tsx) — `black-translucent`

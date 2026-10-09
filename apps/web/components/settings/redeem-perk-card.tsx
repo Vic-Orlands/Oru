@@ -6,13 +6,13 @@ import { IconGiftFilled } from "@tabler/icons-react";
 import { useAction, useConvexAuth, useQuery } from "convex/react";
 import { ConvexError } from "convex/values";
 import { useCustomer } from "autumn-js/react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 import {
   currentSlotPlan,
   eligible,
   PERKS,
-} from "@whirl/backend/convex/slots/catalog";
+} from "@oru/backend/convex/slots/catalog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SettingsCard, SettingsRow } from "./settings-rows";
@@ -83,7 +83,7 @@ export function RedeemPerkCard() {
         <form onSubmit={submit} className="flex flex-wrap gap-2">
           <Input
             aria-label="Arcade prize code"
-            placeholder="WHIRL-…"
+            placeholder="ORU-…"
             value={code}
             onChange={(event) => setCode(event.target.value)}
             autoComplete="off"

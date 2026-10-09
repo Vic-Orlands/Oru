@@ -16,7 +16,7 @@ import { MemoriesCard } from "./memories-card";
 import { SourcesCard } from "./sources-card";
 import { SupermemoryToggle } from "./supermemory-toggle";
 
-/* The Memory tab. The switch up top decides whether Oso-Ahia reads or writes
+/* The Memory tab. The switch up top decides whether Ọru reads or writes
    memory at all; everything under it manages what's already stored, which
    matters just as much when the switch is off.
 
@@ -40,7 +40,7 @@ export function MemorySection() {
     <>
       <SettingsHeader
         title="Memory"
-        description="What Oso-Ahia carries from one chat to the next."
+        description="What Ọru carries from one chat to the next."
       />
       {/* Roomy gaps: each group is heading + card, and the whitespace is
           what tells them apart — matching the Integrations tab. */}
@@ -50,7 +50,7 @@ export function MemorySection() {
             <SettingsRow
               icon={IconLogin2}
               title="You're signed out"
-              description="Sign in and Oso-Ahia can remember your preferences, projects, and context between chats."
+              description="Sign in and Ọru can remember your preferences, projects, and context between chats."
               control={
                 <Button variant="secondary" onClick={() => setAuthOpen(true)}>
                   Sign in
@@ -63,7 +63,7 @@ export function MemorySection() {
             <SettingsRow
               icon={IconBrain}
               title="Memory is a paid perk"
-              description="Oso-Ahia picks up your preferences, projects, and context as you chat, then brings them to every new one — and you get to edit every last bit of it here."
+              description="Ọru picks up your preferences, projects, and context as you chat, then brings them to every new one — and you get to edit every last bit of it here."
               control={
                 <Button onClick={openPricing}>
                   <IconSparkles size={15} stroke={2} />
@@ -83,7 +83,7 @@ export function MemorySection() {
             <SettingsCard>
               <SettingsRow
                 title="Use memory"
-                description="Let Oso-Ahia draw on what it knows about you and keep learning from new chats. Turning it off pauses both — nothing already saved is deleted."
+                description="Let Ọru draw on what it knows about you and keep learning from new chats. Turning it off pauses both — nothing already saved is deleted."
                 control={<SupermemoryToggle />}
               />
             </SettingsCard>

@@ -5,7 +5,7 @@ import type { Metadata } from "next";
    /thread/<id>. The real title lands client-side once the thread list
    answers — the server only knows the id. */
 
-export const metadata: Metadata = { title: "Oso-Ahia" };
+export const metadata: Metadata = { title: "Ọru" };
 
 export default function ThreadPage() {
   return null;

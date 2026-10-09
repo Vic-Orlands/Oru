@@ -135,13 +135,13 @@ export function ImageUploadField({
 /**
  * Optional monochrome SVG icon. Read as text (not uploaded) so the client
  * can recolor it via CSS mask; the gray preview shows exactly how it renders
- * when Oso-Ahia uses the integration. The default copy speaks integration —
+ * when Ọru uses the integration. The default copy speaks integration —
  * pass `hint` when the icon belongs to something else (e.g. a model).
  */
 export function SvgIconField({
   value,
   onChange,
-  hint = "A small SVG shown gray wherever Oso-Ahia uses this integration, instead of the generic plug icon. Previewed exactly as it'll appear.",
+  hint = "A small SVG shown gray wherever Ọru uses this integration, instead of the generic plug icon. Previewed exactly as it'll appear.",
 }: {
   value: string | null;
   onChange: (next: string | null) => void;

@@ -1,6 +1,6 @@
 // The acquisition funnel, server side (W-155).
 //
-// Six ordered steps describe a person's whole journey through Oso-Ahia:
+// Six ordered steps describe a person's whole journey through Ọru:
 //
 //   visitor_landed → signup_completed → first_chat_sent → free_limit_reached
 //     → paywall_viewed → plan_purchased

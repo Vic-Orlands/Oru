@@ -9,7 +9,7 @@ function slugify(title: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
-  return stem || "whirl-artifact";
+  return stem || "oru-artifact";
 }
 
 function isDark(): boolean {
@@ -44,10 +44,10 @@ export function downloadHtmlArtifact(title: string, html: string) {
 /**
  * Download a React artifact as its source module.
  *
- * Deliberately not a standalone .html: making one run outside Oso-Ahia means
+ * Deliberately not a standalone .html: making one run outside Ọru means
  * inlining a megabyte of runtime, and an artifact with data bindings would
  * still be inert because the bindings only resolve against the owner's
- * session. The source is the honest artifact — it's what whirl wrote.
+ * session. The source is the honest artifact — it's what oru wrote.
  */
 export function downloadReactArtifactSource(title: string, code: string) {
   const blob = new Blob([code], { type: "text/jsx;charset=utf-8" });

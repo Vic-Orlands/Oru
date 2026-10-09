@@ -1,4 +1,4 @@
-# Oso-Ahia Kernel job runner
+# Ọru Kernel job runner
 
 This Kernel app owns only the short-lived browser execution layer. Convex remains
 the system of record for candidate data, approvals, application packs, events,
@@ -13,7 +13,7 @@ and receipts.
    to the Kernel runtime.
 4. Add these variables to the Convex deployment:
    - `KERNEL_API_KEY`
-   - `KERNEL_JOB_APP_NAME=oso-ahia-job-agent`
+   - `KERNEL_JOB_APP_NAME=oru-job-agent`
    - `KERNEL_JOB_APP_VERSION=latest`
 
 The runner deliberately uses headful, non-stealth sessions. Login, MFA, CAPTCHA,

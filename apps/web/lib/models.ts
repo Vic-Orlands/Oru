@@ -43,7 +43,7 @@ export type ChatModel = {
    *  can't think just carry ["none"]; Heavy always reasons, so "none"
    *  isn't on its wheel at all. */
   thinkingLevels: ThinkingLevel[];
-  /** Oso-Ahia's own white-labeled tier — cheaper for us, so users get more
+  /** Ọru's own white-labeled tier — cheaper for us, so users get more
    *  usage out of these than out of by-name models. */
   whiteLabel: boolean;
   /** The model runs the search/thinking gates itself (Auto decides,

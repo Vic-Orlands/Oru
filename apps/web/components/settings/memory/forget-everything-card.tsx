@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAction } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
+import { api } from "@oru/backend/convex/_generated/api";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ export function ForgetEverythingCard({
       <SettingsCard>
         <SettingsRow
           title="Forget everything"
-          description="Delete every memory and every synced chat. Your conversations stay put — only what Oso-Ahia learned from them goes."
+          description="Delete every memory and every synced chat. Your conversations stay put — only what Ọru learned from them goes."
           control={
             <Button
               variant="destructive"
@@ -64,7 +64,7 @@ export function ForgetEverythingCard({
         open={confirming}
         onOpenChange={setConfirming}
         title="Forget everything?"
-        message="Every memory and every synced chat goes for good. Oso-Ahia starts over from scratch, and this can't be undone."
+        message="Every memory and every synced chat goes for good. Ọru starts over from scratch, and this can't be undone."
         confirmLabel="Forget everything"
         destructive
         onConfirm={() => void wipe()}

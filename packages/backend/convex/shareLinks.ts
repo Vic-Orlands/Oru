@@ -1,4 +1,4 @@
-/* Absolute public share links for whirl artifacts, built backend-side so
+/* Absolute public share links for oru artifacts, built backend-side so
    the model can hand them out in replies. The tokens are minted at
    creation (documents.ts, html.ts); these pages are served by the main
    app, at the origin convex/site.ts resolves. */

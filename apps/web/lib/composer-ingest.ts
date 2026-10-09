@@ -19,7 +19,7 @@ export function insertComposerQuote(quote: string): boolean {
 }
 
 /**
- * Drop a text selection from a whirl-authored document into the composer,
+ * Drop a text selection from a oru-authored document into the composer,
  * naming the source document (and its id) and quoting the selection so the
  * model can target it with editDocument. Returns false when no composer is
  * mounted to receive it.

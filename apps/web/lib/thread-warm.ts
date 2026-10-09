@@ -1,8 +1,8 @@
 "use client";
 
 import type { ConvexReactClient } from "convex/react";
-import { api } from "@whirl/backend/convex/_generated/api";
-import type { Id } from "@whirl/backend/convex/_generated/dataModel";
+import { api } from "@oru/backend/convex/_generated/api";
+import type { Id } from "@oru/backend/convex/_generated/dataModel";
 
 import { writeThreadMessageCache } from "./message-cache";
 import { computeIsGenerating, type ChatMessage } from "./messages";
