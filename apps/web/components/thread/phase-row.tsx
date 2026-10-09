@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   IconBrain,
+  IconBrowser,
   IconCalculator,
   IconChartHistogram,
   IconChevronDown,
@@ -12,6 +13,7 @@ import {
   IconSchool,
   IconSearch,
   IconWorld,
+  IconExternalLink,
 } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
 
@@ -25,7 +27,9 @@ import { PhaseIcon, PhaseLabel } from "./phase-motion";
 import { PhaseSources } from "./phase-sources";
 import { CalcBody } from "./calc-body";
 
-function isSearchSource(item: unknown): item is import("@/lib/messages").SearchSource {
+function isSearchSource(
+  item: unknown,
+): item is import("@/lib/messages").SearchSource {
   return Boolean(item && typeof item === "object" && "url" in item);
 }
 
@@ -37,6 +41,8 @@ function PhaseGlyph({ kind }: { kind: string }) {
       return <IconSearch size={15} stroke={2} />;
     case "fetch":
       return <IconWorld size={15} stroke={2} />;
+    case "browser":
+      return <IconBrowser size={15} stroke={2} />;
     case "calc":
       return <IconCalculator size={15} stroke={2} />;
     case "skill":
@@ -66,13 +72,32 @@ export function phaseDisclosure(phase: MessagePhase) {
       sources.length > 0 ||
       (phase.kind === "calc" &&
         (Boolean(phase.result || phase.error || phase.expression) ||
-          Boolean(phase.items?.length))),
+          Boolean(phase.items?.length))) ||
+      (phase.kind === "browser" && Boolean(phase.url || phase.error)),
   };
 }
 
 export function PhaseDetailContent({ phase }: { phase: MessagePhase }) {
   const { sources, trace } = phaseDisclosure(phase);
   if (phase.kind === "calc") return <CalcBody phase={phase} />;
+  if (phase.kind === "browser") {
+    return (
+      <div className="space-y-1.5 py-1 text-[13px]/5 text-muted-foreground">
+        {phase.error ? <p>{phase.error}</p> : null}
+        {phase.url ? (
+          <a
+            href={phase.url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex max-w-full items-center gap-1.5 text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+          >
+            <span className="truncate">{phase.url}</span>
+            <IconExternalLink size={13} className="shrink-0" />
+          </a>
+        ) : null}
+      </div>
+    );
+  }
   return trace ? (
     <div className="py-1 text-[13px]/5.5 whitespace-pre-wrap text-muted-foreground">
       {trace}

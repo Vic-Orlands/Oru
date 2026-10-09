@@ -4,6 +4,7 @@ const COMPACT_KINDS = new Set([
   "thought",
   "search",
   "fetch",
+  "browser",
   "calc",
   "mcp",
   "skill",
@@ -56,9 +57,7 @@ export function samePhases(
 /** The latest phase is the thing the large pre-response indicator narrates.
  * A just-finished call remains current through the tiny gap before the next
  * one starts, avoiding a generic filler flash between chained tools. */
-export function currentPhase(
-  phases: MessagePhase[],
-): MessagePhase | undefined {
+export function currentPhase(phases: MessagePhase[]): MessagePhase | undefined {
   return [...phases]
     .reverse()
     .find(
@@ -88,6 +87,10 @@ export function phaseAction(
       return "Searching the web";
     case "fetch":
       return "Reading sources";
+    case "browser":
+      return phase.url
+        ? `Opening ${browserHost(phase.url)}`
+        : "Opening a browser";
     case "calc":
       return "Calculating";
     case "mcp":
@@ -135,6 +138,10 @@ export function completedLabel(phase: MessagePhase): string {
       const count = phase.sources ?? phase.items?.length ?? 0;
       return `Read ${count} page${count === 1 ? "" : "s"}`;
     }
+    case "browser":
+      return phase.ok === false
+        ? `Couldn't inspect ${browserHost(phase.url)}`
+        : `Inspected ${phase.title?.trim() || browserHost(phase.url)}`;
     case "calc":
       return phase.error
         ? "Couldn't calculate"
@@ -175,6 +182,15 @@ export function completedLabel(phase: MessagePhase): string {
       return "Asked you a question";
     default:
       return "Finished a task";
+  }
+}
+
+function browserHost(url: string | undefined): string {
+  if (!url) return "the page";
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "the page";
   }
 }
 

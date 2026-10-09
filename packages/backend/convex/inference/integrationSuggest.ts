@@ -50,9 +50,12 @@ function setupOf(match: IntegrationSuggestion): string {
 export function createSuggestIntegrationsTool({
   search,
   onResult,
+  requiredConnection,
 }: {
   search: (query: string) => Promise<IntegrationSuggestion[]>;
   onResult: (payload: IntegrationSuggestionPhasePayload) => Promise<void>;
+  /** Server-classified account work must pause until its app is connected. */
+  requiredConnection?: { resumeInstruction: string };
 }) {
   return tool({
     description:
@@ -128,13 +131,17 @@ export function createSuggestIntegrationsTool({
           };
         }
 
+        const shouldWait = waitForConnection || Boolean(requiredConnection);
+        const instruction =
+          resumeInstruction?.trim() ||
+          requiredConnection?.resumeInstruction.trim();
         await onResult({
           query: trimmed,
           items: [{ integrationId: picked.integrationId, name: picked.name }],
           stage: "shown",
-          ...(waitForConnection ? { waitForConnection: true } : {}),
-          ...(waitForConnection && resumeInstruction?.trim()
-            ? { resumeInstruction: resumeInstruction.trim().slice(0, 300) }
+          ...(shouldWait ? { waitForConnection: true } : {}),
+          ...(shouldWait && instruction
+            ? { resumeInstruction: instruction.slice(0, 300) }
             : {}),
         });
         return {
@@ -144,7 +151,7 @@ export function createSuggestIntegrationsTool({
             verified: picked.verified,
             setup: setupOf(picked),
           },
-          note: waitForConnection
+          note: shouldWait
             ? "The user sees a connection gate in chat. End this turn with one short sentence. The task will resume automatically, even after a refresh, when they connect; do not ask them to send another message."
             : "The user sees one install card for it right where you called this. Reference it in a short line — it already shows the name, description and an install button — and don't repeat those details, add links, or offer the alternatives.",
         };

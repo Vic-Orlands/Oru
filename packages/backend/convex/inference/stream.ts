@@ -113,7 +113,10 @@ import { createExaAnswerTool } from "./search";
 import { createParallelSearchTool } from "./parallelSearch";
 import { createLoadSkillTool, LOAD_SKILL_NAME } from "./skills";
 import { createWebFetchTool } from "./webFetch";
-import { createKernelPageInspectionTool } from "./kernelBrowser";
+import {
+  createKernelPageInspectionTool,
+  type BrowserInspectionPhasePayload,
+} from "./kernelBrowser";
 import { createWeatherTool, type WeatherPhasePayload } from "./weather";
 import { resolveWeatherUnits } from "./openMeteo";
 import {
@@ -137,6 +140,7 @@ import {
   estimatePromptContentTokens,
 } from "./finalize";
 import type { LeadAgentKind } from "../leadAgents";
+import { chooseInitialToolRoute, toolRoutingInstruction } from "./toolRouting";
 
 async function sha256(value: string): Promise<string> {
   const digest = await crypto.subtle.digest(
@@ -146,6 +150,27 @@ async function sha256(value: string): Promise<string> {
   return [...new Uint8Array(digest)]
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
+}
+
+function stepReturnedIntegrationCandidates(step: unknown): boolean {
+  if (!step || typeof step !== "object" || !("toolResults" in step)) {
+    return false;
+  }
+  const results = (step as { toolResults?: unknown }).toolResults;
+  if (!Array.isArray(results)) return false;
+  return results.some((result) => {
+    if (!result || typeof result !== "object" || !("output" in result)) {
+      return false;
+    }
+    const output = (result as { output?: unknown }).output;
+    return (
+      output !== null &&
+      typeof output === "object" &&
+      "candidates" in output &&
+      Array.isArray((output as { candidates?: unknown }).candidates) &&
+      (output as { candidates: unknown[] }).candidates.length > 0
+    );
+  });
 }
 
 async function resolvePrivateMediaReferences<T>(ctx: ActionCtx, value: T) {
@@ -437,8 +462,7 @@ export async function runAssistantTurn(
   // the model's search policy still decides whether freshness is actually
   // needed. This also lets natural questions such as "what's that game I'm
   // hearing about?" search without requiring magic words or a stale UI toggle.
-  const searchEnabled =
-    exaApiKey !== undefined || parallelApiKey !== undefined;
+  const searchEnabled = exaApiKey !== undefined || parallelApiKey !== undefined;
   // Billing is optional (see createBillingClient): without it every gate
   // below stays open and nothing is deducted.
   const autumn = createBillingClient();
@@ -2156,7 +2180,16 @@ export async function runAssistantTurn(
       const ctxPlace = anon ? undefined : requestInfo.place;
       const ctxUnitsSystem = anon ? undefined : requestInfo.unitsSystem;
 
-      const systemPrompt = buildSystemPrompt({
+      const initialToolRoute = chooseInitialToolRoute({
+        text: requestInfo.latestUserText,
+        connectedIntegrations: mcpIntegrations.map(
+          (integration) => integration.name,
+        ),
+        exaEnabled: Boolean(exaApiKey),
+        parallelEnabled: Boolean(parallelApiKey),
+        browserEnabled: kernelBrowserEnabled,
+      });
+      const systemPrompt = `${buildSystemPrompt({
         leadAgent: requestInfo.leadAgent as LeadAgentKind,
         search: searchEnabled,
         compactionSummary: requestInfo.compactionSummary,
@@ -2180,13 +2213,11 @@ export async function runAssistantTurn(
         imageToolEnabled: imageToolAllowed,
         threadHtmlArtifacts: requestInfo.threadHtmlArtifacts,
         now: Date.now(),
-      });
+      })}\n\n<required_tool_route>\n${toolRoutingInstruction(initialToolRoute)}\n</required_tool_route>`;
       // Providers report the prompt side as one lump that also carries the
       // system prompt and tool schemas. Estimate the conversation content
       // actually sent so the usage tab can charge the user just for that.
-      const promptContentTokens = estimatePromptContentTokens(
-        requestMessages,
-      );
+      const promptContentTokens = estimatePromptContentTokens(requestMessages);
       timings.mark("providerStart");
       const generationStartedAt = Date.now();
       let toolCallCount = 0;
@@ -2425,6 +2456,14 @@ export async function runAssistantTurn(
                   query,
                 }),
               onResult: persistIntegrationSuggestion,
+              ...(initialToolRoute.kind === "integration" &&
+              !initialToolRoute.connectedName
+                ? {
+                    requiredConnection: {
+                      resumeInstruction: requestInfo.latestUserText,
+                    },
+                  }
+                : {}),
             }),
             // The clarifying-question form. Always on: when a decision
             // genuinely needs the user's call, the model raises an
@@ -2650,7 +2689,21 @@ export async function runAssistantTurn(
                 }
               : {}),
             ...(kernelBrowserEnabled
-              ? { inspectWebPage: createKernelPageInspectionTool() }
+              ? {
+                  inspectWebPage: createKernelPageInspectionTool({
+                    onResult: async (
+                      payload: BrowserInspectionPhasePayload,
+                    ) => {
+                      await runMutation(
+                        internal.inference.finalizeLastPendingBrowser,
+                        {
+                          assistantId: requestInfo.assistantId,
+                          ...payload,
+                        },
+                      );
+                    },
+                  }),
+                }
               : {}),
             ...(searchEnabled && exaApiKey
               ? {
@@ -2781,6 +2834,52 @@ export async function runAssistantTurn(
                 activeTools: [] as never[],
                 toolChoice: "none",
                 system: `${systemPrompt}\n\n${FINAL_RESPONSE_SYSTEM_INSTRUCTION}`,
+              };
+            }
+            // The first capability choice is deterministic. Models are good at
+            // using a tool after they see its schema, but unreliable at
+            // deciding whether account data can be replaced with public web
+            // search. Force only the first step; later work stays agentic.
+            if (steps.length === 0) {
+              const forcedTool =
+                initialToolRoute.kind === "integration"
+                  ? initialToolRoute.connectedName
+                    ? MCP_LIST_TOOLS_NAME
+                    : "suggestIntegrations"
+                  : initialToolRoute.kind === "browser"
+                    ? "inspectWebPage"
+                    : initialToolRoute.kind === "fetch"
+                      ? "fetchUrl"
+                      : initialToolRoute.kind === "research"
+                        ? "researchWeb"
+                        : initialToolRoute.kind === "answer"
+                          ? "answerQuestion"
+                          : undefined;
+              if (forcedTool) {
+                return {
+                  ...replay,
+                  toolChoice: {
+                    type: "tool",
+                    toolName: forcedTool,
+                  } as never,
+                };
+              }
+            }
+            // Integration discovery intentionally has a search step and a
+            // card step. If the first forced search returned candidates, force
+            // the immediate pick so the model cannot wander off into prose.
+            if (
+              steps.length === 1 &&
+              initialToolRoute.kind === "integration" &&
+              !initialToolRoute.connectedName &&
+              stepReturnedIntegrationCandidates(steps[0])
+            ) {
+              return {
+                ...replay,
+                toolChoice: {
+                  type: "tool",
+                  toolName: "suggestIntegrations",
+                } as never,
               };
             }
             if (decision.repeatedTools.length > 0) {
@@ -2933,80 +3032,86 @@ export async function runAssistantTurn(
                         contentOffset: text.length,
                         pending: true,
                       }
-                    : part.toolName === "calculate" ||
-                        part.toolName === "calculateBatch"
+                    : part.toolName === "inspectWebPage"
                       ? {
-                          kind: "calc" as const,
+                          kind: "browser" as const,
                           contentOffset: text.length,
                           pending: true,
                         }
-                      : part.toolName === "getWeather"
+                      : part.toolName === "calculate" ||
+                          part.toolName === "calculateBatch"
                         ? {
-                            kind: "weather" as const,
+                            kind: "calc" as const,
                             contentOffset: text.length,
                             pending: true,
                           }
-                        : part.toolName === "createChart"
+                        : part.toolName === "getWeather"
                           ? {
-                              kind: "chart" as const,
+                              kind: "weather" as const,
                               contentOffset: text.length,
                               pending: true,
                             }
-                          : part.toolName === "generateImage"
+                          : part.toolName === "createChart"
                             ? {
-                                kind: "image" as const,
+                                kind: "chart" as const,
                                 contentOffset: text.length,
                                 pending: true,
                               }
-                            : part.toolName === "searchChatHistory"
+                            : part.toolName === "generateImage"
                               ? {
-                                  kind: "history" as const,
+                                  kind: "image" as const,
                                   contentOffset: text.length,
                                   pending: true,
                                 }
-                              : part.toolName === "suggestIntegrations"
+                              : part.toolName === "searchChatHistory"
                                 ? {
-                                    kind: "integrationSuggestion" as const,
+                                    kind: "history" as const,
                                     contentOffset: text.length,
                                     pending: true,
                                   }
-                                : part.toolName === ASK_QUESTION_TOOL_NAME
+                                : part.toolName === "suggestIntegrations"
                                   ? {
-                                      kind: "question" as const,
+                                      kind: "integrationSuggestion" as const,
                                       contentOffset: text.length,
                                       pending: true,
                                     }
-                                  : part.toolName === "editDocument"
+                                  : part.toolName === ASK_QUESTION_TOOL_NAME
                                     ? {
-                                        kind: "document" as const,
-                                        op: "edit" as const,
+                                        kind: "question" as const,
                                         contentOffset: text.length,
                                         pending: true,
                                       }
-                                    : // editHtml's input is tiny, so execute() can finish
-                                      // before this add commits; the onResult sweep in the
-                                      // tool wiring (and clearPendingPhases at turn end)
-                                      // drops the stray phase when that happens.
-                                      part.toolName === "editHtml"
+                                    : part.toolName === "editDocument"
                                       ? {
-                                          kind: "html" as const,
+                                          kind: "document" as const,
                                           op: "edit" as const,
                                           contentOffset: text.length,
                                           pending: true,
                                         }
-                                      : part.toolName === LOAD_SKILL_NAME
+                                      : // editHtml's input is tiny, so execute() can finish
+                                        // before this add commits; the onResult sweep in the
+                                        // tool wiring (and clearPendingPhases at turn end)
+                                        // drops the stray phase when that happens.
+                                        part.toolName === "editHtml"
                                         ? {
-                                            kind: "skill" as const,
+                                            kind: "html" as const,
+                                            op: "edit" as const,
                                             contentOffset: text.length,
                                             pending: true,
                                           }
-                                        : isMcpToolName(part.toolName)
+                                        : part.toolName === LOAD_SKILL_NAME
                                           ? {
-                                              kind: "mcp" as const,
+                                              kind: "skill" as const,
                                               contentOffset: text.length,
                                               pending: true,
                                             }
-                                          : null;
+                                          : isMcpToolName(part.toolName)
+                                            ? {
+                                                kind: "mcp" as const,
+                                                contentOffset: text.length,
+                                                pending: true,
+                                              }
+                                            : null;
               if (toolPhase) {
                 await runMutation(internal.inference.addAssistantPhase, {
                   assistantId: requestInfo.assistantId,
@@ -3369,10 +3474,7 @@ export async function runAssistantTurn(
           const repair = await repairFinalReply({
             model,
             systemPrompt,
-            messages: [
-              ...(requestMessages as ModelMessage[]),
-              ...toolMessages,
-            ],
+            messages: [...(requestMessages as ModelMessage[]), ...toolMessages],
             toolNames: completedSteps.flatMap((step) =>
               step.toolCalls.flatMap((call) => call?.toolName ?? []),
             ),

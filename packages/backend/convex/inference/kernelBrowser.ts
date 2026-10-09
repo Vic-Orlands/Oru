@@ -2,12 +2,8 @@ import { jsonSchema, tool } from "ai";
 
 import { invokeKernelAction } from "../kernelClient";
 
-type InspectionFocus =
-  | "overview"
-  | "fonts"
-  | "links"
-  | "metadata"
-  | "accessibility";
+export type InspectionFocus =
+  "overview" | "fonts" | "links" | "metadata" | "accessibility";
 
 type PageInspection = {
   url: string;
@@ -33,7 +29,20 @@ type PageInspection = {
   }>;
 };
 
-export function createKernelPageInspectionTool() {
+export type BrowserInspectionPhasePayload = {
+  url: string;
+  focus: InspectionFocus;
+  title?: string;
+  ok: boolean;
+  error?: string;
+  durationMs: number;
+};
+
+export function createKernelPageInspectionTool({
+  onResult,
+}: {
+  onResult: (payload: BrowserInspectionPhasePayload) => Promise<void>;
+}) {
   return tool({
     description:
       "Open an exact public webpage in a real rendered browser and inspect its DOM, computed fonts, links, metadata, or accessibility surface. Use this when ordinary web search or text fetching cannot answer what the live page actually renders. Never use it for private/internal URLs.",
@@ -54,11 +63,33 @@ export function createKernelPageInspectionTool() {
       additionalProperties: false,
     }),
     execute: async ({ url, focus }) => {
-      const result = await invokeKernelAction<PageInspection>("inspect-page", {
-        url,
-        focus,
-      });
-      return result.output;
+      const startedAt = Date.now();
+      try {
+        const result = await invokeKernelAction<PageInspection>(
+          "inspect-page",
+          {
+            url,
+            focus,
+          },
+        );
+        await onResult({
+          url,
+          focus,
+          title: result.output.title,
+          ok: true,
+          durationMs: Date.now() - startedAt,
+        });
+        return result.output;
+      } catch (error) {
+        await onResult({
+          url,
+          focus,
+          ok: false,
+          error: "The remote browser couldn't inspect this page.",
+          durationMs: Date.now() - startedAt,
+        });
+        throw error;
+      }
     },
   });
 }

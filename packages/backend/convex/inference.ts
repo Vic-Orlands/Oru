@@ -725,6 +725,48 @@ export const finalizeLastPendingFetch = internalMutation({
   },
 });
 
+export const finalizeLastPendingBrowser = internalMutation({
+  args: {
+    assistantId: v.id("messages"),
+    url: v.string(),
+    focus: v.union(
+      v.literal("overview"),
+      v.literal("fonts"),
+      v.literal("links"),
+      v.literal("metadata"),
+      v.literal("accessibility"),
+    ),
+    title: v.optional(v.string()),
+    ok: v.boolean(),
+    error: v.optional(v.string()),
+    durationMs: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const assistant = await ctx.db.get(args.assistantId);
+    if (!assistant) throw new Error("Assistant message not found");
+
+    const phases = [...(assistant.phases ?? [])];
+    for (let index = phases.length - 1; index >= 0; index -= 1) {
+      const phase = phases[index];
+      if (phase.kind !== "browser" || !phase.pending) continue;
+      phases[index] = {
+        kind: "browser",
+        url: args.url,
+        focus: args.focus,
+        ...(args.title ? { title: args.title } : {}),
+        ok: args.ok,
+        ...(args.error ? { error: args.error } : {}),
+        durationMs: args.durationMs,
+        ...(phase.contentOffset !== undefined
+          ? { contentOffset: phase.contentOffset }
+          : {}),
+      };
+      await ctx.db.patch(args.assistantId, { phases, updatedAt: Date.now() });
+      return;
+    }
+  },
+});
+
 export const finalizeLastPendingWeather = internalMutation({
   args: {
     assistantId: v.id("messages"),

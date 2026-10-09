@@ -83,6 +83,7 @@ import type * as inference_textMatch from "../inference/textMatch.js";
 import type * as inference_titleRegen from "../inference/titleRegen.js";
 import type * as inference_titles from "../inference/titles.js";
 import type * as inference_toolPolicy from "../inference/toolPolicy.js";
+import type * as inference_toolRouting from "../inference/toolRouting.js";
 import type * as inference_turnUsage from "../inference/turnUsage.js";
 import type * as inference_urlSafety from "../inference/urlSafety.js";
 import type * as inference_weather from "../inference/weather.js";
@@ -255,6 +256,7 @@ declare const fullApi: ApiFromModules<{
   "inference/titleRegen": typeof inference_titleRegen;
   "inference/titles": typeof inference_titles;
   "inference/toolPolicy": typeof inference_toolPolicy;
+  "inference/toolRouting": typeof inference_toolRouting;
   "inference/turnUsage": typeof inference_turnUsage;
   "inference/urlSafety": typeof inference_urlSafety;
   "inference/weather": typeof inference_weather;

@@ -126,7 +126,9 @@ export const listStore = query({
           // An install the user never finished signing into (OAuth or
           // Composio connect) isn't "installed" yet — the UI offers to
           // resume the flow instead.
-          installedConnected: server ? isInstallConnected(server) : false,
+          installedConnected: server
+            ? server.enabled && isInstallConnected(server)
+            : false,
         };
       }),
     );
@@ -255,7 +257,12 @@ export const searchForSuggestion = internalQuery({
       authMode: row.authMode ?? "none",
       needsSignIn:
         (row.authMode ?? "none") === "oauth" || needsComposioConnect(row),
-      installed: installed.has(row._id),
+      // A half-finished or disabled install is not usable by the agent. Keep
+      // it suggestible so chat can surface the existing row's Connect flow.
+      installed: (() => {
+        const server = installed.get(row._id);
+        return server ? server.enabled && isInstallConnected(server) : false;
+      })(),
     }));
   },
 });
@@ -287,7 +294,9 @@ export const listSuggested = query({
         return {
           ...(await toStoreEntry(ctx, row)),
           installedServerId: server?._id ?? null,
-          installedConnected: server ? isInstallConnected(server) : false,
+          installedConnected: server
+            ? server.enabled && isInstallConnected(server)
+            : false,
         };
       }),
     );

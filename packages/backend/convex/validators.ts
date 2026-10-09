@@ -208,6 +208,27 @@ export const phaseValidator = v.union(
     contentOffset: v.optional(v.number()),
     pending: v.optional(v.boolean()),
   }),
+  // A remote rendered-browser inspection. Kernel runs headlessly, so this
+  // phase is the user's honest, visible proof that a browser opened the page.
+  v.object({
+    kind: v.literal("browser"),
+    url: v.optional(v.string()),
+    focus: v.optional(
+      v.union(
+        v.literal("overview"),
+        v.literal("fonts"),
+        v.literal("links"),
+        v.literal("metadata"),
+        v.literal("accessibility"),
+      ),
+    ),
+    title: v.optional(v.string()),
+    ok: v.optional(v.boolean()),
+    error: v.optional(v.string()),
+    durationMs: v.optional(v.number()),
+    contentOffset: v.optional(v.number()),
+    pending: v.optional(v.boolean()),
+  }),
   v.object({
     kind: v.literal("calc"),
     // Legacy: the retired "result card" mode. Kept so old messages validate;
@@ -440,6 +461,7 @@ export function settledPhases(
       !(
         (phase.kind === "search" ||
           phase.kind === "fetch" ||
+          phase.kind === "browser" ||
           phase.kind === "thought" ||
           phase.kind === "calc" ||
           phase.kind === "weather" ||

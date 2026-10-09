@@ -5,9 +5,15 @@ import { OPPORTUNITY_PROFILES, scoreOpportunity } from "./opportunityProfiles";
 describe("opportunity profiles", () => {
   it("keeps agent stages and rubrics distinct", () => {
     const profiles = Object.values(OPPORTUNITY_PROFILES);
-    expect(new Set(profiles.map((profile) => profile.toolName)).size).toBe(5);
-    expect(new Set(profiles.map((profile) => profile.stages.join("|"))).size).toBe(5);
-    expect(new Set(profiles.map((profile) => profile.criteria.join("|"))).size).toBe(5);
+    expect(new Set(profiles.map((profile) => profile.toolName)).size).toBe(
+      profiles.length,
+    );
+    expect(new Set(profiles.map((profile) => profile.stages.join("|"))).size).toBe(
+      profiles.length,
+    );
+    expect(new Set(profiles.map((profile) => profile.criteria.join("|"))).size).toBe(
+      profiles.length,
+    );
   });
 
   it("scores the visible rubric deterministically", () => {

@@ -92,6 +92,8 @@ export type MessagePhase = {
   text?: string;
   durationMs?: number;
   query?: string;
+  url?: string;
+  focus?: "overview" | "fonts" | "links" | "metadata" | "accessibility";
   sources?: number;
   items?: SearchSource[] | CalcItem[];
   contentOffset?: number;
