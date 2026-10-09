@@ -171,6 +171,9 @@ export function Sidebar() {
       <div className="mt-1 mb-2">
         <UserButton />
       </div>
+      <div className="mb-2">
+        <AgentSwitcher />
+      </div>
       {/* The middle is a two-faced strip (chats vs settings) riding the
           page slide; the account above and utility footer below stay put as
           chrome, so opening settings only swipes the rows between them. */}
@@ -213,9 +216,6 @@ export function Sidebar() {
                 New chat
               </TooltipContent>
             </Tooltip>
-            <div className="mt-1 mb-1">
-              <AgentSwitcher />
-            </div>
             {/* -mt pulls the nav onto the same pitch as the New pill: 2px
                 seams all the way down, so a hovered row's pill stacks under
                 New exactly like the rows stack under each other. */}

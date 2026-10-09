@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  IconAffiliate,
-  IconBriefcase,
-  IconCheck,
-  IconChevronDown,
-  IconCoin,
-  IconSparkles,
-  IconTargetArrow,
-  IconUsers,
-  type Icon,
-} from "@tabler/icons-react";
+import { IconCheck, IconChevronDown } from "@tabler/icons-react";
 
 import {
   DropdownMenu,
@@ -28,20 +18,17 @@ import {
   type LeadAgentId,
 } from "@/lib/lead-agents";
 import { useView } from "@/lib/view";
+import { AgentAvatar } from "./agent-avatar";
 
-const ICONS: Record<LeadAgentId, Icon> = {
-  general: IconSparkles,
-  sales: IconTargetArrow,
-  job_hunt: IconBriefcase,
-  recruiting: IconUsers,
-  partnerships: IconAffiliate,
-  fundraising: IconCoin,
-};
-
-export function AgentSwitcher({ compact = false, contextLabel }: { compact?: boolean; contextLabel?: string }) {
+export function AgentSwitcher({
+  compact = false,
+  contextLabel,
+}: {
+  compact?: boolean;
+  contextLabel?: string;
+}) {
   const activeId = useLeadAgent();
   const active = leadAgentById(activeId);
-  const ActiveIcon = ICONS[activeId];
   const { openHome } = useView();
 
   const select = (id: LeadAgentId) => {
@@ -64,13 +51,23 @@ export function AgentSwitcher({ compact = false, contextLabel }: { compact?: boo
           />
         }
       >
-        <ActiveIcon size={compact ? 14 : 16} className="shrink-0 text-primary" />
-        <span className={compact ? "truncate font-medium" : "min-w-0 flex-1 truncate font-medium sidebar-collapsed:hidden"}>
+        <AgentAvatar agentId={activeId} size={compact ? 18 : 24} />
+        <span
+          className={
+            compact
+              ? "truncate font-medium"
+              : "min-w-0 flex-1 truncate font-medium sidebar-collapsed:hidden"
+          }
+        >
           {contextLabel ? `${contextLabel} · ${active.shortName}` : active.shortName}
         </span>
         <IconChevronDown
           size={13}
-          className={compact ? "shrink-0 text-muted-foreground" : "shrink-0 text-muted-foreground sidebar-collapsed:hidden"}
+          className={
+            compact
+              ? "shrink-0 text-muted-foreground"
+              : "shrink-0 text-muted-foreground sidebar-collapsed:hidden"
+          }
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -81,7 +78,6 @@ export function AgentSwitcher({ compact = false, contextLabel }: { compact?: boo
         <DropdownMenuGroup>
           <DropdownMenuLabel className="px-2 py-1.5">Agents</DropdownMenuLabel>
           {LEAD_AGENTS.map((agent) => {
-            const AgentIcon = ICONS[agent.id];
             const selected = agent.id === activeId;
             return (
               <DropdownMenuItem
@@ -89,14 +85,18 @@ export function AgentSwitcher({ compact = false, contextLabel }: { compact?: boo
                 onClick={() => select(agent.id)}
                 className="items-start gap-2.5 px-2 py-2"
               >
-                <AgentIcon size={17} className="mt-0.5 text-muted-foreground" />
+                <AgentAvatar agentId={agent.id} size={30} className="mt-0.5" />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[13px] font-medium">{agent.name}</span>
+                  <span className="block text-[13px] font-medium">
+                    {agent.name}
+                  </span>
                   <span className="block text-[11.5px]/4 text-muted-foreground">
                     {agent.description}
                   </span>
                 </span>
-                {selected && <IconCheck size={15} className="mt-0.5 text-primary" />}
+                {selected && (
+                  <IconCheck size={15} className="mt-0.5 text-primary" />
+                )}
               </DropdownMenuItem>
             );
           })}

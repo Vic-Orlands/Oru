@@ -2,6 +2,15 @@ import type { NextConfig } from "next";
 import { withBotId } from "botid/next/config";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "api.dicebear.com",
+        pathname: "/10.x/bottts-neutral/svg",
+      },
+    ],
+  },
   /* Turbopack keeps a filesystem cache in .next between dev sessions, on by
      default since Next 16.1. It is not bounded, and it does not prune: over
      about two and a half weeks this one reached 21GB across 13,000 files,
