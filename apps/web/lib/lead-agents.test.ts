@@ -25,4 +25,16 @@ describe("lead agent routing", () => {
       recommendLeadAgent("Find a sales partner and an investor", "job_hunt"),
     ).toBeNull();
   });
+
+  test("routes ordinary website work to the general agent", () => {
+    expect(
+      recommendLeadAgent("Inspect the fonts used on this website", "sales"),
+    ).toBe("general");
+  });
+
+  test("prioritizes a specialist over general research wording", () => {
+    expect(
+      recommendLeadAgent("Research open frontend jobs for me", "general"),
+    ).toBe("job_hunt");
+  });
 });

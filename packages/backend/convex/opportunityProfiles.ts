@@ -20,6 +20,13 @@ export const OPPORTUNITY_PROFILES: Record<
   LeadAgentKind,
   OpportunityProfile
 > = {
+  general: {
+    singular: "saved finding",
+    plural: "saved findings",
+    toolName: "fileResearchFindings",
+    stages: ["Saved"],
+    criteria: ["relevance", "evidence quality"],
+  },
   sales: {
     singular: "sales lead",
     plural: "sales leads",
@@ -103,7 +110,10 @@ export function scoreOpportunity(
   } as const;
 }
 
-export function opportunityStage(agent: LeadAgentKind, requested?: string) {
+export function opportunityStage(
+  agent: LeadAgentKind,
+  requested?: string,
+) {
   const stages = OPPORTUNITY_PROFILES[agent].stages;
   if (!requested) return stages[0];
   return stages.find((stage) => stage.toLowerCase() === requested.toLowerCase()) ?? stages[0];

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { leadAgentInstruction, type LeadAgentKind } from "./leadAgents";
 
 const agents: LeadAgentKind[] = [
+  "general",
   "sales",
   "job_hunt",
   "recruiting",
@@ -32,5 +33,12 @@ describe("leadAgentInstruction", () => {
     expect(prompt).toContain("prospective customer account");
     expect(prompt).toContain("verified emails");
     expect(prompt).toContain("Won/Lost");
+  });
+
+  it("keeps general work out of lead pipelines", () => {
+    const prompt = leadAgentInstruction("general");
+    expect(prompt).toContain("not limited to lead workflows");
+    expect(prompt).toContain("inspectWebPage");
+    expect(prompt).toContain("Do not force ordinary research into prospect records");
   });
 });

@@ -6,6 +6,7 @@ import {
   IconCheck,
   IconChevronDown,
   IconCoin,
+  IconSparkles,
   IconTargetArrow,
   IconUsers,
   type Icon,
@@ -29,6 +30,7 @@ import {
 import { useView } from "@/lib/view";
 
 const ICONS: Record<LeadAgentId, Icon> = {
+  general: IconSparkles,
   sales: IconTargetArrow,
   job_hunt: IconBriefcase,
   recruiting: IconUsers,

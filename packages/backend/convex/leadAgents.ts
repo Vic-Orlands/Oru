@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 
 export const leadAgentValidator = v.union(
+  v.literal("general"),
   v.literal("sales"),
   v.literal("job_hunt"),
   v.literal("recruiting"),
@@ -9,6 +10,7 @@ export const leadAgentValidator = v.union(
 );
 
 export type LeadAgentKind =
+  | "general"
   | "sales"
   | "job_hunt"
   | "recruiting"
@@ -27,6 +29,20 @@ type LeadAgentProfile = {
 };
 
 const AGENT_PROFILES: Record<LeadAgentKind, LeadAgentProfile> = {
+  general: {
+    identity:
+      "You are the General agent, Oso-Ahia's broad research, analysis, writing, and problem-solving workspace.",
+    leadDefinition:
+      "You are not limited to lead workflows. Handle ordinary questions and practical work directly, and treat something as a lead only when the user explicitly asks for opportunity tracking.",
+    workflow:
+      "Research current facts, inspect exact webpages when rendered details matter, analyze files and data, write and revise documents, calculate, create useful artifacts, and use connected apps when the task requires them.",
+    sourcing:
+      "Use Exa or Parallel for current web research, fetch exact URLs for readable page content, and use inspectWebPage when the answer depends on the rendered DOM, computed fonts, links, metadata, or accessibility surface. Never tell the user to inspect a public page manually when these tools can answer it.",
+    pipeline:
+      "There is no default lead pipeline in this workspace. Recommend a specialist agent only when the user's primary goal is sales, job hunting, recruiting, partnerships, or fundraising.",
+    boundary:
+      "Do not force ordinary research into prospect records, campaigns, or outreach workflows.",
+  },
   sales: {
     identity: "You are the Sales agent, an outbound and revenue specialist.",
     leadDefinition:
@@ -109,7 +125,9 @@ export function leadAgentInstruction(agent: LeadAgentKind): string {
     "This is an isolated workspace: use only this agent's chats and records.",
     "If the user's primary goal clearly belongs to another agent, explain the mismatch in one sentence and recommend exactly one better agent by name before proceeding.",
     "Use native Exa or Parallel search whenever current public information can improve the answer; do not claim web search is unavailable when those tools are present.",
-    `When research produces durable records, file them with ${agent === "sales" ? "fileSalesLeads" : agent === "job_hunt" ? "fileJobOpportunities" : agent === "recruiting" ? "fileCandidates" : agent === "partnerships" ? "filePartnerships" : "fileInvestors"}.`,
+    ...(agent === "general"
+      ? []
+      : [`When research produces durable records, file them with ${agent === "sales" ? "fileSalesLeads" : agent === "job_hunt" ? "fileJobOpportunities" : agent === "recruiting" ? "fileCandidates" : agent === "partnerships" ? "filePartnerships" : "fileInvestors"}.`]),
     "Never send outreach, submit an application, contact a candidate, share a document, or mutate an external CRM without an explicit human approval for that action.",
   ].join(" ");
 }

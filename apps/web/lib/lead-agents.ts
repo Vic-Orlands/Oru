@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 
 export const LEAD_AGENT_IDS = [
+  "general",
   "sales",
   "job_hunt",
   "recruiting",
@@ -21,6 +22,13 @@ export type LeadAgent = {
 };
 
 export const LEAD_AGENTS: LeadAgent[] = [
+  {
+    id: "general",
+    name: "General agent",
+    shortName: "General",
+    description: "Research, analysis, writing, websites, files, and everyday work.",
+    noun: "findings",
+  },
   {
     id: "sales",
     name: "Sales agent",
@@ -60,7 +68,7 @@ export const LEAD_AGENTS: LeadAgent[] = [
 
 const STORAGE_KEY = "oso-lead-agent";
 const listeners = new Set<() => void>();
-let current: LeadAgentId = "sales";
+let current: LeadAgentId = "general";
 let hydrated = false;
 
 function isLeadAgentId(value: string | null): value is LeadAgentId {
@@ -102,7 +110,7 @@ export function setLeadAgent(agent: LeadAgentId) {
 }
 
 export function useLeadAgent(): LeadAgentId {
-  return useSyncExternalStore(subscribe, snapshot, () => "sales");
+  return useSyncExternalStore(subscribe, snapshot, () => "general");
 }
 
 export function leadAgentById(id: LeadAgentId): LeadAgent {
@@ -110,9 +118,10 @@ export function leadAgentById(id: LeadAgentId): LeadAgent {
 }
 
 const SIGNALS: Record<LeadAgentId, RegExp> = {
+  general: /\b(research|analy[sz]e|write|summari[sz]e|website|webpage|font|document|file|calculate|explain)\b/i,
   sales: /\b(sales|prospect|buyer|customer|outbound|account executive|revenue)\b/i,
   job_hunt:
-    /\b(job hunt|job search|vacanc(?:y|ies)|open role|my resume|my cv|application|interview prep|hiring manager)\b/i,
+    /\b(job hunt|job search|jobs?|vacanc(?:y|ies)|open role|my resume|my cv|application|interview prep|hiring manager)\b/i,
   recruiting:
     /\b(recruit|candidate|talent|applicant|source engineers|fill (?:a|the) role|hiring pipeline)\b/i,
   partnerships:
@@ -125,7 +134,18 @@ export function recommendLeadAgent(
   prompt: string,
   active: LeadAgentId,
 ): LeadAgentId | null {
-  const matches = LEAD_AGENT_IDS.filter((id) => SIGNALS[id].test(prompt));
-  if (matches.length !== 1 || matches[0] === active) return null;
-  return matches[0];
+  const specialistMatches = LEAD_AGENT_IDS.filter(
+    (id) => id !== "general" && SIGNALS[id].test(prompt),
+  );
+  if (specialistMatches.length === 1) {
+    return specialistMatches[0] === active ? null : specialistMatches[0];
+  }
+  if (
+    specialistMatches.length === 0 &&
+    active !== "general" &&
+    SIGNALS.general.test(prompt)
+  ) {
+    return "general";
+  }
+  return null;
 }

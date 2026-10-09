@@ -2,7 +2,7 @@ import { stepCountIs, type ModelMessage, type Tool } from "ai";
 
 import { components, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
-import type { ActionCtx } from "../_generated/server";
+import { env, type ActionCtx } from "../_generated/server";
 import { bestEffort } from "./bestEffort";
 import { createMutationQueue } from "./mutationQueue";
 import { routesPerRequest, stripEncryptedReasoning } from "./reasoningReplay";
@@ -113,6 +113,7 @@ import { createExaAnswerTool } from "./search";
 import { createParallelSearchTool } from "./parallelSearch";
 import { createLoadSkillTool, LOAD_SKILL_NAME } from "./skills";
 import { createWebFetchTool } from "./webFetch";
+import { createKernelPageInspectionTool } from "./kernelBrowser";
 import { createWeatherTool, type WeatherPhasePayload } from "./weather";
 import { resolveWeatherUnits } from "./openMeteo";
 import {
@@ -423,6 +424,7 @@ export async function runAssistantTurn(
   const openRouterApiKey = process.env.OPENROUTER_API_KEY;
   const exaApiKey = process.env.EXA_API_KEY || undefined;
   const parallelApiKey = process.env.PARALLEL_API_KEY || undefined;
+  const kernelBrowserEnabled = Boolean(env.KERNEL_API_KEY);
   if (!openRouterApiKey) {
     return failPreflight("OPENROUTER_API_KEY");
   }
@@ -2646,6 +2648,9 @@ export async function runAssistantTurn(
                     },
                   }),
                 }
+              : {}),
+            ...(kernelBrowserEnabled
+              ? { inspectWebPage: createKernelPageInspectionTool() }
               : {}),
             ...(searchEnabled && exaApiKey
               ? {

@@ -53,6 +53,7 @@ export function createOpportunityTools(opts: {
   onCard: (card: { name?: string; title: string; text: string }) => Promise<void>;
 }) {
   const { ctx, userId, leadAgent, latestProviderReceipt, onCard } = opts;
+  if (leadAgent === "general") return {};
   const profile = OPPORTUNITY_PROFILES[leadAgent];
   const toolName = profile.toolName;
 

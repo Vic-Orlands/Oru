@@ -3,7 +3,7 @@ import { chromium, type Browser, type Page } from "playwright";
 
 export const kernel = new Kernel();
 
-function safeApplicationUrl(raw: unknown) {
+export function safePublicUrl(raw: unknown) {
   if (typeof raw !== "string") throw new Error("A valid application URL is required.");
   const url = new URL(raw);
   if (url.protocol !== "https:") throw new Error("Application URLs must use HTTPS.");
@@ -21,7 +21,7 @@ function safeApplicationUrl(raw: unknown) {
 }
 
 export async function openApplicationBrowser(rawUrl: unknown, name: string) {
-  const url = safeApplicationUrl(rawUrl);
+  const url = safePublicUrl(rawUrl);
   const session = await kernel.browsers.create({
     name,
     headless: false,
@@ -35,6 +35,25 @@ export async function openApplicationBrowser(rawUrl: unknown, name: string) {
   const context = browser.contexts()[0] || (await browser.newContext());
   const page = context.pages()[0] || (await context.newPage());
   await page.waitForLoadState("domcontentloaded", { timeout: 30_000 }).catch(() => undefined);
+  return { browser, page, session };
+}
+
+export async function openInspectionBrowser(rawUrl: unknown) {
+  const url = safePublicUrl(rawUrl);
+  const session = await kernel.browsers.create({
+    headless: true,
+    stealth: false,
+    start_url: url,
+    timeout_seconds: 300,
+    tags: { product: "oso-ahia", workflow: "page-inspection" },
+  });
+  const browser = await chromium.connectOverCDP(session.cdp_ws_url);
+  const context = browser.contexts()[0] || (await browser.newContext());
+  const page = context.pages()[0] || (await context.newPage());
+  await page
+    .waitForLoadState("networkidle", { timeout: 20_000 })
+    .catch(() => page.waitForLoadState("domcontentloaded", { timeout: 10_000 }))
+    .catch(() => undefined);
   return { browser, page, session };
 }
 

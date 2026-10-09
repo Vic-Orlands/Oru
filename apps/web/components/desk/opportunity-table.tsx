@@ -9,6 +9,7 @@ import { leadAgentById, useLeadAgent } from "@/lib/lead-agents";
 import { JobApplicationDialog } from "./job-application-dialog";
 
 const STAGES = {
+  general: ["Saved"],
   sales: ["New", "Qualified", "Sequenced", "Replied", "Meeting", "Won", "Lost"],
   job_hunt: ["Discovered", "Shortlisted", "Applied", "Recruiter screen", "Interview", "Offer", "Closed"],
   recruiting: ["Sourced", "Contacted", "Replied", "Screen", "Interview", "Offer", "Hired", "Closed"],

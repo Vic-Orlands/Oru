@@ -59,6 +59,7 @@ export function createLeadTools(opts: {
           : leadAgent === "fundraising"
             ? "investor leads"
             : "sales prospects";
+  if (leadAgent === "general") return {};
   return {
     getAgentProfile: tool({
       description: "Read the active agent's durable profile before personalized discovery or scoring. If it is not configured, ask the user for the missing facts instead of guessing.",

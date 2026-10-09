@@ -8,7 +8,9 @@ and receipts.
 
 1. Create a Kernel project and API key.
 2. Set `KERNEL_API_KEY` in your shell.
-3. Run `bun run --cwd packages/kernel-job-runner deploy`.
+3. Run `bun run deploy:kernel-job-runner` from the repository root. The script
+   reads the local backend environment and securely passes only `KERNEL_API_KEY`
+   to the Kernel runtime.
 4. Add these variables to the Convex deployment:
    - `KERNEL_API_KEY`
    - `KERNEL_JOB_APP_NAME=oso-ahia-job-agent`

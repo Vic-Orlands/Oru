@@ -12,7 +12,7 @@
     "dev:console": "bun run --cwd apps/console dev",
     "build": "bun run --cwd apps/web build",
     "build:console": "bun run --cwd apps/console build",
-    "deploy:kernel-job-runner": "bun run --cwd packages/kernel-job-runner deploy",
+    "deploy:kernel-job-runner": "set -a; source packages/backend/.env.local; set +a; bun run --cwd packages/kernel-job-runner deploy",
     "dev:mobile": "bun run --cwd apps/mobile start"
   },
   "devDependencies": {

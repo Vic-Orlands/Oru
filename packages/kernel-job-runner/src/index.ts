@@ -10,8 +10,10 @@ import {
   disconnect,
   kernel,
   openApplicationBrowser,
+  openInspectionBrowser,
   reconnectApplicationBrowser,
 } from "./kernel-browser";
+import { inspectRenderedPage, type InspectionFocus } from "./page-inspection";
 
 const app = kernel.app("oso-ahia-job-agent");
 
@@ -107,4 +109,19 @@ app.action("close-application", async (_ctx: KernelContext, rawPayload) => {
   const sessionId = textValue(payload, "sessionId");
   await kernel.browsers.deleteByID(sessionId);
   return { closed: true };
+});
+
+app.action("inspect-page", async (_ctx: KernelContext, rawPayload) => {
+  const payload = objectPayload(rawPayload);
+  const focus = textValue(payload, "focus") as InspectionFocus;
+  if (!["overview", "fonts", "links", "metadata", "accessibility"].includes(focus)) {
+    throw new Error("A supported page inspection focus is required.");
+  }
+  const { browser, page, session } = await openInspectionBrowser(payload.url);
+  try {
+    return await inspectRenderedPage(page, focus);
+  } finally {
+    await disconnect(browser, page);
+    await kernel.browsers.deleteByID(session.session_id).catch(() => undefined);
+  }
 });

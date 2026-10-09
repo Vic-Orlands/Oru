@@ -56,6 +56,7 @@ import type * as inference_html from "../inference/html.js";
 import type * as inference_htmlTheme from "../inference/htmlTheme.js";
 import type * as inference_image from "../inference/image.js";
 import type * as inference_integrationSuggest from "../inference/integrationSuggest.js";
+import type * as inference_kernelBrowser from "../inference/kernelBrowser.js";
 import type * as inference_leadScoring from "../inference/leadScoring.js";
 import type * as inference_leadTools from "../inference/leadTools.js";
 import type * as inference_math from "../inference/math.js";
@@ -227,6 +228,7 @@ declare const fullApi: ApiFromModules<{
   "inference/htmlTheme": typeof inference_htmlTheme;
   "inference/image": typeof inference_image;
   "inference/integrationSuggest": typeof inference_integrationSuggest;
+  "inference/kernelBrowser": typeof inference_kernelBrowser;
   "inference/leadScoring": typeof inference_leadScoring;
   "inference/leadTools": typeof inference_leadTools;
   "inference/math": typeof inference_math;

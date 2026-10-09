@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "deploy": "bunx @onkernel/cli deploy src/index.ts"
+    "deploy": "test -n \"$KERNEL_API_KEY\" && bunx @onkernel/cli deploy index.ts --force"
   },
   "dependencies": {
     "@onkernel/sdk": "^0.121.0",
