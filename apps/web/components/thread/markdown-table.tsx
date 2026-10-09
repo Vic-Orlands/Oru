@@ -15,13 +15,13 @@ export const TABLE_COMPONENTS: NonNullable<StreamdownProps["components"]> = {
       <div
         className={cn(
           THREAD_ANALYSIS_WIDTH,
-          "my-4 overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border",
+          "my-4 overflow-hidden rounded-xl bg-card shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(0_0_0/0.03)] dark:shadow-[0_0_0_1px_var(--border)]",
         )}
       >
         <div className="w-full overflow-x-auto [scrollbar-width:thin]">
           <table
             className={cn(
-              "w-full min-w-[56rem] border-collapse text-[13px]/5",
+              "w-full min-w-[56rem] border-separate border-spacing-0 text-[12.5px]/5",
               className,
             )}
             {...props}
@@ -34,7 +34,7 @@ export const TABLE_COMPONENTS: NonNullable<StreamdownProps["components"]> = {
   },
   thead: ({ node, className, ...props }) => {
     void node;
-    return <thead className={cn("bg-well", className)} {...props} />;
+    return <thead className={cn("bg-muted/35", className)} {...props} />;
   },
   tbody: ({ node, className, ...props }) => {
     void node;
@@ -47,7 +47,10 @@ export const TABLE_COMPONENTS: NonNullable<StreamdownProps["components"]> = {
     void node;
     return (
       <tr
-        className={cn("border-b border-border last:border-b-0", className)}
+        className={cn(
+          "group/chat-table-row transition-colors duration-150 hover:bg-muted/20",
+          className,
+        )}
         {...props}
       />
     );
@@ -57,7 +60,7 @@ export const TABLE_COMPONENTS: NonNullable<StreamdownProps["components"]> = {
     return (
       <th
         className={cn(
-          "border-b border-border px-4 py-2.5 text-left align-bottom text-[12px]/5 font-medium tracking-[0.02em] whitespace-nowrap text-muted-foreground",
+          "border-r border-b border-border px-3.5 py-2.5 text-left align-bottom text-[11px]/4 font-medium tracking-[0.025em] whitespace-nowrap text-muted-foreground last:border-r-0",
           className,
         )}
         {...props}
@@ -68,7 +71,10 @@ export const TABLE_COMPONENTS: NonNullable<StreamdownProps["components"]> = {
     void node;
     return (
       <td
-        className={cn("px-4 py-3 align-top text-wrap-pretty", className)}
+        className={cn(
+          "border-r border-b border-border px-3.5 py-3 align-top text-wrap-pretty last:border-r-0 group-last/chat-table-row:border-b-0",
+          className,
+        )}
         {...props}
       />
     );

@@ -2,7 +2,12 @@
 
 import { useDeskData } from "@/lib/desk-data";
 import type { DeskPage } from "@/lib/view";
-import { IconExternalLink } from "@tabler/icons-react";
+import {
+  IconChartBar,
+  IconExternalLink,
+  IconMail,
+  IconSend,
+} from "@tabler/icons-react";
 import { ApprovalActions } from "./approval-actions";
 import { DeskEmptyState } from "./desk-empty-state";
 import { AgentSwitcher } from "@/components/agent-switcher";
@@ -11,6 +16,17 @@ import { OpportunityTable } from "./opportunity-table";
 import { TaskActions } from "./task-actions";
 import { ActionApprovalList } from "./action-approval-list";
 import { leadAgentById, useLeadAgent } from "@/lib/lead-agents";
+import {
+  DataTableCell,
+  DataTableFrame,
+  DataTableHead,
+  DataTableHeaderCell,
+  DataTableRow,
+  PrimaryCell,
+  StatusPill,
+} from "@/components/ui/data-table";
+import { DeskToolbar } from "./desk-toolbar";
+import { PerformanceChart } from "./performance-chart";
 
 const COPY: Record<DeskPage, { title: string; lede: string }> = {
   prospects: {
@@ -42,13 +58,13 @@ const COPY: Record<DeskPage, { title: string; lede: string }> = {
 export function DeskPages({ page }: { page: DeskPage }) {
   const copy = COPY[page];
   return (
-    <div className="h-full min-h-0 overflow-y-auto px-5 py-6 md:px-8">
-      <header className="mb-5 flex w-full items-start justify-between gap-4">
+    <div className="h-full min-h-0 overflow-y-auto px-5 py-7 md:px-8 lg:px-10">
+      <header className="mb-7 flex w-full items-start justify-between gap-4 border-b border-border pb-5">
         <div>
-          <h1 className="text-[20px] font-medium tracking-tight">
+          <h1 className="text-balance text-[22px] font-semibold tracking-[-0.02em]">
             {copy.title}
           </h1>
-          <p className="mt-1 text-[13px]/5 text-muted-foreground">
+          <p className="mt-1 max-w-2xl text-pretty text-[13px]/5 text-muted-foreground">
             {copy.lede}
           </p>
         </div>
@@ -72,6 +88,20 @@ function Panel({ children }: { children: React.ReactNode }) {
       {children}
     </div>
   );
+}
+
+function statusTone(status?: string) {
+  const value = status?.toLowerCase() ?? "";
+  if (["active", "live", "completed", "won", "approved"].includes(value)) {
+    return "success" as const;
+  }
+  if (["failed", "lost", "declined", "cancelled", "canceled"].includes(value)) {
+    return "danger" as const;
+  }
+  if (["paused", "pending", "waiting", "stale"].includes(value)) {
+    return "warning" as const;
+  }
+  return "neutral" as const;
 }
 
 function Prospects() {
@@ -103,26 +133,24 @@ function Prospects() {
               </span>
             ))}
           </div>
-          <Panel>
-            <table className="w-full text-left text-[12.5px]">
-              <thead className="text-[11px] tracking-wide text-muted-foreground uppercase">
+          <div>
+            <DeskToolbar count={prospects.length} />
+            <DataTableFrame minWidth="760px">
+              <DataTableHead>
                 <tr className="border-b border-border">
                   {["Name", "Company", "List", "Score", "Fit", "Status"].map(
                     (head) => (
-                      <th key={head} className="px-3 py-2 font-medium">
+                      <DataTableHeaderCell key={head}>
                         {head}
-                      </th>
+                      </DataTableHeaderCell>
                     ),
                   )}
                 </tr>
-              </thead>
+              </DataTableHead>
               <tbody>
                 {prospects.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="border-b border-border last:border-0"
-                  >
-                    <td className="px-3 py-2">
+                  <DataTableRow key={row.id}>
+                    <DataTableCell className="min-w-64 align-top">
                       <div className="flex items-center gap-1.5 font-medium">
                         <span>{row.name}</span>
                         {(row.profileUrl ?? row.sourceUrl) && (
@@ -149,21 +177,25 @@ function Prospects() {
                         evidence={row.evidence}
                         breakdown={row.scoreBreakdown}
                       />
-                    </td>
-                    <td className="px-3 py-2">{row.company}</td>
-                    <td className="px-3 py-2 text-muted-foreground">
+                    </DataTableCell>
+                    <DataTableCell>{row.company}</DataTableCell>
+                    <DataTableCell className="text-muted-foreground">
                       {row.list}
-                    </td>
-                    <td className="px-3 py-2 tabular-nums">{row.score}</td>
-                    <td className="px-3 py-2">{row.fit}</td>
-                    <td className="px-3 py-2 text-muted-foreground">
-                      {row.status}
-                    </td>
-                  </tr>
+                    </DataTableCell>
+                    <DataTableCell className="font-medium tabular-nums">
+                      {row.score}
+                    </DataTableCell>
+                    <DataTableCell>{row.fit}</DataTableCell>
+                    <DataTableCell>
+                      <StatusPill tone={statusTone(row.status)} dot>
+                        {row.status}
+                      </StatusPill>
+                    </DataTableCell>
+                  </DataTableRow>
                 ))}
               </tbody>
-            </table>
-          </Panel>
+            </DataTableFrame>
+          </div>
         </>
       )}
     </div>
@@ -216,38 +248,43 @@ function Campaigns() {
     );
   }
   return (
-    <div className="w-full overflow-x-auto">
-      <Panel>
-        <table className="w-full text-left text-[12.5px]">
-          <thead className="text-[11px] tracking-wide text-muted-foreground uppercase">
-            <tr className="border-b border-border">
-              {["Sequence", "Sent", "Replies", "Meetings", "Status"].map(
-                (head) => (
-                  <th key={head} className="px-3 py-2 font-medium">
-                    {head}
-                  </th>
-                ),
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {campaigns.map((row) => (
-              <tr
-                key={row.name}
-                className="border-b border-border last:border-0"
-              >
-                <td className="px-3 py-2.5 font-medium">{row.name}</td>
-                <td className="px-3 py-2.5 tabular-nums">{row.sent}</td>
-                <td className="px-3 py-2.5 tabular-nums">{row.replies}</td>
-                <td className="px-3 py-2.5 tabular-nums">{row.meetings}</td>
-                <td className="px-3 py-2.5 text-muted-foreground">
+    <div className="w-full">
+      <DeskToolbar count={campaigns.length} />
+      <DataTableFrame minWidth="680px">
+        <DataTableHead>
+          <tr className="border-b border-border">
+            {["Sequence", "Sent", "Replies", "Meetings", "Status"].map(
+              (head) => (
+                <DataTableHeaderCell key={head}>{head}</DataTableHeaderCell>
+              ),
+            )}
+          </tr>
+        </DataTableHead>
+        <tbody>
+          {campaigns.map((row) => (
+            <DataTableRow key={row.name}>
+              <DataTableCell>
+                <PrimaryCell
+                  title={row.name}
+                  subtitle={`${row.sent} delivered messages`}
+                />
+              </DataTableCell>
+              <DataTableCell className="tabular-nums">{row.sent}</DataTableCell>
+              <DataTableCell className="tabular-nums">
+                {row.replies}
+              </DataTableCell>
+              <DataTableCell className="tabular-nums">
+                {row.meetings}
+              </DataTableCell>
+              <DataTableCell>
+                <StatusPill tone={statusTone(row.status)} dot>
                   {row.status}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Panel>
+                </StatusPill>
+              </DataTableCell>
+            </DataTableRow>
+          ))}
+        </tbody>
+      </DataTableFrame>
     </div>
   );
 }
@@ -264,26 +301,57 @@ function Pipeline() {
   }
   const max = pipeline[0]?.count ?? 1;
   return (
-    <div className="grid w-full gap-2 md:grid-cols-2 xl:grid-cols-3">
-      {pipeline.map((stage) => (
-        <div
-          key={stage.stage}
-          className="rounded-xl bg-card px-3 py-2.5 ring-1 ring-border"
-        >
-          <div className="mb-1.5 flex items-baseline justify-between text-[12.5px]">
-            <span className="font-medium">{stage.stage}</span>
-            <span className="tabular-nums text-muted-foreground">
-              {stage.count} · {stage.rate}
-            </span>
-          </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-accent">
-            <div
-              className="h-full rounded-full bg-primary"
-              style={{ width: `${Math.max(8, (stage.count / max) * 100)}%` }}
-            />
-          </div>
-        </div>
-      ))}
+    <div className="w-full">
+      <DeskToolbar count={pipeline.length} />
+      <DataTableFrame minWidth="640px">
+        <DataTableHead>
+          <tr>
+            <DataTableHeaderCell>Stage</DataTableHeaderCell>
+            <DataTableHeaderCell>Volume</DataTableHeaderCell>
+            <DataTableHeaderCell>Conversion</DataTableHeaderCell>
+            <DataTableHeaderCell className="w-[42%]">
+              Distribution
+            </DataTableHeaderCell>
+          </tr>
+        </DataTableHead>
+        <tbody>
+          {pipeline.map((stage, index) => (
+            <DataTableRow key={stage.stage}>
+              <DataTableCell>
+                <PrimaryCell
+                  title={stage.stage}
+                  subtitle={
+                    index === 0
+                      ? "Pipeline entry"
+                      : `From ${pipeline[index - 1]?.stage ?? "previous stage"}`
+                  }
+                />
+              </DataTableCell>
+              <DataTableCell className="font-medium tabular-nums">
+                {stage.count}
+              </DataTableCell>
+              <DataTableCell className="tabular-nums text-muted-foreground">
+                {stage.rate}
+              </DataTableCell>
+              <DataTableCell>
+                <div className="flex items-center gap-3">
+                  <div className="h-1.5 min-w-40 flex-1 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out motion-reduce:transition-none"
+                      style={{
+                        width: `${Math.max(4, (stage.count / max) * 100)}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="w-10 text-right text-[11.5px] tabular-nums text-muted-foreground">
+                    {Math.round((stage.count / max) * 100)}%
+                  </span>
+                </div>
+              </DataTableCell>
+            </DataTableRow>
+          ))}
+        </tbody>
+      </DataTableFrame>
     </div>
   );
 }
@@ -299,9 +367,10 @@ function Tasks() {
     );
   }
   return (
-    <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-border">
-      <table className="w-full min-w-[920px] text-left text-[12.5px]">
-        <thead className="border-b border-border text-[11px] tracking-wide text-muted-foreground uppercase">
+    <div>
+      <DeskToolbar count={tasks.length} />
+      <DataTableFrame minWidth="980px">
+        <DataTableHead>
           <tr>
             {[
               "Reference",
@@ -312,60 +381,59 @@ function Tasks() {
               "Status",
               "Actions",
             ].map((label) => (
-              <th key={label} className="px-3 py-2 font-medium">
-                {label}
-              </th>
+              <DataTableHeaderCell key={label}>{label}</DataTableHeaderCell>
             ))}
           </tr>
-        </thead>
+        </DataTableHead>
         <tbody>
           {tasks.map((task) => (
-            <tr
-              key={task.id}
-              className="border-b border-border align-top last:border-0"
-            >
-              <td className="px-3 py-3 font-mono text-[11px] text-muted-foreground">
+            <DataTableRow key={task.id}>
+              <DataTableCell className="font-mono text-[11px] text-muted-foreground">
                 {task.reference}
-              </td>
-              <td className="max-w-md px-3 py-3">
-                <div className="font-medium">{task.title}</div>
-                <p className="mt-0.5 line-clamp-2 text-[11.5px]/4 text-muted-foreground">
-                  {task.instructions ?? task.kind}
-                </p>
-              </td>
-              <td className="whitespace-nowrap px-3 py-3 text-muted-foreground">
+              </DataTableCell>
+              <DataTableCell className="max-w-md">
+                <PrimaryCell
+                  title={task.title}
+                  subtitle={task.instructions ?? task.kind}
+                />
+              </DataTableCell>
+              <DataTableCell className="whitespace-nowrap text-muted-foreground">
                 {task.nextRunAt
                   ? new Date(task.nextRunAt).toLocaleString([], {
                       dateStyle: "medium",
                       timeStyle: "short",
                     })
                   : "—"}
-              </td>
-              <td className="px-3 py-3 capitalize text-muted-foreground">
+              </DataTableCell>
+              <DataTableCell className="capitalize text-muted-foreground">
                 {task.recurrence === "none"
                   ? "Once"
                   : (task.recurrence ?? "Once")}
-              </td>
-              <td className="whitespace-nowrap px-3 py-3 text-muted-foreground">
+              </DataTableCell>
+              <DataTableCell className="whitespace-nowrap text-muted-foreground">
                 {task.lastRunAt
                   ? new Date(task.lastRunAt).toLocaleString([], {
                       dateStyle: "medium",
                       timeStyle: "short",
                     })
                   : "Never"}
-              </td>
-              <td className="px-3 py-3">
-                <span className="rounded-full bg-accent px-2 py-1 text-[11px] capitalize text-muted-foreground">
+              </DataTableCell>
+              <DataTableCell>
+                <StatusPill
+                  tone={statusTone(task.status)}
+                  dot
+                  className="capitalize"
+                >
                   {task.status ?? "active"}
-                </span>
-              </td>
-              <td className="px-3 py-2">
+                </StatusPill>
+              </DataTableCell>
+              <DataTableCell>
                 <TaskActions task={task} />
-              </td>
-            </tr>
+              </DataTableCell>
+            </DataTableRow>
           ))}
         </tbody>
-      </table>
+      </DataTableFrame>
     </div>
   );
 }
@@ -380,47 +448,70 @@ function Performance() {
       />
     );
   }
-  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const sent = campaigns.reduce((sum, row) => sum + row.sent, 0);
   const replies = campaigns.reduce((sum, row) => sum + row.replies, 0);
   const meetings = campaigns.reduce((sum, row) => sum + row.meetings, 0);
   return (
-    <div className="grid w-full gap-3 md:grid-cols-3">
-      {[
-        ["Sent", String(sent)],
-        ["Replies", String(replies)],
-        ["Meetings", String(meetings)],
-      ].map(([label, value]) => (
-        <div
-          key={label}
-          className="rounded-xl bg-card px-3 py-3 ring-1 ring-border"
-        >
-          <div className="text-[11.5px] text-muted-foreground">{label}</div>
-          <div className="mt-1 text-[22px] font-medium tabular-nums tracking-tight">
-            {value}
+    <div className="grid w-full gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(17rem,0.75fr)]">
+      <section className="rounded-xl bg-card p-4 shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(0_0_0/0.03)] dark:shadow-[0_0_0_1px_var(--border)]">
+        <div className="mb-2 flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-[13px] font-medium">Weekly activity</h2>
+            <p className="text-[11.5px] text-muted-foreground">
+              Verified sends reported by connected tools
+            </p>
           </div>
+          <StatusPill tone="info" dot>
+            Live metrics
+          </StatusPill>
         </div>
-      ))}
-      <div className="rounded-xl bg-card p-3 ring-1 ring-border md:col-span-3">
-        <div className="mb-3 text-[12px] text-muted-foreground">
-          Sends this week
-        </div>
-        <div className="flex h-24 items-end gap-3">
-          {bars.map((value, index) => (
-            <div
-              key={days[index]}
-              className="flex flex-1 flex-col items-center gap-1"
-            >
-              <div
-                className="w-full max-w-8 rounded-sm bg-primary/80"
-                style={{ height: `${value * 2.4}px` }}
-              />
-              <span className="text-[10px] text-muted-foreground">
-                {days[index]}
-              </span>
+        <PerformanceChart values={bars} />
+      </section>
+      <div className="grid gap-2.5">
+        {[
+          {
+            label: "Sent",
+            value: sent,
+            icon: IconSend,
+            detail: "Delivered this period",
+          },
+          {
+            label: "Replies",
+            value: replies,
+            icon: IconMail,
+            detail:
+              sent > 0
+                ? `${Math.round((replies / sent) * 100)}% reply rate`
+                : "No sends yet",
+          },
+          {
+            label: "Meetings",
+            value: meetings,
+            icon: IconChartBar,
+            detail:
+              replies > 0
+                ? `${Math.round((meetings / replies) * 100)}% of replies`
+                : "No replies yet",
+          },
+        ].map(({ label, value, icon: MetricIcon, detail }) => (
+          <div
+            key={label}
+            className="flex items-center gap-3 rounded-xl bg-card px-4 py-3 shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(0_0_0/0.03)] dark:shadow-[0_0_0_1px_var(--border)]"
+          >
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted/60 text-muted-foreground">
+              <MetricIcon size={17} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="text-[11.5px] text-muted-foreground">{label}</div>
+              <div className="text-[20px] font-semibold tabular-nums tracking-[-0.02em]">
+                {value}
+              </div>
             </div>
-          ))}
-        </div>
+            <span className="max-w-24 text-right text-[10.5px]/4 text-muted-foreground">
+              {detail}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );

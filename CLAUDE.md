@@ -12,7 +12,22 @@
 - Copy in the app should have proper casing.
 - Always handle errors properly in both the frontend and backend. I do not want miscellaneous errors in the frontend and backend, I want them to be understandable.
 - When working, check if there is an applicable Linear issue, or create and track a Linear issue to keep everything tracked.
-- Whirl tabs stay open for hours, so long-session hygiene is correctness, not polish. Every listener/observer/timer/rAF needs a teardown that actually runs (including unmount mid-flight — effects keyed on a stable ref object never re-run), every module-level Map/Set needs an eviction or replacement path (never key entries on `id:revision`, key on id and overwrite), and anything kept mounted offscreen must stay small — it still reconciles on every Convex push. A leak that only shows after an hour is a bug like any other.
+- Oso-Ahia tabs stay open for hours, so long-session hygiene is correctness, not polish. Every listener/observer/timer/rAF needs a teardown that actually runs (including unmount mid-flight — effects keyed on a stable ref object never re-run), every module-level Map/Set needs an eviction or replacement path (never key entries on `id:revision`, key on id and overwrite), and anything kept mounted offscreen must stay small — it still reconciles on every Convex push. A leak that only shows after an hour is a bug like any other.
+
+## Product design system
+
+- Keep the interface calm, precise, and data-first. Use neutral surfaces and hairline separators; reserve color for semantic status, charts, alerts, and primary actions.
+- Reuse the existing spacing, type, surface, and motion tokens. Do not introduce a new visual language for one page. Extend shared primitives when a pattern will appear twice.
+- Pages use a clear title, a short descriptive line, generous breathing room, and then dense functional content. Body copy stays compact; headings use balanced wrapping and descriptions use pretty wrapping.
+- Data tables are the default for tasks, pipelines, campaigns, performance details, prospects, and other record collections. Use crisp cell dividers, quiet headers, comfortable rows, two-line primary cells, tabular numerals, compact semantic status pills, and an obvious actions column. Avoid turning every row into a rounded card.
+- Tables and other data-heavy artifacts inside chat may exceed the prose measure up to the available thread viewport. They must scroll horizontally on small screens instead of crushing columns.
+- The sidebar uses grouped section labels, compact edge-to-edge rows, one continuous hover field, a restrained active surface, and persistent account/settings/help utilities at the bottom. Collapsed navigation must retain tooltips and must not leave label-sized gaps.
+- Cards are for summaries, approvals, timelines, and grouped evidence—not as a default wrapper around everything. Nested radii must be concentric. Use subtle shadow rings for raised surfaces and real borders for tables and dividers.
+- Support light and dark mode together. Dark mode uses tonal elevation rather than white tiles or high-contrast outlines.
+- Motion must preserve spatial context and remain interruptible. Prefer CSS transitions for interactive state, generally 150–240 ms with ease-out; animate transform/opacity/color/shadow, respect reduced motion, and never animate large lists merely for decoration.
+- Use Recharts for analytical charts, with visible labels/tooltips and a readable table or textual equivalent where appropriate. Do not hand-roll complex charts with arbitrary divs.
+- Use Tabler icons only. Icons should clarify actions and data types; do not decorate every label.
+- App copy uses proper casing, direct language, and specific system states. Avoid vague labels, title-case every word, or technical implementation details in user-facing copy.
 
 <!-- convex-ai-start -->
 

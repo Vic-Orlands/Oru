@@ -65,7 +65,8 @@ export function SidebarRow({
         // Left-anchored in both states — the 12px collapsed padding centers
         // the icon on the rail with a 2px glide instead of a center-jump,
         // and the label fades under the sliding edge rather than popping.
-        "group/row sidebar-glide relative flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 text-[13.5px]/4 font-medium text-foreground-soft transition-[padding] before:absolute before:-inset-x-3 before:top-0 before:bottom-0 sidebar-collapsed:pl-3",
+        "group/row sidebar-glide relative flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 text-[13px]/4 font-medium transition-[padding,color] before:absolute before:-inset-x-3 before:top-0 before:bottom-0 sidebar-collapsed:pl-3",
+        active ? "text-foreground" : "text-foreground-soft",
         className,
       )}
       {...props}

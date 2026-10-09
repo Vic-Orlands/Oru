@@ -5,4 +5,4 @@
  * sidebar width and never reaches under app chrome.
  */
 export const THREAD_ANALYSIS_WIDTH =
-  "relative left-1/2 w-[min(68rem,calc(100cqw-1.5rem))] max-w-none -translate-x-1/2 sm:w-[min(68rem,calc(100cqw-3rem))]";
+  "relative left-1/2 w-[min(76rem,calc(100cqw-1rem))] max-w-none -translate-x-1/2 sm:w-[min(76rem,calc(100cqw-2.5rem))]";

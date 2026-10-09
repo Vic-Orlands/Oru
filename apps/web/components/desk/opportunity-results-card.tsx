@@ -96,7 +96,7 @@ export function OpportunityResultsCard({
     <section
       className={cn(
         THREAD_ANALYSIS_WIDTH,
-        "my-2 overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border",
+        "my-3 overflow-hidden rounded-xl bg-card shadow-[0_0_0_1px_var(--border),0_1px_2px_rgb(0_0_0/0.03)] dark:shadow-[0_0_0_1px_var(--border)]",
       )}
     >
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
@@ -107,7 +107,8 @@ export function OpportunityResultsCard({
               className="text-primary"
               aria-hidden="true"
             />
-            {rows.length} source-backed {rows.length === 1 ? "match" : "matches"}
+            {rows.length} source-backed{" "}
+            {rows.length === 1 ? "match" : "matches"}
           </div>
           <h3 className="truncate text-[14px]/5 font-semibold text-foreground">
             {data.title || title || "Opportunities"}
@@ -133,13 +134,21 @@ export function OpportunityResultsCard({
       </header>
 
       <div className="hidden overflow-x-auto md:block">
-        <table className="w-full min-w-[720px] table-fixed text-left text-[13px]/5">
-          <thead className="border-b border-border bg-muted/35 text-[11px]/4 font-medium tracking-[0.04em] text-muted-foreground uppercase">
+        <table className="w-full min-w-[780px] table-fixed border-separate border-spacing-0 text-left text-[12.5px]/5">
+          <thead className="bg-muted/35 text-[11px]/4 font-medium tracking-[0.025em] text-muted-foreground">
             <tr>
-              <th className="w-[42%] px-4 py-2 font-medium">Opportunity</th>
-              <th className="w-[17%] px-3 py-2 font-medium">Fit</th>
-              <th className="w-[19%] px-3 py-2 font-medium">Stage</th>
-              <th className="w-[22%] px-3 py-2 font-medium">Source</th>
+              <th className="w-[42%] border-r border-b border-border px-4 py-2.5 font-medium">
+                Opportunity
+              </th>
+              <th className="w-[17%] border-r border-b border-border px-3 py-2.5 font-medium">
+                Fit
+              </th>
+              <th className="w-[19%] border-r border-b border-border px-3 py-2.5 font-medium">
+                Stage
+              </th>
+              <th className="w-[22%] border-b border-border px-3 py-2.5 font-medium">
+                Source
+              </th>
             </tr>
           </thead>
           {rows.map((row) => (
@@ -173,25 +182,30 @@ function OpportunityTableGroup({
   provider?: string;
 }) {
   return (
-    <tbody className="border-b border-border last:border-b-0">
-      <tr className="align-top transition-colors hover:bg-muted/25">
-        <td className="px-4 pt-3 pb-2">
+    <tbody className="group/result-row">
+      <tr className="align-top transition-colors duration-150 hover:bg-muted/20">
+        <td className="border-r border-border px-4 pt-3 pb-2">
           <OpportunityIdentity row={row} />
         </td>
-        <td className="px-3 pt-3 pb-2">
+        <td className="border-r border-border px-3 pt-3 pb-2">
           <span
             className={`inline-flex rounded-full px-2 py-0.5 font-semibold tabular-nums ${scoreTone(row.score)}`}
           >
             {row.score}% · {row.scoreLabel}
           </span>
         </td>
-        <td className="px-3 pt-3 pb-2 text-muted-foreground">{row.stage}</td>
+        <td className="border-r border-border px-3 pt-3 pb-2 text-muted-foreground">
+          {row.stage}
+        </td>
         <td className="px-3 pt-3 pb-2">
           <SourceLink row={row} provider={provider} />
         </td>
       </tr>
       <tr>
-        <td colSpan={4} className="px-4 pt-0 pb-3">
+        <td
+          colSpan={4}
+          className="border-b border-border px-4 pt-0 pb-3 group-last/result-row:border-b-0"
+        >
           <MatchRationale row={row} />
         </td>
       </tr>
@@ -294,9 +308,9 @@ function MatchRationale({ row }: { row: OpportunityRow }) {
 
   return (
     <details className="group mt-2 text-[12px]/5">
-      <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between gap-3 rounded-lg px-2 text-muted-foreground transition-colors hover:bg-muted/55 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
+      <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between gap-3 border-t border-border pt-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
         <span className="flex min-w-0 items-center gap-2">
-          <span className="font-medium text-foreground">Match rationale</span>
+          <span className="font-medium text-foreground">Why this fits</span>
           <span className="truncate">
             {breakdown.length > 0
               ? `${breakdown.length} scored signals`
@@ -309,7 +323,7 @@ function MatchRationale({ row }: { row: OpportunityRow }) {
           aria-hidden="true"
         />
       </summary>
-      <div className="mt-1 grid gap-4 rounded-xl bg-muted/35 p-3.5 text-muted-foreground shadow-[inset_0_0_0_1px_var(--well-outline)] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.35fr)]">
+      <div className="mt-2 grid gap-5 border-l-2 border-primary/20 pl-3.5 text-muted-foreground md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.35fr)]">
         <EvidenceList evidence={evidence} salary={salary} />
         <SignalBreakdown breakdown={breakdown} />
       </div>
