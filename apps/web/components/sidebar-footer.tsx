@@ -16,6 +16,7 @@ import { openSupport, useSupportAvailable } from "@/lib/support";
 import { showToast } from "@/lib/toasts";
 import { useView } from "@/lib/view";
 import { SidebarRow } from "./sidebar-row";
+import { SidebarHoverGroup } from "./sidebar-hover-group";
 
 const THEMES: Array<{ value: Theme; label: string; icon: Icon }> = [
   { value: "light", label: "Light theme", icon: IconSunFilled },
@@ -93,27 +94,29 @@ export function SidebarFooter() {
 
   return (
     <div className="flex flex-col gap-1">
-      <nav aria-label="Help and account links" className="flex flex-col gap-0">
-        <SidebarRow
-          icon={IconGiftFilled}
-          label="Invite friends"
-          onClick={() => void invitePeople()}
-        />
-        <SidebarRow
-          icon={IconHelpCircleFilled}
-          label="Help & support"
-          onClick={() => {
-            if (supportAvailable) openSupport();
-            else showToast("Support isn’t available in this deployment yet.");
-          }}
-        />
-        <SidebarRow
-          icon={IconSettingsFilled}
-          label="Settings"
-          active={settingsOpen}
-          onClick={() => openSettings()}
-        />
-      </nav>
+      <SidebarHoverGroup>
+        <nav aria-label="Help and account links" className="flex flex-col gap-0">
+          <SidebarRow
+            icon={IconGiftFilled}
+            label="Invite friends"
+            onClick={() => void invitePeople()}
+          />
+          <SidebarRow
+            icon={IconHelpCircleFilled}
+            label="Help & support"
+            onClick={() => {
+              if (supportAvailable) openSupport();
+              else showToast("Support isn’t available in this deployment yet.");
+            }}
+          />
+          <SidebarRow
+            icon={IconSettingsFilled}
+            label="Settings"
+            active={settingsOpen}
+            onClick={() => openSettings()}
+          />
+        </nav>
+      </SidebarHoverGroup>
       <SidebarThemeSwitch />
     </div>
   );

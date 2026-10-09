@@ -18,6 +18,7 @@ import { ChatView } from "./chat-view";
 import { HistoryView } from "./mobile/history-view";
 import { MobileTabBar } from "./mobile/tab-bar";
 import { IncognitoJanitor } from "./incognito-toggle";
+import { AgentDeckPicker } from "./agent-deck-picker";
 import { PageSlide } from "./page-slide";
 import { Sidebar } from "./sidebar";
 import { LockDialogs } from "./locked/lock-dialogs";
@@ -220,6 +221,11 @@ export function AppShell({ children }: { children?: React.ReactNode }) {
     <div className="app-frame flex h-dvh w-full flex-col bg-background md:flex-row">
       <Sidebar />
       <main className="raised relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-surface md:my-2 md:mr-2 md:rounded-lg md:border md:border-border">
+        {awayFace === null && (
+          <div className="absolute top-3 left-3 z-30">
+            <AgentDeckPicker />
+          </div>
+        )}
         <UsageMultiplierBanner />
         <PageSlide
           page={awayFace === null ? 1 : 2}

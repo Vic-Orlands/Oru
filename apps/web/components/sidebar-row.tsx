@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, type ComponentPropsWithRef } from "react";
+import type { ComponentPropsWithRef } from "react";
 import type { Icon } from "@tabler/icons-react";
 
 import {
@@ -28,8 +26,6 @@ export function SidebarRow({
   alert = false,
   tooltip = true,
   className = "",
-  onPointerEnter,
-  onPointerLeave,
   ...props
 }: {
   icon: Icon;
@@ -41,10 +37,9 @@ export function SidebarRow({
    *  survives the collapse to the rail where a trailing badge wouldn't. */
   alert?: boolean;
 } & ComponentPropsWithRef<"button">) {
-  const [hovered, setHovered] = useState(false);
   const content = (
     <>
-      <RowPill active={active} hovered={hovered} />
+      <RowPill active={active} />
       <span className="relative shrink-0">
         <RowIcon size={16} />
         {alert && (
@@ -64,21 +59,14 @@ export function SidebarRow({
   const row = (
     <button
       type="button"
+      data-sidebar-hover-row
       aria-label={label}
       aria-current={active ? "page" : undefined}
-      onPointerEnter={(event) => {
-        setHovered(true);
-        onPointerEnter?.(event);
-      }}
-      onPointerLeave={(event) => {
-        setHovered(false);
-        onPointerLeave?.(event);
-      }}
       className={cn(
         // Left-anchored in both states — the 12px collapsed padding centers
         // the icon on the rail with a 2px glide instead of a center-jump,
         // and the label fades under the sliding edge rather than popping.
-        "group/row sidebar-glide relative flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 text-[13px]/4 font-medium transition-[padding,color] before:absolute before:-inset-x-3 before:top-0 before:bottom-0 sidebar-collapsed:pl-3",
+        "group/row sidebar-glide relative z-[1] flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-sm px-2.5 text-[13px]/4 font-medium transition-[padding,color] before:absolute before:-inset-x-3 before:top-0 before:bottom-0 sidebar-collapsed:pl-3",
         active ? "text-foreground" : "text-foreground-soft",
         className,
       )}

@@ -19,6 +19,7 @@ export type LeadAgent = {
   shortName: string;
   description: string;
   noun: string;
+  strengths: readonly string[];
 };
 
 export const LEAD_AGENTS: LeadAgent[] = [
@@ -28,6 +29,7 @@ export const LEAD_AGENTS: LeadAgent[] = [
     shortName: "General",
     description: "Research, analysis, writing, websites, files, and everyday work.",
     noun: "findings",
+    strengths: ["Web research", "Analysis", "Writing and files"],
   },
   {
     id: "sales",
@@ -35,6 +37,7 @@ export const LEAD_AGENTS: LeadAgent[] = [
     shortName: "Sales",
     description: "Buyers, accounts, outreach, and revenue pipeline.",
     noun: "prospects",
+    strengths: ["Account discovery", "Buyer research", "Outreach planning"],
   },
   {
     id: "job_hunt",
@@ -42,6 +45,7 @@ export const LEAD_AGENTS: LeadAgent[] = [
     shortName: "Job Hunt",
     description: "Roles, employers, networking, and applications.",
     noun: "opportunities",
+    strengths: ["Role discovery", "Application support", "Career pipeline"],
   },
   {
     id: "recruiting",
@@ -49,6 +53,7 @@ export const LEAD_AGENTS: LeadAgent[] = [
     shortName: "Recruiting",
     description: "Candidates, sourcing, outreach, and hiring pipeline.",
     noun: "candidates",
+    strengths: ["Candidate sourcing", "Fit assessment", "Hiring outreach"],
   },
   {
     id: "partnerships",
@@ -56,6 +61,7 @@ export const LEAD_AGENTS: LeadAgent[] = [
     shortName: "Partnerships",
     description: "Partners, alliances, channels, and ecosystem fit.",
     noun: "partners",
+    strengths: ["Partner discovery", "Fit mapping", "Alliance planning"],
   },
   {
     id: "fundraising",
@@ -63,6 +69,7 @@ export const LEAD_AGENTS: LeadAgent[] = [
     shortName: "Fundraising",
     description: "Investors, thesis fit, introductions, and diligence.",
     noun: "investors",
+    strengths: ["Investor research", "Thesis matching", "Diligence prep"],
   },
 ];
 

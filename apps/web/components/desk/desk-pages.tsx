@@ -10,7 +10,6 @@ import {
 } from "@tabler/icons-react";
 import { ApprovalActions } from "./approval-actions";
 import { DeskEmptyState } from "./desk-empty-state";
-import { AgentSwitcher } from "@/components/agent-switcher";
 import { ProspectEvidence } from "./prospect-evidence";
 import { OpportunityTable } from "./opportunity-table";
 import { TaskActions } from "./task-actions";
@@ -58,8 +57,8 @@ const COPY: Record<DeskPage, { title: string; lede: string }> = {
 export function DeskPages({ page }: { page: DeskPage }) {
   const copy = COPY[page];
   return (
-    <div className="h-full min-h-0 overflow-y-auto px-5 py-7 md:px-8 lg:px-10">
-      <header className="mb-7 flex w-full items-start justify-between gap-4 border-b border-border pb-5">
+    <div className="h-full min-h-0 overflow-y-auto px-5 pt-14 pb-7 md:px-8 lg:px-10">
+      <header className="mb-7 w-full border-b border-border pb-5">
         <div>
           <h1 className="text-balance text-[22px] font-semibold tracking-[-0.02em]">
             {copy.title}
@@ -67,9 +66,6 @@ export function DeskPages({ page }: { page: DeskPage }) {
           <p className="mt-1 max-w-2xl text-pretty text-[13px]/5 text-muted-foreground">
             {copy.lede}
           </p>
-        </div>
-        <div className="shrink-0 rounded-lg bg-card ring-1 ring-border md:hidden">
-          <AgentSwitcher compact />
         </div>
       </header>
       {page === "prospects" && <Prospects />}

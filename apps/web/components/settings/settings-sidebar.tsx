@@ -17,6 +17,7 @@ import { useSettingsSections } from "@/lib/deployment-features";
 import { useExpiredIntegrations } from "@/lib/integrations-data";
 import { useView, type SettingsSection } from "@/lib/view";
 import { SidebarRow } from "../sidebar-row";
+import { SidebarHoverGroup } from "../sidebar-hover-group";
 
 const SECTIONS: { key: SettingsSection; label: string; icon: Icon }[] = [
   { key: "general", label: "General", icon: IconAdjustmentsFilled },
@@ -46,25 +47,27 @@ export function SettingsSidebar({
   const sections = SECTIONS.filter(({ key }) => visible.includes(key));
 
   return (
-    <nav className="flex flex-col gap-0">
-      {sections.map(({ key, label, icon }, index) => (
-        <SidebarRow
-          key={key}
-          icon={icon}
-          label={label}
-          active={section === key}
-          alert={key === "integrations" && expired.length > 0}
-          className={
-            index === sections.length - 1
-              ? "before:-top-px before:-bottom-1"
-              : "before:-top-px before:-bottom-px"
-          }
-          onClick={() => {
-            setSection(key);
-            onNavigate?.();
-          }}
-        />
-      ))}
-    </nav>
+    <SidebarHoverGroup>
+      <nav className="flex flex-col gap-0">
+        {sections.map(({ key, label, icon }, index) => (
+          <SidebarRow
+            key={key}
+            icon={icon}
+            label={label}
+            active={section === key}
+            alert={key === "integrations" && expired.length > 0}
+            className={
+              index === sections.length - 1
+                ? "before:-top-px before:-bottom-1"
+                : "before:-top-px before:-bottom-px"
+            }
+            onClick={() => {
+              setSection(key);
+              onNavigate?.();
+            }}
+          />
+        ))}
+      </nav>
+    </SidebarHoverGroup>
   );
 }

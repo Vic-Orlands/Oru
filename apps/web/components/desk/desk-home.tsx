@@ -20,7 +20,6 @@ import type { SetModelPref } from "@/lib/model-pref";
 import { useSearchPref, useThinkingPref, type ComposerGates } from "@/lib/composer-gates";
 import { useRunningThreadIds, useThreads } from "@/lib/threads";
 import { useView } from "@/lib/view";
-import { AgentSwitcher } from "@/components/agent-switcher";
 import { leadAgentById, useLeadAgent } from "@/lib/lead-agents";
 import { ComposerAttachments } from "@/components/composer-attachments";
 import { ModelSelect } from "@/components/model-select";
@@ -163,9 +162,6 @@ export function DeskHome({
                   ? "Who should hear the story?"
                   : "Who should we reach today?"}
         </h1>
-        <div className="absolute top-3 right-3 rounded-xl bg-black/35 text-white backdrop-blur-md md:hidden">
-          <AgentSwitcher compact />
-        </div>
       </div>
 
       <div className="relative z-10 -mt-10 flex min-h-0 flex-1 flex-col px-4 pb-4 md:px-8">
@@ -201,7 +197,6 @@ export function DeskHome({
               />
               <div className="flex items-center gap-2 px-2.5 pb-2.5">
                 <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
-                  <div className="rounded-md bg-accent"><AgentSwitcher compact /></div>
                   <div className="rounded-md bg-accent">
                     <ModelSelect value={model} onValueChange={onModelChange} searchOn={searchOn} onSearchOnChange={setSearchOn} thinking={thinking} onThinkingChange={setThinking} />
                   </div>

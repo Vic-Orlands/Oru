@@ -4,15 +4,15 @@ import { useState } from "react";
 import {
   IconLayoutSidebarLeftCollapseFilled,
   IconLayoutSidebarLeftExpandFilled,
-  IconChartBar,
-  IconCheckbox,
-  IconFilter,
-  IconMail,
+  IconFilterFilled,
+  IconMailFilled,
   IconPlus,
-  IconSend,
+  IconReportAnalyticsFilled,
+  IconSendFilled,
   IconPuzzleFilled,
   IconSearch,
-  IconUsers,
+  IconSquareCheckFilled,
+  IconUserFilled,
 } from "@tabler/icons-react";
 
 import { useIncognitoState } from "@/lib/incognito";
@@ -33,13 +33,12 @@ import { PageSlide } from "./page-slide";
 import { SearchModal } from "./search-modal";
 import { SettingsSidebar } from "./settings/settings-sidebar";
 import { SidebarRow } from "./sidebar-row";
-import { SyncIndicator } from "./sync-indicator";
 import { SquishButton } from "./squish-button";
 import { ThreadList } from "./thread-list";
 import { UserButton } from "./user-button";
 import { OruLogo } from "./oru-logo";
-import { AgentSwitcher } from "./agent-switcher";
 import { SidebarFooter } from "./sidebar-footer";
+import { SidebarHoverGroup } from "./sidebar-hover-group";
 
 /* Width rides `--sidebar-width` (painted pre-hydration by the layout script,
    driven live by useSidebar), so drags track 1:1 and the collapse toggle
@@ -56,7 +55,7 @@ const GLIDE =
    as the entrance animation starts. The row is a real DialogTrigger, so
    Base UI excludes it from outside-press dismissal and pressing it while
    open toggles closed instead of racing a close-then-reopen. */
-function SearchRow() {
+function HeaderSearchButton() {
   const [open, setOpen] = useState(false);
   /* ⌘K stays dead while incognito — history is exactly what this mode
      isn't, and a palette hop would torch the ephemeral chat. */
@@ -71,22 +70,19 @@ function SearchRow() {
             render={
               <DialogTrigger
                 render={
-                  <SidebarRow
-                    icon={IconSearch}
-                    label="Search"
-                    tooltip={false}
-                    className="before:-top-px before:-bottom-px"
-                  />
+                  <button
+                    type="button"
+                    aria-label="Search chats"
+                    className="hidden size-7 items-center justify-center rounded-sm text-foreground-soft transition-colors duration-100 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:flex sidebar-collapsed:hidden"
+                  >
+                    <IconSearch size={17} stroke={2.15} aria-hidden="true" />
+                  </button>
                 }
               />
             }
           />
-          <TooltipContent
-            side="right"
-            sideOffset={10}
-            className="hidden sidebar-collapsed:block"
-          >
-            Search
+          <TooltipContent side="bottom" sideOffset={7}>
+            Search chats
           </TooltipContent>
         </Tooltip>
       }
@@ -161,21 +157,23 @@ export function Sidebar() {
             Ọru
           </span>
         </button>
-        <SyncIndicator />
-        {/* Only surfaces while the pointer is over the sidebar; when
-            collapsed it overlays the header and crossfades with the logo. */}
-        <button
-          type="button"
-          onClick={toggleCollapsed}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="ml-auto -mr-1.5 hidden size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-foreground-soft opacity-0 transition-[opacity,background-color] duration-150 group-hover/sidebar:opacity-100 hover:bg-accent focus-visible:opacity-100 sidebar-collapsed:absolute sidebar-collapsed:inset-0 sidebar-collapsed:m-auto md:flex"
-        >
-          {collapsed ? (
-            <IconLayoutSidebarLeftExpandFilled size={18} />
-          ) : (
-            <IconLayoutSidebarLeftCollapseFilled size={18} />
-          )}
-        </button>
+        <div className="ml-auto flex shrink-0 items-center gap-0.5">
+          <HeaderSearchButton />
+          {/* Only surfaces while the pointer is over the sidebar when it is
+              collapsed; expanded sidebars keep both controls visible. */}
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="-mr-1.5 hidden size-7 shrink-0 cursor-pointer items-center justify-center rounded-sm text-foreground-soft opacity-100 transition-[opacity,background-color] duration-100 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sidebar-collapsed:absolute sidebar-collapsed:inset-0 sidebar-collapsed:m-auto sidebar-collapsed:opacity-0 sidebar-collapsed:group-hover/sidebar:opacity-100 md:flex"
+          >
+            {collapsed ? (
+              <IconLayoutSidebarLeftExpandFilled size={18} />
+            ) : (
+              <IconLayoutSidebarLeftCollapseFilled size={18} />
+            )}
+          </button>
+        </div>
       </div>
       <div className="mt-1">
         <UserButton />
@@ -189,7 +187,6 @@ export function Sidebar() {
         pageClassName="flex flex-col gap-0"
         one={
           <>
-            <AgentSwitcher />
             {/* Hit areas (the before: layers here and on the rows) reach the
                 sidebar edges and split the gaps between neighbors, so clicks
                 in the dead space still land. The label clips in an inner
@@ -204,7 +201,7 @@ export function Sidebar() {
                   <SquishButton
                     aria-label="New chat"
                     onClick={openHome}
-                    className="relative h-8 w-full py-0 before:absolute before:-inset-x-3 before:-top-1 before:-bottom-px"
+                    className="relative h-8 w-full rounded-sm py-0 before:absolute before:-inset-x-3 before:-top-1 before:-bottom-px"
                   />
                 }
               >
@@ -226,56 +223,57 @@ export function Sidebar() {
             {/* -mt pulls the nav onto the same pitch as the New pill: 2px
                 seams all the way down, so a hovered row's pill stacks under
                 New exactly like the rows stack under each other. */}
-            <nav className="flex flex-col gap-0">
-              <SearchRow />
-              <SidebarRow
-                icon={IconPuzzleFilled}
-                label="Integrations"
-                active={integrationsOpen}
-                alert={expiredIntegrations.length > 0}
-                onClick={openIntegrations}
-                className="before:-top-px before:-bottom-px"
-              />
-            </nav>
-            <nav className="flex flex-col gap-0">
-              <SidebarRow
-                icon={IconUsers}
-                label="Prospects"
-                active={deskPage === "prospects"}
-                onClick={() => openDesk("prospects")}
-              />
-              <SidebarRow
-                icon={IconMail}
-                label="Approvals"
-                active={deskPage === "approvals"}
-                onClick={() => openDesk("approvals")}
-              />
-              <SidebarRow
-                icon={IconSend}
-                label="Campaigns"
-                active={deskPage === "campaigns"}
-                onClick={() => openDesk("campaigns")}
-              />
-              <SidebarRow
-                icon={IconFilter}
-                label="Pipeline"
-                active={deskPage === "pipeline"}
-                onClick={() => openDesk("pipeline")}
-              />
-              <SidebarRow
-                icon={IconCheckbox}
-                label="Tasks"
-                active={deskPage === "tasks"}
-                onClick={() => openDesk("tasks")}
-              />
-              <SidebarRow
-                icon={IconChartBar}
-                label="Performance"
-                active={deskPage === "performance"}
-                onClick={() => openDesk("performance")}
-                className="before:-top-px before:-bottom-1"
-              />
-            </nav>
+            <SidebarHoverGroup>
+              <nav className="flex flex-col gap-0">
+                <SidebarRow
+                  icon={IconPuzzleFilled}
+                  label="Integrations"
+                  active={integrationsOpen}
+                  alert={expiredIntegrations.length > 0}
+                  onClick={openIntegrations}
+                  className="before:-top-px before:-bottom-px"
+                />
+              </nav>
+              <nav className="flex flex-col gap-0">
+                <SidebarRow
+                  icon={IconUserFilled}
+                  label="Prospects"
+                  active={deskPage === "prospects"}
+                  onClick={() => openDesk("prospects")}
+                />
+                <SidebarRow
+                  icon={IconMailFilled}
+                  label="Approvals"
+                  active={deskPage === "approvals"}
+                  onClick={() => openDesk("approvals")}
+                />
+                <SidebarRow
+                  icon={IconSendFilled}
+                  label="Campaigns"
+                  active={deskPage === "campaigns"}
+                  onClick={() => openDesk("campaigns")}
+                />
+                <SidebarRow
+                  icon={IconFilterFilled}
+                  label="Pipeline"
+                  active={deskPage === "pipeline"}
+                  onClick={() => openDesk("pipeline")}
+                />
+                <SidebarRow
+                  icon={IconSquareCheckFilled}
+                  label="Tasks"
+                  active={deskPage === "tasks"}
+                  onClick={() => openDesk("tasks")}
+                />
+                <SidebarRow
+                  icon={IconReportAnalyticsFilled}
+                  label="Performance"
+                  active={deskPage === "performance"}
+                  onClick={() => openDesk("performance")}
+                  className="before:-top-px before:-bottom-1"
+                />
+              </nav>
+            </SidebarHoverGroup>
             <div className="h-2" aria-hidden />
             <ThreadList />
           </>
