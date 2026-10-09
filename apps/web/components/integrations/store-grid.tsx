@@ -1,6 +1,6 @@
 "use client";
 
-import { IconChevronRight, IconCircleCheckFilled } from "@tabler/icons-react";
+import { IconCircleCheckFilled, IconPlus } from "@tabler/icons-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 
 import { IntegrationLogo } from "@/components/integration-logo";
@@ -79,13 +79,13 @@ export function StoreGrid({
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
               onClick={() => onOpen(item.id)}
-              className="group flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors duration-150 hover:bg-muted"
+              className="group flex w-full cursor-pointer items-center gap-3 rounded-sm px-2 py-2.5 text-left transition-colors duration-100 hover:bg-muted"
             >
               <IntegrationLogo
                 name={item.name}
                 logoUrl={item.logoUrl}
                 iconSvg={item.iconSvg}
-                size={44}
+                size={40}
               />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="flex items-center gap-1.5">
@@ -118,10 +118,11 @@ export function StoreGrid({
                   </motion.span>
                 ) : (
                   <motion.span key="open" {...trailingPop} className="shrink-0">
-                    <IconChevronRight
-                      size={16}
+                    <IconPlus
+                      size={17}
                       stroke={2}
-                      className="text-muted-foreground/40 transition-[color,translate] group-hover:translate-x-0.5 group-hover:text-muted-foreground"
+                      className="text-muted-foreground/55 transition-[color,scale] duration-100 group-hover:scale-110 group-hover:text-foreground"
+                      aria-label={`View ${item.name}`}
                     />
                   </motion.span>
                 )}

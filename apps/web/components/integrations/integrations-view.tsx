@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/auth/session";
-import {
-  IconAdjustmentsHorizontal,
-  IconSearch,
-} from "@tabler/icons-react";
+import { IconAdjustmentsHorizontal, IconSearch } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
 
 import { AuthModal } from "@/components/auth/auth-modal";
@@ -24,6 +21,7 @@ import { EmptyState } from "./empty-state";
 import { IntegrationInstallModal } from "./install-modal";
 import { ReauthNotice } from "./reauth-notice";
 import { SkillInstallModal } from "./skill-install-modal";
+import { StoreDetailView, type StoreDetail } from "./store-detail-view";
 import { StoreGrid, type StoreListing } from "./store-grid";
 import { StoreSkeleton } from "./store-skeleton";
 import { StoreTabs } from "./store-tabs";
@@ -66,8 +64,14 @@ export function IntegrationsView() {
 
   const [tab, setTab] = useState<Tab>("browse");
   const [query, setQuery] = useState("");
-  const [openIntegrationId, setOpenIntegrationId] = useState<string | null>(null);
-  const [openSkillId, setOpenSkillId] = useState<string | null>(null);
+  const [detailIntegrationId, setDetailIntegrationId] = useState<string | null>(
+    null,
+  );
+  const [detailSkillId, setDetailSkillId] = useState<string | null>(null);
+  const [installIntegrationId, setInstallIntegrationId] = useState<
+    string | null
+  >(null);
+  const [installSkillId, setInstallSkillId] = useState<string | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
 
   const signedOut = isLoaded && !user;
@@ -79,15 +83,18 @@ export function IntegrationsView() {
     const params = new URLSearchParams(window.location.search);
     const integrationId = params.get("i");
     const skillId = params.get("s");
-    if (integrationId) {
-      setOpenIntegrationId(integrationId);
-    } else if (skillId) {
-      setTab("skills");
-      setOpenSkillId(skillId);
-    }
-    if (integrationId || skillId) {
-      window.history.replaceState(null, "", "/integrations");
-    }
+    const frame = requestAnimationFrame(() => {
+      if (integrationId) {
+        setDetailIntegrationId(integrationId);
+      } else if (skillId) {
+        setTab("skills");
+        setDetailSkillId(skillId);
+      }
+      if (integrationId || skillId) {
+        window.history.replaceState(null, "", "/integrations");
+      }
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   /* Escape backs out to chats — unless a dialog or menu owns the key. */
@@ -96,19 +103,26 @@ export function IntegrationsView() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape" || event.defaultPrevented) return;
       if (
-        document.querySelector("[data-popup-open], [role='dialog'], [role='menu']")
+        document.querySelector(
+          "[data-popup-open], [role='dialog'], [role='menu']",
+        )
       )
         return;
+      if (detailIntegrationId || detailSkillId) {
+        setDetailIntegrationId(null);
+        setDetailSkillId(null);
+        return;
+      }
       openHome();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [integrationsOpen, openHome]);
+  }, [detailIntegrationId, detailSkillId, integrationsOpen, openHome]);
 
   /* The install modal runs its own sign-in flow; a popup opened elsewhere
      (Settings → Integrations) reporting back here just gets a toast. */
   useOAuthResult(({ ok, error }) => {
-    if (openIntegrationId) return;
+    if (installIntegrationId) return;
     showToast(
       ok
         ? "Connected."
@@ -146,11 +160,17 @@ export function IntegrationsView() {
   );
 
   // The open modals read from the live lists so install state stays fresh.
-  const selectedIntegration = openIntegrationId
-    ? (store?.find((row) => row.id === openIntegrationId) ?? null)
+  const selectedIntegration = detailIntegrationId
+    ? (store?.find((row) => row.id === detailIntegrationId) ?? null)
     : null;
-  const selectedSkill = openSkillId
-    ? (skills?.find((row) => row.id === openSkillId) ?? null)
+  const selectedSkill = detailSkillId
+    ? (skills?.find((row) => row.id === detailSkillId) ?? null)
+    : null;
+  const installIntegration = installIntegrationId
+    ? (store?.find((row) => row.id === installIntegrationId) ?? null)
+    : null;
+  const installSkill = installSkillId
+    ? (skills?.find((row) => row.id === installSkillId) ?? null)
     : null;
 
   const toListing = (row: StoreIntegration): StoreListing => ({
@@ -194,150 +214,219 @@ export function IntegrationsView() {
   const skillShelves =
     shownSkills && !q ? shelvesOf(shownSkills, toSkillListing) : null;
 
+  const integrationDetail: StoreDetail | null = selectedIntegration
+    ? {
+        id: selectedIntegration.id,
+        kind: "integration",
+        name: selectedIntegration.name,
+        description: selectedIntegration.description,
+        author: selectedIntegration.author,
+        category: selectedIntegration.category,
+        verified: selectedIntegration.verified,
+        logoUrl: selectedIntegration.logoUrl,
+        bannerUrl: selectedIntegration.bannerUrl,
+        iconSvg: selectedIntegration.iconSvg,
+        installed: selectedIntegration.installedConnected,
+        pending:
+          selectedIntegration.installedServerId !== null &&
+          !selectedIntegration.installedConnected,
+        toolCount: selectedIntegration.toolCount,
+        connectionLabel: selectedIntegration.composioConnect
+          ? "Secure provider sign-in"
+          : selectedIntegration.authMode === "apiKey"
+            ? "API key required"
+            : selectedIntegration.authMode === "oauth"
+              ? "Secure sign-in required"
+              : "No sign-in required",
+      }
+    : null;
+
+  const skillDetail: StoreDetail | null = selectedSkill
+    ? {
+        id: selectedSkill.id,
+        kind: "skill",
+        name: selectedSkill.name,
+        description: selectedSkill.description,
+        author: selectedSkill.author,
+        category: selectedSkill.category,
+        verified: selectedSkill.verified,
+        logoUrl: selectedSkill.logoUrl,
+        bannerUrl: selectedSkill.bannerUrl,
+        iconSvg: selectedSkill.iconSvg,
+        installed: selectedSkill.installed,
+      }
+    : null;
+
+  const detail = integrationDetail ?? skillDetail;
+
   return (
     <div className="flex min-h-0 flex-1 overflow-y-auto px-4 [scrollbar-gutter:stable_both-edges] md:px-6">
       {/* h-fit, or the flex stretch pins this box at pane height and the
           pb-16 lands mid-content — clipping the last shelf's bottom edge. */}
-      <div className="mx-auto h-fit w-full max-w-3xl pt-[max(1rem,env(safe-area-inset-top))] pb-10 md:pt-10 md:pb-16">
-        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight">
-              Integrations
-            </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Plug the desk into the tools you already sell with.
-            </p>
-          </div>
-          <label className="flex h-9 w-full max-w-[260px] items-center gap-2 rounded-full bg-well px-3.5 shadow-[inset_0_0_0_1px_var(--well-outline),inset_0_1px_0_0_var(--well-highlight)] transition-shadow focus-within:shadow-[inset_0_0_0_1px_var(--ring)] max-md:max-w-full">
-            <IconSearch
-              size={15}
-              stroke={2}
-              className="shrink-0 text-muted-foreground"
-            />
-            <input
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Escape" && query) {
-                  event.stopPropagation();
-                  setQuery("");
-                }
-              }}
-              placeholder={
-                tab === "skills" ? "Search skills" : "Search integrations"
-              }
-              aria-label="Search the store"
-              className="w-full bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
-            />
-          </label>
-        </header>
+      <div className="mx-auto h-fit w-full max-w-5xl pt-[max(1rem,env(safe-area-inset-top))] pb-10 md:pt-10 md:pb-16">
+        {detail ? (
+          <StoreDetailView
+            listing={detail}
+            shareUrl={`${window.location.origin}/integrations?${detail.kind === "skill" ? "s" : "i"}=${encodeURIComponent(detail.id)}`}
+            onBack={() => {
+              setDetailIntegrationId(null);
+              setDetailSkillId(null);
+            }}
+            onPrimaryAction={() => {
+              if (detail.kind === "skill") setInstallSkillId(detail.id);
+              else setInstallIntegrationId(detail.id);
+            }}
+          />
+        ) : (
+          <>
+            <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+              <div>
+                <h1 className="text-xl font-semibold tracking-tight">
+                  {tab === "skills" ? "Skills" : "Integrations"}
+                </h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {tab === "skills"
+                    ? "Give Ọru focused playbooks for specialized work."
+                    : "Connect the tools Ọru can work with on your behalf."}
+                </p>
+              </div>
+              <label className="flex h-9 w-full max-w-[260px] items-center gap-2 rounded-full bg-well px-3.5 shadow-[inset_0_0_0_1px_var(--well-outline),inset_0_1px_0_0_var(--well-highlight)] transition-shadow focus-within:shadow-[inset_0_0_0_1px_var(--ring)] max-md:max-w-full">
+                <IconSearch
+                  size={15}
+                  stroke={2}
+                  className="shrink-0 text-muted-foreground"
+                />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Escape" && query) {
+                      event.stopPropagation();
+                      setQuery("");
+                    }
+                  }}
+                  placeholder={
+                    tab === "skills" ? "Search skills" : "Search integrations"
+                  }
+                  aria-label="Search the store"
+                  className="w-full bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
+                />
+              </label>
+            </header>
 
-        {/* Between the header and the shelves: someone browsing for a new
+            {/* Between the header and the shelves: someone browsing for a new
             integration should find out here that one they already have has
             gone quiet. */}
-        {!signedOut && <ReauthNotice className="mt-6" />}
+            {!signedOut && <ReauthNotice className="mt-6" />}
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <StoreTabs
-            value={tab}
-            onChange={setTab}
-            tabs={[
-              { value: "browse", label: "Browse" },
-              { value: "skills", label: "Skills" },
-            ]}
-          />
-          {!signedOut && (
-            <button
-              type="button"
-              onClick={() => openSettings("integrations")}
-              className="flex cursor-pointer items-center gap-1 text-[12.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <IconAdjustmentsHorizontal size={14} stroke={2} />
-              Manage installed
-            </button>
-          )}
-        </div>
-
-        <div className="mt-4">
-          <AnimatePresence mode="popLayout" initial={false}>
-            <motion.div key={tab} {...paneFlip}>
-              {tab === "browse" ? (
-                !shownIntegrations ? (
-                  <StoreSkeleton />
-                ) : shownIntegrations.length === 0 ? (
-                  q ? (
-                    <EmptyState
-                      title={`Nothing matching "${query.trim()}"`}
-                      body="Try a different name — or clear the search to see everything."
-                    />
-                  ) : (
-                    <EmptyState
-                      title="Nothing on the shelves yet"
-                      body="The store is warming up — approved integrations will show up here as developers publish them."
-                    />
-                  )
-                ) : browseShelves ? (
-                  browseShelves.map((shelf) => (
-                    <StoreSection
-                      key={shelf.title}
-                      title={shelf.title}
-                      items={shelf.items}
-                      onOpen={setOpenIntegrationId}
-                    />
-                  ))
-                ) : (
-                  <StoreGrid
-                    items={shownIntegrations.map(toListing)}
-                    onOpen={setOpenIntegrationId}
-                  />
-                )
-              ) : !shownSkills ? (
-                <StoreSkeleton />
-              ) : shownSkills.length === 0 ? (
-                q ? (
-                  <EmptyState
-                    title={`Nothing matching "${query.trim()}"`}
-                    body="Try a different name — or clear the search to see everything."
-                  />
-                ) : (
-                  <EmptyState
-                    title="No skills on the shelves yet"
-                    body="Skills are instruction packs the desk picks up mid-chat. Approved ones show up here as they are published."
-                  />
-                )
-              ) : skillShelves ? (
-                skillShelves.map((shelf) => (
-                  <StoreSection
-                    key={shelf.title}
-                    title={shelf.title}
-                    items={shelf.items}
-                    onOpen={setOpenSkillId}
-                  />
-                ))
-              ) : (
-                <StoreGrid
-                  items={shownSkills.map(toSkillListing)}
-                  onOpen={setOpenSkillId}
-                />
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <StoreTabs
+                value={tab}
+                onChange={(nextTab) => {
+                  setTab(nextTab);
+                  setQuery("");
+                }}
+                tabs={[
+                  { value: "browse", label: "Integrations" },
+                  { value: "skills", label: "Skills" },
+                ]}
+              />
+              {!signedOut && (
+                <button
+                  type="button"
+                  onClick={() => openSettings("integrations")}
+                  className="flex cursor-pointer items-center gap-1 text-[12.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <IconAdjustmentsHorizontal size={14} stroke={2} />
+                  Manage installed
+                </button>
               )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+            </div>
 
-        <p className="mt-10 text-center text-[12.5px] text-muted-foreground">
-          Pipedream and anything else outside the Composio catalog can connect
-          through an MCP server in Settings.
-        </p>
+            <div className="mt-4">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.div key={tab} {...paneFlip}>
+                  {tab === "browse" ? (
+                    !shownIntegrations ? (
+                      <StoreSkeleton />
+                    ) : shownIntegrations.length === 0 ? (
+                      q ? (
+                        <EmptyState
+                          title={`Nothing matching "${query.trim()}"`}
+                          body="Try a different name — or clear the search to see everything."
+                        />
+                      ) : (
+                        <EmptyState
+                          title="Nothing on the shelves yet"
+                          body="The store is warming up — approved integrations will show up here as developers publish them."
+                        />
+                      )
+                    ) : browseShelves ? (
+                      browseShelves.map((shelf) => (
+                        <StoreSection
+                          key={shelf.title}
+                          title={shelf.title}
+                          items={shelf.items}
+                          onOpen={setDetailIntegrationId}
+                        />
+                      ))
+                    ) : (
+                      <StoreGrid
+                        items={shownIntegrations.map(toListing)}
+                        onOpen={setDetailIntegrationId}
+                      />
+                    )
+                  ) : !shownSkills ? (
+                    <StoreSkeleton />
+                  ) : shownSkills.length === 0 ? (
+                    q ? (
+                      <EmptyState
+                        title={`Nothing matching "${query.trim()}"`}
+                        body="Try a different name — or clear the search to see everything."
+                      />
+                    ) : (
+                      <EmptyState
+                        title="No skills on the shelves yet"
+                        body="Skills are instruction packs the desk picks up mid-chat. Approved ones show up here as they are published."
+                      />
+                    )
+                  ) : skillShelves ? (
+                    skillShelves.map((shelf) => (
+                      <StoreSection
+                        key={shelf.title}
+                        title={shelf.title}
+                        items={shelf.items}
+                        onOpen={setDetailSkillId}
+                      />
+                    ))
+                  ) : (
+                    <StoreGrid
+                      items={shownSkills.map(toSkillListing)}
+                      onOpen={setDetailSkillId}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {tab === "browse" && (
+              <p className="mt-10 text-center text-[12.5px] text-muted-foreground">
+                Pipedream and anything else outside the Composio catalog can
+                connect through an MCP server in Settings.
+              </p>
+            )}
+          </>
+        )}
 
         <IntegrationInstallModal
-          integration={selectedIntegration}
-          onClose={() => setOpenIntegrationId(null)}
+          integration={installIntegration}
+          onClose={() => setInstallIntegrationId(null)}
           onRequireAuth={signedOut ? () => setAuthOpen(true) : undefined}
         />
         <SkillInstallModal
-          skill={selectedSkill}
-          onClose={() => setOpenSkillId(null)}
+          skill={installSkill}
+          onClose={() => setInstallSkillId(null)}
           onRequireAuth={signedOut ? () => setAuthOpen(true) : undefined}
         />
         <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
