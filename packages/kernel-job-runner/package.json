@@ -1,0 +1,17 @@
+{
+  "name": "@oso-ahia/kernel-job-runner",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "deploy": "bunx @onkernel/cli deploy src/index.ts"
+  },
+  "dependencies": {
+    "@onkernel/sdk": "^0.121.0",
+    "playwright": "^1.64.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2"
+  }
+}

@@ -25,6 +25,8 @@ export const LEAD_TOOL_NAMES = new Set([
   "getAgentProfile",
   "saveAgentProfile",
   "clearAgentProfile",
+  "prepareJobApplication",
+  "listJobApplications",
   ...Object.values(OPPORTUNITY_PROFILES).map((profile) => profile.toolName),
 ]);
 
@@ -97,6 +99,51 @@ export function createLeadTools(opts: {
         return { cleared: true, leadAgent };
       },
     }),
+    ...(leadAgent === "job_hunt"
+      ? {
+          prepareJobApplication: tool({
+            description:
+              "Create a reviewed application draft for a previously saved, live Job Hunt opportunity. This does not fill or submit anything. Tell the user to open the opportunity's Apply desk to inspect the employer form, approve answers, handle login/uploads/captcha, and explicitly submit.",
+            inputSchema: jsonSchema<{ sourceUrl: string }>({
+              type: "object",
+              properties: {
+                sourceUrl: {
+                  type: "string",
+                  format: "uri",
+                  description: "The exact source URL of the saved job opportunity.",
+                },
+              },
+              required: ["sourceUrl"],
+              additionalProperties: false,
+            }),
+            execute: async ({ sourceUrl }) => {
+              const applicationId = await ctx.runMutation(
+                internal.jobApplications.prepareForAgent,
+                { userId, sourceUrl },
+              );
+              return {
+                prepared: true,
+                applicationId,
+                nextStep:
+                  "Open Prospects and choose Apply on this role. The user must approve the answer pack and final submission.",
+              };
+            },
+          }),
+          listJobApplications: tool({
+            description:
+              "List the user's job applications and their real recorded statuses. Use this instead of guessing whether an application was submitted or progressed.",
+            inputSchema: jsonSchema<Record<string, never>>({
+              type: "object",
+              properties: {},
+              additionalProperties: false,
+            }),
+            execute: async () =>
+              await ctx.runQuery(internal.jobApplications.listForAgent, {
+                userId,
+              }),
+          }),
+        }
+      : {}),
     ...createOpportunityTools(opts),
     findProspects: tool({
       description:

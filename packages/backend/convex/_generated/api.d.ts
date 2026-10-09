@@ -90,7 +90,11 @@ import type * as integrationProviderPolicy from "../integrationProviderPolicy.js
 import type * as integrationScan from "../integrationScan.js";
 import type * as integrationStore from "../integrationStore.js";
 import type * as integrations from "../integrations.js";
+import type * as jobApplicationActions from "../jobApplicationActions.js";
+import type * as jobApplicationValidators from "../jobApplicationValidators.js";
+import type * as jobApplications from "../jobApplications.js";
 import type * as judge from "../judge.js";
+import type * as kernelClient from "../kernelClient.js";
 import type * as kirkify from "../kirkify.js";
 import type * as kirkify_aspect from "../kirkify/aspect.js";
 import type * as kirkify_limits from "../kirkify/limits.js";
@@ -257,7 +261,11 @@ declare const fullApi: ApiFromModules<{
   integrationScan: typeof integrationScan;
   integrationStore: typeof integrationStore;
   integrations: typeof integrations;
+  jobApplicationActions: typeof jobApplicationActions;
+  jobApplicationValidators: typeof jobApplicationValidators;
+  jobApplications: typeof jobApplications;
   judge: typeof judge;
+  kernelClient: typeof kernelClient;
   kirkify: typeof kirkify;
   "kirkify/aspect": typeof kirkify_aspect;
   "kirkify/limits": typeof kirkify_limits;

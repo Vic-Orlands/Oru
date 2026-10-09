@@ -6,6 +6,7 @@ import { IconExternalLink, IconThumbDown, IconThumbUp } from "@tabler/icons-reac
 
 import { useDeskData } from "@/lib/desk-data";
 import { leadAgentById, useLeadAgent } from "@/lib/lead-agents";
+import { JobApplicationDialog } from "./job-application-dialog";
 
 const STAGES = {
   sales: ["New", "Qualified", "Sequenced", "Replied", "Meeting", "Won", "Lost"],
@@ -27,7 +28,7 @@ export function OpportunityTable() {
     <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-border">
       <table className="w-full min-w-[820px] text-left text-[12.5px]">
         <thead className="border-b border-border text-[11px] tracking-wide text-muted-foreground uppercase">
-          <tr>{[agent.noun, "Organization", "Score", "Stage", "Source", "Feedback"].map((label) => <th key={label} className="px-3 py-2 font-medium">{label}</th>)}</tr>
+          <tr>{[agent.noun, "Organization", "Score", "Stage", "Source", "Feedback", ...(agentId === "job_hunt" ? ["Application"] : [])].map((label) => <th key={label} className="px-3 py-2 font-medium">{label}</th>)}</tr>
         </thead>
         <tbody>
           {opportunities.map((row) => (
@@ -56,6 +57,11 @@ export function OpportunityTable() {
                 </div>
                 {row.feedback && <div className="mt-1 text-[11px] text-muted-foreground">{row.feedback.replace("_", " ")}</div>}
               </td>
+              {agentId === "job_hunt" && (
+                <td className="px-3 py-3">
+                  <JobApplicationDialog opportunityId={row.id} title={row.title} organization={row.organization} />
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

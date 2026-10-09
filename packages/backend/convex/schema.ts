@@ -3,6 +3,12 @@ import { v } from "convex/values";
 import { slotTables } from "./slots/tables";
 import { leadAgentValidator } from "./leadAgents";
 import {
+  applicationFieldValidator,
+  applicationPackStatusValidator,
+  applicationRunStatusValidator,
+  jobApplicationStatusValidator,
+} from "./jobApplicationValidators";
+import {
   opportunityDetailsValidator,
   opportunityFeedbackValidator,
   opportunityScoreItemValidator,
@@ -1154,6 +1160,73 @@ export default defineSchema({
   })
     .index("by_user_agent", ["userId", "leadAgent"])
     .index("by_user_agent_dedupe", ["userId", "leadAgent", "dedupeKey"]),
+
+  jobApplications: defineTable({
+    userId: v.string(),
+    opportunityId: v.id("opportunities"),
+    status: jobApplicationStatusValidator,
+    currentPackId: v.optional(v.id("applicationPacks")),
+    latestRunId: v.optional(v.id("applicationRuns")),
+    ats: v.optional(v.string()),
+    externalId: v.optional(v.string()),
+    confirmationText: v.optional(v.string()),
+    submittedAt: v.optional(v.number()),
+    confirmedAt: v.optional(v.number()),
+    lastStatusSource: v.optional(v.string()),
+    lastStatusConfidence: v.optional(
+      v.union(v.literal("high"), v.literal("medium"), v.literal("low")),
+    ),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_opportunity", ["userId", "opportunityId"]),
+
+  applicationPacks: defineTable({
+    userId: v.string(),
+    applicationId: v.id("jobApplications"),
+    version: v.number(),
+    status: applicationPackStatusValidator,
+    fields: v.array(applicationFieldValidator),
+    resumeObjectKey: v.optional(v.string()),
+    resumeFileName: v.optional(v.string()),
+    coverLetter: v.optional(v.string()),
+    payloadHash: v.optional(v.string()),
+    approvedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_application_version", ["applicationId", "version"]),
+
+  applicationRuns: defineTable({
+    userId: v.string(),
+    applicationId: v.id("jobApplications"),
+    packId: v.id("applicationPacks"),
+    provider: v.literal("kernel"),
+    status: applicationRunStatusValidator,
+    sessionId: v.optional(v.string()),
+    invocationId: v.optional(v.string()),
+    liveViewUrl: v.optional(v.string()),
+    ats: v.optional(v.string()),
+    currentUrl: v.optional(v.string()),
+    confirmationText: v.optional(v.string()),
+    error: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index("by_application", ["applicationId"])
+    .index("by_user_status", ["userId", "status"]),
+
+  applicationEvents: defineTable({
+    userId: v.string(),
+    applicationId: v.id("jobApplications"),
+    runId: v.optional(v.id("applicationRuns")),
+    type: v.string(),
+    summary: v.string(),
+    source: v.string(),
+    evidence: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_application_created_at", ["applicationId", "createdAt"]),
 
   prospectLists: defineTable({
     userId: v.string(),
