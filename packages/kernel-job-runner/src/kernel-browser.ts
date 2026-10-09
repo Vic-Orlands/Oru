@@ -41,8 +41,9 @@ export async function openApplicationBrowser(rawUrl: unknown, name: string) {
 export async function openInspectionBrowser(rawUrl: unknown) {
   const url = safePublicUrl(rawUrl);
   const session = await kernel.browsers.create({
-    headless: true,
+    headless: false,
     stealth: false,
+    kiosk_mode: true,
     start_url: url,
     timeout_seconds: 300,
     tags: { product: "oso-ahia", workflow: "page-inspection" },
@@ -55,6 +56,10 @@ export async function openInspectionBrowser(rawUrl: unknown) {
     .catch(() => page.waitForLoadState("domcontentloaded", { timeout: 10_000 }))
     .catch(() => undefined);
   return { browser, page, session };
+}
+
+export async function reconnectInspectionBrowser(sessionId: string) {
+  return reconnectApplicationBrowser(sessionId);
 }
 
 export async function reconnectApplicationBrowser(sessionId: string) {

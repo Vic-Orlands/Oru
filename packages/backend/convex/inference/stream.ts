@@ -2691,6 +2691,15 @@ export async function runAssistantTurn(
             ...(kernelBrowserEnabled
               ? {
                   inspectWebPage: createKernelPageInspectionTool({
+                    onOpen: async (payload) => {
+                      await runMutation(
+                        internal.inference.openLastPendingBrowser,
+                        {
+                          assistantId: requestInfo.assistantId,
+                          ...payload,
+                        },
+                      );
+                    },
                     onResult: async (
                       payload: BrowserInspectionPhasePayload,
                     ) => {

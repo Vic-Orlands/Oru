@@ -728,6 +728,8 @@ export const finalizeLastPendingFetch = internalMutation({
 export const finalizeLastPendingBrowser = internalMutation({
   args: {
     assistantId: v.id("messages"),
+    sessionId: v.string(),
+    liveViewUrl: v.string(),
     url: v.string(),
     focus: v.union(
       v.literal("overview"),
@@ -751,6 +753,8 @@ export const finalizeLastPendingBrowser = internalMutation({
       if (phase.kind !== "browser" || !phase.pending) continue;
       phases[index] = {
         kind: "browser",
+        sessionId: args.sessionId,
+        liveViewUrl: args.liveViewUrl,
         url: args.url,
         focus: args.focus,
         ...(args.title ? { title: args.title } : {}),
@@ -760,6 +764,41 @@ export const finalizeLastPendingBrowser = internalMutation({
         ...(phase.contentOffset !== undefined
           ? { contentOffset: phase.contentOffset }
           : {}),
+      };
+      await ctx.db.patch(args.assistantId, { phases, updatedAt: Date.now() });
+      return;
+    }
+  },
+});
+
+export const openLastPendingBrowser = internalMutation({
+  args: {
+    assistantId: v.id("messages"),
+    sessionId: v.string(),
+    liveViewUrl: v.string(),
+    url: v.string(),
+    focus: v.union(
+      v.literal("overview"),
+      v.literal("fonts"),
+      v.literal("links"),
+      v.literal("metadata"),
+      v.literal("accessibility"),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const assistant = await ctx.db.get(args.assistantId);
+    if (!assistant) throw new Error("Assistant message not found");
+
+    const phases = [...(assistant.phases ?? [])];
+    for (let index = phases.length - 1; index >= 0; index -= 1) {
+      const phase = phases[index];
+      if (phase.kind !== "browser" || !phase.pending) continue;
+      phases[index] = {
+        ...phase,
+        sessionId: args.sessionId,
+        liveViewUrl: args.liveViewUrl,
+        url: args.url,
+        focus: args.focus,
       };
       await ctx.db.patch(args.assistantId, { phases, updatedAt: Date.now() });
       return;

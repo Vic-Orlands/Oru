@@ -10,7 +10,14 @@ import { useSyncExternalStore } from "react";
 export type ArtifactPanelTarget =
   | { kind: "document"; documentId: string }
   | { kind: "html"; htmlId: string }
-  | { kind: "lead"; leadId: string };
+  | { kind: "lead"; leadId: string }
+  | {
+      kind: "browser";
+      sessionId: string;
+      liveViewUrl: string;
+      url: string;
+      title?: string;
+    };
 
 type PanelState = {
   target: ArtifactPanelTarget | null;
@@ -45,6 +52,15 @@ export function openLeadPanel(leadId: string) {
 export function openHtmlPanel(htmlId: string) {
   autoOpened.add(htmlId);
   set({ ...state, target: { kind: "html", htmlId } });
+}
+
+export function openBrowserPanel(target: {
+  sessionId: string;
+  liveViewUrl: string;
+  url: string;
+  title?: string;
+}) {
+  set({ ...state, target: { kind: "browser", ...target } });
 }
 
 export function closeArtifactPanel() {

@@ -60,6 +60,7 @@ import { ArtifactDataSources } from "./artifact-data-sources";
 import { ArtifactFrameView } from "./artifact-frame-view";
 import { LeadPanelBody } from "@/components/desk/lead-panel";
 import { HtmlExportButtons } from "./html-export-buttons";
+import { BrowserPanel } from "./browser-panel";
 
 /* The artifact side panel: whirl-authored documents in a full TipTap
    markdown editor (mirroring the body live while it streams, editable with
@@ -112,6 +113,19 @@ export function ArtifactPanel() {
           fullscreen={isFullscreen}
         >
           <HtmlPanelBody htmlId={target.htmlId} fullscreen={isFullscreen} />
+        </Shell>
+      ) : target?.kind === "browser" ? (
+        <Shell
+          key={`browser:${target.sessionId}`}
+          onClose={closeArtifactPanel}
+          fullscreen={isFullscreen}
+        >
+          <BrowserPanel
+            liveViewUrl={target.liveViewUrl}
+            url={target.url}
+            title={target.title}
+            fullscreen={isFullscreen}
+          />
         </Shell>
       ) : null}
     </AnimatePresence>

@@ -12,6 +12,7 @@ import {
   openApplicationBrowser,
   openInspectionBrowser,
   reconnectApplicationBrowser,
+  reconnectInspectionBrowser,
 } from "./kernel-browser";
 import { inspectRenderedPage, type InspectionFocus } from "./page-inspection";
 
@@ -111,17 +112,34 @@ app.action("close-application", async (_ctx: KernelContext, rawPayload) => {
   return { closed: true };
 });
 
-app.action("inspect-page", async (_ctx: KernelContext, rawPayload) => {
+app.action("open-inspection", async (_ctx: KernelContext, rawPayload) => {
   const payload = objectPayload(rawPayload);
+  const { browser, page, session } = await openInspectionBrowser(payload.url);
+  try {
+    if (!session.browser_live_view_url) {
+      throw new Error("Kernel did not provide a live browser view.");
+    }
+    return {
+      sessionId: session.session_id,
+      liveViewUrl: session.browser_live_view_url,
+      currentUrl: page.url(),
+    };
+  } finally {
+    await disconnect(browser, page);
+  }
+});
+
+app.action("inspect-session", async (_ctx: KernelContext, rawPayload) => {
+  const payload = objectPayload(rawPayload);
+  const sessionId = textValue(payload, "sessionId");
   const focus = textValue(payload, "focus") as InspectionFocus;
   if (!["overview", "fonts", "links", "metadata", "accessibility"].includes(focus)) {
     throw new Error("A supported page inspection focus is required.");
   }
-  const { browser, page, session } = await openInspectionBrowser(payload.url);
+  const { browser, page } = await reconnectInspectionBrowser(sessionId);
   try {
     return await inspectRenderedPage(page, focus);
   } finally {
     await disconnect(browser, page);
-    await kernel.browsers.deleteByID(session.session_id).catch(() => undefined);
   }
 });

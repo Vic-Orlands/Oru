@@ -139,6 +139,20 @@ export function useSteadyPhaseNarration(
       shownRef.current.key === target.key &&
       shownRef.current.mode === target.mode
     ) {
+      // A phase can gain useful data without changing identity: MCP names
+      // arrive after input starts, and browser live-view URLs arrive after
+      // Kernel opens the session. Refresh that payload in place without
+      // restarting the minimum-read timer.
+      if (
+        shownRef.current.mode === "live" &&
+        target.mode === "live" &&
+        (shownRef.current.phase !== target.phase ||
+          shownRef.current.status !== target.status ||
+          shownRef.current.thinking !== target.thinking)
+      ) {
+        shownRef.current = target;
+        setShown(target);
+      }
       queueRef.current = queueRef.current.filter(
         (item) => item.mode === "final",
       );

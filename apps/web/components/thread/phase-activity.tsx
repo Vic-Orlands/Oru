@@ -25,6 +25,7 @@ import { IntegrationIcon } from "@/components/integration-logo";
 import { useIntegrationActivity } from "@/lib/integration-activity";
 import type { MessagePhase, MessageStatus } from "@/lib/messages";
 import { EASE_OUT, SHED_BLUR } from "@/lib/motion";
+import { openBrowserPanel } from "@/lib/artifact-panel";
 import {
   compactPhases,
   currentPhase,
@@ -149,7 +150,10 @@ export const PhaseActivity = memo(
     const singleExpandable = single
       ? phaseDisclosure(single).expandable
       : false;
-    const expandable = grouped || singleExpandable;
+    const browserViewable =
+      current?.kind === "browser" &&
+      Boolean(current.sessionId && current.liveViewUrl && current.url);
+    const expandable = grouped || singleExpandable || browserViewable;
     const narratedStatus =
       narration.mode === "live" ? narration.status : status;
     const narratedThinking =
@@ -213,11 +217,29 @@ export const PhaseActivity = memo(
               disabled={!expandable}
               onClick={(event) => {
                 claimScrollIntent(event.currentTarget);
+                if (
+                  browserViewable &&
+                  current?.sessionId &&
+                  current.liveViewUrl &&
+                  current.url
+                ) {
+                  openBrowserPanel({
+                    sessionId: current.sessionId,
+                    liveViewUrl: current.liveViewUrl,
+                    url: current.url,
+                    ...(current.title ? { title: current.title } : {}),
+                  });
+                  return;
+                }
                 setExpandedAnchor(expanded ? undefined : compact[0]);
               }}
-              aria-expanded={expandable ? expanded : undefined}
+              aria-expanded={
+                expandable && !browserViewable ? expanded : undefined
+              }
               title={
-                single?.kind === "mcp" && single.server && single.tool
+                browserViewable
+                  ? "Open live browser"
+                  : single?.kind === "mcp" && single.server && single.tool
                   ? `${single.server} · ${single.tool}`
                   : undefined
               }
@@ -263,7 +285,13 @@ export const PhaseActivity = memo(
                   <IconChevronRight size={14} stroke={2.4} />
                 </motion.span>
               )}
-              {singleExpandable && (
+              {browserViewable && !grouped && (
+                <IconChevronRight
+                  size={14}
+                  className="shrink-0 text-muted-foreground"
+                />
+              )}
+              {singleExpandable && !browserViewable && (
                 <IconChevronDown
                   size={14}
                   className={`shrink-0 text-muted-foreground transition-transform duration-200 ${
@@ -273,7 +301,7 @@ export const PhaseActivity = memo(
               )}
             </button>
             <AnimatePresence initial={false}>
-              {expandable && expanded && (
+              {expandable && !browserViewable && expanded && (
                 <motion.div
                   key="activity-details"
                   initial={{ height: 0, opacity: 0 }}

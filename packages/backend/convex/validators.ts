@@ -212,6 +212,8 @@ export const phaseValidator = v.union(
   // phase is the user's honest, visible proof that a browser opened the page.
   v.object({
     kind: v.literal("browser"),
+    sessionId: v.optional(v.string()),
+    liveViewUrl: v.optional(v.string()),
     url: v.optional(v.string()),
     focus: v.optional(
       v.union(

@@ -93,6 +93,8 @@ export type MessagePhase = {
   durationMs?: number;
   query?: string;
   url?: string;
+  sessionId?: string;
+  liveViewUrl?: string;
   focus?: "overview" | "fonts" | "links" | "metadata" | "accessibility";
   sources?: number;
   items?: SearchSource[] | CalcItem[];

@@ -7,6 +7,7 @@ import {
   IconCalculator,
   IconChartHistogram,
   IconChevronDown,
+  IconChevronRight,
   IconHistory,
   IconPhotoFilled,
   IconPlugConnected,
@@ -21,6 +22,7 @@ import { IntegrationIcon } from "@/components/integration-logo";
 import { useIntegrationActivity } from "@/lib/integration-activity";
 import type { MessagePhase } from "@/lib/messages";
 import { EASE_OUT } from "@/lib/motion";
+import { openBrowserPanel } from "@/lib/artifact-panel";
 import { integrationCompletedLabel } from "@/lib/phase-activity";
 import { claimScrollIntent } from "@/lib/scroll-intent";
 import { PhaseIcon, PhaseLabel } from "./phase-motion";
@@ -115,6 +117,9 @@ export function PhaseRow({ phase }: { phase: MessagePhase }) {
     mcp ? phase.tool : undefined,
   );
   const { expandable } = phaseDisclosure(phase);
+  const browserViewable =
+    phase.kind === "browser" &&
+    Boolean(phase.sessionId && phase.liveViewUrl && phase.url);
   const brandedIcon = mcp ? integration.iconSvg : undefined;
   const label = integrationCompletedLabel(phase, integration.completed);
 
@@ -122,19 +127,35 @@ export function PhaseRow({ phase }: { phase: MessagePhase }) {
     <div className="min-w-0">
       <button
         type="button"
-        disabled={!expandable}
+        disabled={!expandable && !browserViewable}
         onClick={(event) => {
           claimScrollIntent(event.currentTarget);
+          if (
+            browserViewable &&
+            phase.sessionId &&
+            phase.liveViewUrl &&
+            phase.url
+          ) {
+            openBrowserPanel({
+              sessionId: phase.sessionId,
+              liveViewUrl: phase.liveViewUrl,
+              url: phase.url,
+              ...(phase.title ? { title: phase.title } : {}),
+            });
+            return;
+          }
           setOpen((current) => !current);
         }}
-        aria-expanded={expandable ? open : undefined}
+        aria-expanded={expandable && !browserViewable ? open : undefined}
         title={
-          mcp && phase.server && phase.tool
+          browserViewable
+            ? "Open live browser"
+            : mcp && phase.server && phase.tool
             ? `${phase.server} · ${phase.tool}`
             : undefined
         }
         className={`-mx-1 flex max-w-full items-center gap-2 rounded-md px-1 py-0.5 text-left ${
-          expandable
+          expandable || browserViewable
             ? "cursor-pointer transition-colors duration-150 hover:bg-black/[0.04] dark:hover:bg-white/[0.05]"
             : "cursor-default"
         }`}
@@ -156,7 +177,7 @@ export function PhaseRow({ phase }: { phase: MessagePhase }) {
           text={label}
           className="max-w-[min(32rem,calc(100vw-7rem))] text-[13px]/5 font-medium text-muted-foreground"
         />
-        {expandable && (
+        {expandable && !browserViewable && (
           <IconChevronDown
             size={13}
             className={`shrink-0 text-muted-foreground transition-transform duration-200 ${
@@ -164,9 +185,15 @@ export function PhaseRow({ phase }: { phase: MessagePhase }) {
             }`}
           />
         )}
+        {browserViewable && (
+          <IconChevronRight
+            size={13}
+            className="shrink-0 text-muted-foreground"
+          />
+        )}
       </button>
       <AnimatePresence initial={false}>
-        {expandable && open && (
+        {expandable && !browserViewable && open && (
           <motion.div
             key="details"
             initial={{ height: 0, opacity: 0 }}

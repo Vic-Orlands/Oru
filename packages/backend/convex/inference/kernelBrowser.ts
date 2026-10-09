@@ -30,6 +30,8 @@ type PageInspection = {
 };
 
 export type BrowserInspectionPhasePayload = {
+  sessionId: string;
+  liveViewUrl: string;
   url: string;
   focus: InspectionFocus;
   title?: string;
@@ -39,8 +41,15 @@ export type BrowserInspectionPhasePayload = {
 };
 
 export function createKernelPageInspectionTool({
+  onOpen,
   onResult,
 }: {
+  onOpen: (payload: {
+    sessionId: string;
+    liveViewUrl: string;
+    url: string;
+    focus: InspectionFocus;
+  }) => Promise<void>;
   onResult: (payload: BrowserInspectionPhasePayload) => Promise<void>;
 }) {
   return tool({
@@ -64,15 +73,29 @@ export function createKernelPageInspectionTool({
     }),
     execute: async ({ url, focus }) => {
       const startedAt = Date.now();
+      let opened:
+        | { sessionId: string; liveViewUrl: string; currentUrl: string }
+        | undefined;
       try {
+        const openResult = await invokeKernelAction<{
+          sessionId: string;
+          liveViewUrl: string;
+          currentUrl: string;
+        }>("open-inspection", { url });
+        opened = openResult.output;
+        await onOpen({
+          sessionId: opened.sessionId,
+          liveViewUrl: opened.liveViewUrl,
+          url: opened.currentUrl || url,
+          focus,
+        });
         const result = await invokeKernelAction<PageInspection>(
-          "inspect-page",
-          {
-            url,
-            focus,
-          },
+          "inspect-session",
+          { sessionId: opened.sessionId, focus },
         );
         await onResult({
+          sessionId: opened.sessionId,
+          liveViewUrl: opened.liveViewUrl,
           url,
           focus,
           title: result.output.title,
@@ -81,13 +104,17 @@ export function createKernelPageInspectionTool({
         });
         return result.output;
       } catch (error) {
-        await onResult({
-          url,
-          focus,
-          ok: false,
-          error: "The remote browser couldn't inspect this page.",
-          durationMs: Date.now() - startedAt,
-        });
+        if (opened) {
+          await onResult({
+            sessionId: opened.sessionId,
+            liveViewUrl: opened.liveViewUrl,
+            url,
+            focus,
+            ok: false,
+            error: "The remote browser couldn't inspect this page.",
+            durationMs: Date.now() - startedAt,
+          });
+        }
         throw error;
       }
     },
