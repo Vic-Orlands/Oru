@@ -1,4 +1,6 @@
-import type { ComponentPropsWithRef } from "react";
+"use client";
+
+import { useState, type ComponentPropsWithRef } from "react";
 import type { Icon } from "@tabler/icons-react";
 
 import {
@@ -26,6 +28,8 @@ export function SidebarRow({
   alert = false,
   tooltip = true,
   className = "",
+  onPointerEnter,
+  onPointerLeave,
   ...props
 }: {
   icon: Icon;
@@ -37,9 +41,10 @@ export function SidebarRow({
    *  survives the collapse to the rail where a trailing badge wouldn't. */
   alert?: boolean;
 } & ComponentPropsWithRef<"button">) {
+  const [hovered, setHovered] = useState(false);
   const content = (
     <>
-      <RowPill className={active ? "bg-accent" : undefined} />
+      <RowPill active={active} hovered={hovered} />
       <span className="relative shrink-0">
         <RowIcon size={16} />
         {alert && (
@@ -61,6 +66,14 @@ export function SidebarRow({
       type="button"
       aria-label={label}
       aria-current={active ? "page" : undefined}
+      onPointerEnter={(event) => {
+        setHovered(true);
+        onPointerEnter?.(event);
+      }}
+      onPointerLeave={(event) => {
+        setHovered(false);
+        onPointerLeave?.(event);
+      }}
       className={cn(
         // Left-anchored in both states — the 12px collapsed padding centers
         // the icon on the rail with a 2px glide instead of a center-jump,

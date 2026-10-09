@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "api.dicebear.com",
-        pathname: "/10.x/bottts-neutral/svg",
+        pathname: "/10.x/**",
       },
     ],
   },

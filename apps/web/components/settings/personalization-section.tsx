@@ -3,11 +3,16 @@
 import { IconRestore } from "@tabler/icons-react";
 
 import { accentLabel, DEFAULT_ACCENT, useAccent } from "@/lib/accent";
+import {
+  DEFAULT_AGENT_AVATAR_STYLE,
+  useAgentAvatarStyle,
+} from "@/lib/agent-avatar-style";
 import { useShowSuggestionsPref } from "@/lib/home-prefs";
 import { DEFAULT_TINT, useCanvasTint } from "@/lib/tint";
 import { ToggleSwitch } from "../toggle-switch";
 import { Button } from "../ui/button";
 import { AccentPicker } from "./accent-picker";
+import { AgentAvatarStylePicker } from "./agent-avatar-style-picker";
 import { SettingsCard, SettingsHeader, SettingsRow } from "./settings-rows";
 import { TintPicker } from "./tint-picker";
 
@@ -15,13 +20,19 @@ export function PersonalizationSection() {
   const { accent, setAccent } = useAccent();
   const { tint, setTint } = useCanvasTint();
   const [showSuggestions, setShowSuggestions] = useShowSuggestionsPref();
+  const { style: agentAvatarStyle, setStyle: setAgentAvatarStyle } =
+    useAgentAvatarStyle();
 
   const isDefault =
-    accent === DEFAULT_ACCENT && !tint.enabled && showSuggestions;
+    accent === DEFAULT_ACCENT &&
+    !tint.enabled &&
+    showSuggestions &&
+    agentAvatarStyle === DEFAULT_AGENT_AVATAR_STYLE;
   const reset = () => {
     setAccent(DEFAULT_ACCENT);
     setTint(DEFAULT_TINT);
     setShowSuggestions(true);
+    setAgentAvatarStyle(DEFAULT_AGENT_AVATAR_STYLE);
   };
 
   return (
@@ -59,6 +70,18 @@ export function PersonalizationSection() {
 
         <SettingsCard>
           <SettingsRow
+            title="Agent style"
+            description="Give every specialist a matching family of playful DiceBear faces."
+          >
+            <AgentAvatarStylePicker
+              value={agentAvatarStyle}
+              onChange={setAgentAvatarStyle}
+            />
+          </SettingsRow>
+        </SettingsCard>
+
+        <SettingsCard>
+          <SettingsRow
             title="Home suggestions"
             description="A couple of conversation starters under the composer, reshuffled every visit."
             control={
@@ -74,7 +97,7 @@ export function PersonalizationSection() {
         <SettingsCard>
           <SettingsRow
             title="Reset personalization"
-            description="Back to graphite ink, a neutral canvas, and starters on the home screen."
+            description="Back to the default colors, Clay agents, and starters on the home screen."
             control={
               <Button variant="secondary" disabled={isDefault} onClick={reset}>
                 <IconRestore size={16} />

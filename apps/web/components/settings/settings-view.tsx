@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { IconChevronLeft } from "@tabler/icons-react";
 import { AnimatePresence, motion } from "motion/react";
 
 import { paneFlip } from "@/lib/motion";
@@ -57,6 +58,14 @@ export function SettingsView() {
       {/* h-fit, or the flex stretch pins this box at pane height and the
           pb-16 lands mid-content — clipping the last card's bottom edge. */}
       <div className="mx-auto h-fit w-full max-w-2xl pt-[max(1rem,env(safe-area-inset-top))] pb-10 md:pt-10 md:pb-16">
+        <button
+          type="button"
+          onClick={closeSettings}
+          className="mb-4 -ml-1.5 inline-flex h-8 items-center gap-1 rounded-sm px-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <IconChevronLeft size={17} stroke={2.25} aria-hidden="true" />
+          Back
+        </button>
         {/* Outside the AnimatePresence: the strip is the thing doing the
             switching, so it must not flip along with what it switches. */}
         <SectionStrip />

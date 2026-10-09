@@ -201,11 +201,11 @@ export function DeskHome({
               />
               <div className="flex items-center gap-2 px-2.5 pb-2.5">
                 <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
-                  <div className="rounded-full bg-accent"><AgentSwitcher compact contextLabel="Agent" /></div>
-                  <div className="rounded-full bg-accent">
+                  <div className="rounded-md bg-accent"><AgentSwitcher compact /></div>
+                  <div className="rounded-md bg-accent">
                     <ModelSelect value={model} onValueChange={onModelChange} searchOn={searchOn} onSearchOnChange={setSearchOn} thinking={thinking} onThinkingChange={setThinking} />
                   </div>
-                  <button type="button" onClick={() => fileInputRef.current?.click()} className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-2.5 text-[11.5px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Attach files">
+                  <button type="button" onClick={() => fileInputRef.current?.click()} className="inline-flex h-8 items-center gap-1.5 rounded-md bg-accent px-2.5 text-[12.5px]/4 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Attach files">
                     <IconPaperclip size={13} aria-hidden="true" />Attach
                   </button>
                   <input ref={fileInputRef} type="file" multiple hidden onChange={(event) => { if (event.target.files?.length) attachments.addFiles(event.target.files); event.target.value = ""; }} />

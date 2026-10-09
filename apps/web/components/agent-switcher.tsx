@@ -43,10 +43,10 @@ export function AgentSwitcher({
           <button
             type="button"
             aria-label={`Agent: ${active.shortName}`}
-            className={`flex items-center rounded-lg text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+            className={`flex items-center rounded-md text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               compact
-                ? "h-8 max-w-full gap-1.5 px-2 text-[11.5px]"
-                : "h-9 w-full gap-2 px-2.5 text-[12.5px] sidebar-collapsed:w-10 sidebar-collapsed:justify-center sidebar-collapsed:px-0"
+                ? "h-8 max-w-full gap-1.5 px-2 text-[12.5px]/4"
+                : "h-8 w-full gap-2 px-2.5 text-[13px]/4 sidebar-collapsed:w-10 sidebar-collapsed:justify-center sidebar-collapsed:px-0"
             }`}
           />
         }

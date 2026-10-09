@@ -99,7 +99,7 @@ const GLYPH_KINDS = new Set([
 /** The assistant turn's one activity surface. Before prose arrives it stays
  * mounted as the large current-phase indicator. Once the reply becomes
  * visible, one action settles in place; only multi-step work collapses into
- * the "Did N things" disclosure. */
+ * the "Completed N steps" disclosure. */
 export const PhaseActivity = memo(
   function PhaseActivity({
     phases,
@@ -165,7 +165,7 @@ export const PhaseActivity = memo(
       integration.action,
     );
     const label = grouped
-      ? `Did ${compact.length} thing${compact.length === 1 ? "" : "s"}`
+      ? `Completed ${compact.length} steps`
       : single
         ? integrationCompletedLabel(single, integration.completed)
         : actionLabel;

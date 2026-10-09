@@ -141,17 +141,26 @@ export function Sidebar() {
           : "visible w-[var(--sidebar-width,16rem)] px-3 opacity-100"
       } ${resizing ? "" : GLIDE}`}
     >
-      {/* Fixed height: the toggle sits in-flow expanded but absolute when
-          collapsed, so without it the row (and everything below) would
-          shift vertically between states. */}
-      {/* Left-anchored at all times: the collapsed padding re-centers the
-          logo on the rail, gliding on the width curve instead of the old
-          instant justify-center jump. */}
-      <div className="sidebar-glide relative flex h-7 items-center px-1.5 transition-[padding] sidebar-collapsed:pl-2.5">
-        <OruLogo
-          size={20}
-          className="transition-opacity duration-150 sidebar-collapsed:group-hover/sidebar:opacity-0"
-        />
+      {/* The brand is home while expanded. On the collapsed rail, its mark
+          crossfades into the expand control so two overlapping buttons never
+          compete for the same pointer or keyboard target. */}
+      <div className="sidebar-glide relative flex h-8 items-center px-1 transition-[padding] sidebar-collapsed:pl-2">
+        <button
+          type="button"
+          onClick={openHome}
+          tabIndex={collapsed ? -1 : 0}
+          aria-hidden={collapsed}
+          aria-label="Go to Ọru home"
+          className="flex h-8 min-w-0 cursor-pointer items-center gap-2 rounded-md px-1.5 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sidebar-collapsed:pointer-events-none sidebar-collapsed:px-0"
+        >
+          <OruLogo
+            size={20}
+            className="transition-opacity duration-150 sidebar-collapsed:group-hover/sidebar:opacity-0"
+          />
+          <span className="truncate text-[14px]/5 font-semibold tracking-[-0.015em] transition-[opacity,visibility] duration-150 sidebar-collapsed:invisible sidebar-collapsed:opacity-0">
+            Ọru
+          </span>
+        </button>
         <SyncIndicator />
         {/* Only surfaces while the pointer is over the sidebar; when
             collapsed it overlays the header and crossfades with the logo. */}
@@ -168,11 +177,8 @@ export function Sidebar() {
           )}
         </button>
       </div>
-      <div className="mt-1 mb-2">
+      <div className="mt-1">
         <UserButton />
-      </div>
-      <div className="mb-2">
-        <AgentSwitcher />
       </div>
       {/* The middle is a two-faced strip (chats vs settings) riding the
           page slide; the account above and utility footer below stay put as
@@ -183,6 +189,7 @@ export function Sidebar() {
         pageClassName="flex flex-col gap-0"
         one={
           <>
+            <AgentSwitcher />
             {/* Hit areas (the before: layers here and on the rows) reach the
                 sidebar edges and split the gaps between neighbors, so clicks
                 in the dead space still land. The label clips in an inner

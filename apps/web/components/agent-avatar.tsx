@@ -1,5 +1,11 @@
+"use client";
+
 import Image from "next/image";
 
+import {
+  useAgentAvatarStyle,
+  type AgentAvatarStyle,
+} from "@/lib/agent-avatar-style";
 import type { LeadAgentId } from "@/lib/lead-agents";
 import { cn } from "@/lib/utils";
 
@@ -12,27 +18,32 @@ const BACKGROUNDS: Record<LeadAgentId, string> = {
   fundraising: "c0aede",
 };
 
-function avatarUrl(agentId: LeadAgentId) {
+function avatarUrl(agentId: LeadAgentId, avatarStyle: AgentAvatarStyle) {
   const params = new URLSearchParams({
     seed: `oru-${agentId}`,
     backgroundColor: BACKGROUNDS[agentId],
     backgroundType: "gradientLinear",
-    radius: "24",
+    borderRadius: "24",
   });
-  return `https://api.dicebear.com/10.x/bottts-neutral/svg?${params.toString()}`;
+  return `https://api.dicebear.com/10.x/${avatarStyle}/svg?${params.toString()}`;
 }
 
 /** Stable, abstract DiceBear identity for an agent. The adjacent agent name
  *  carries the accessible label, so the artwork stays decorative. */
 export function AgentAvatar({
   agentId,
+  avatarStyle,
   size = 24,
   className,
 }: {
   agentId: LeadAgentId;
+  avatarStyle?: AgentAvatarStyle;
   size?: number;
   className?: string;
 }) {
+  const preference = useAgentAvatarStyle();
+  const style = avatarStyle ?? preference.style;
+
   return (
     <span
       aria-hidden="true"
@@ -43,7 +54,7 @@ export function AgentAvatar({
       style={{ width: size, height: size }}
     >
       <Image
-        src={avatarUrl(agentId)}
+        src={avatarUrl(agentId, style)}
         alt=""
         fill
         unoptimized

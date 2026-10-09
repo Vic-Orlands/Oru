@@ -379,13 +379,13 @@ export function ModelSelect({
     >
       <PopoverTrigger
         aria-label="Choose model"
-        className="relative flex h-9 shrink-0 cursor-pointer items-center rounded-full px-3 text-[13.5px]/4 font-medium text-muted-foreground transition-colors duration-150 hover:bg-black/[0.05] hover:text-foreground data-popup-open:bg-black/[0.05] data-popup-open:text-foreground dark:hover:bg-white/[0.06] dark:data-popup-open:bg-white/[0.06]"
+        className="relative flex h-8 shrink-0 cursor-pointer items-center rounded-md px-2.5 text-[12.5px]/4 font-medium text-muted-foreground transition-colors duration-150 hover:bg-black/[0.05] hover:text-foreground data-popup-open:bg-black/[0.05] data-popup-open:text-foreground dark:hover:bg-white/[0.06] dark:data-popup-open:bg-white/[0.06]"
       >
         {/* The width twin: identical content at rest pose, never visible. */}
         <span
           ref={twinRef}
           aria-hidden
-          className="invisible absolute top-0 left-3 flex items-center whitespace-nowrap"
+          className="invisible absolute top-0 left-2.5 flex items-center whitespace-nowrap"
         >
           <span className="flex items-center gap-1.5">
             <ModelGlyph model={current} size={15} className="shrink-0" />
