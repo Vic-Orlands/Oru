@@ -33,6 +33,9 @@ export function IntegrationLogo({
     logoUrl && isImageLoaded(logoUrl) ? logoUrl : null,
   );
   const radius = Math.round(size * 0.22);
+  const darkModeLogoClass = DARK_MODE_WHITE_LOGOS.has(name.trim().toLowerCase())
+    ? "dark:brightness-0 dark:invert dark:drop-shadow-none"
+    : "dark:drop-shadow-[0_0_1px_rgba(255,255,255,0.7)]";
 
   if (logoUrl && !failed) {
     const loaded = loadedSrc === logoUrl || isImageLoaded(logoUrl);
@@ -70,7 +73,7 @@ export function IntegrationLogo({
           }}
           onLoad={(event) => settle(event.currentTarget)}
           onError={() => setFailed(true)}
-          className={`absolute inset-[14%] size-[72%] object-contain object-center transition-opacity duration-300 dark:drop-shadow-[0_0_1px_rgba(255,255,255,0.7)] ${
+          className={`absolute inset-[14%] size-[72%] object-contain object-center transition-opacity duration-300 ${darkModeLogoClass} ${
             loaded ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -123,6 +126,10 @@ export function IntegrationLogo({
     </span>
   );
 }
+
+/** Brand marks authored as black-on-transparent need an explicit dark-theme
+ * treatment; a glow around black pixels still leaves the mark itself muddy. */
+const DARK_MODE_WHITE_LOGOS = new Set(["github"]);
 
 /** Stable tile colour so a catalog without hosted logos still reads as a
  *  store, not a column of identical plugs. Known tools get a recognisable
